@@ -67,7 +67,7 @@ class AppStrings {
       'filterApply': 'Primijeni filtre',
       'filterClear': 'Očisti filtre',
       'perHour': '/sat',
-      'reviews': 'recenzija',
+      'reviews': 'Recenzija',
       'available': 'Dostupan',
       'unavailable': 'Nedostupan',
 
@@ -201,7 +201,7 @@ class AppStrings {
       'filterApply': 'Apply filters',
       'filterClear': 'Clear filters',
       'perHour': '/hour',
-      'reviews': 'reviews',
+      'reviews': 'Reviews',
       'available': 'Available',
       'unavailable': 'Unavailable',
 
@@ -281,7 +281,7 @@ class AppStrings {
       'deleteConfirm': 'Delete {item}?',
       'distanceKm': '{km} km',
       'pricePerHour': '€{price}/hour',
-      'ratingCount': '{count} reviews',
+      'ratingCount': '{count} Reviews',
       'welcomeUser': 'Welcome, {name}!',
       'orderForStudent': 'Order for {student}',
       'slotTime': '{start} - {end}',
