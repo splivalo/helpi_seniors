@@ -168,6 +168,26 @@ class AppStrings {
       'welcomeUser': 'Dobrodošli, {name}!',
       'orderForStudent': 'Narudžba za {student}',
       'slotTime': '{start} - {end}',
+
+      // ── Kalendar ───────────────────────────
+      'month1': 'Siječanj',
+      'month2': 'Veljača',
+      'month3': 'Ožujak',
+      'month4': 'Travanj',
+      'month5': 'Svibanj',
+      'month6': 'Lipanj',
+      'month7': 'Srpanj',
+      'month8': 'Kolovoz',
+      'month9': 'Rujan',
+      'month10': 'Listopad',
+      'month11': 'Studeni',
+      'month12': 'Prosinac',
+      'calendarFree': 'Slobodno',
+      'calendarPartial': 'Djelomično',
+      'calendarBooked': 'Zauzeto',
+      'selectDatePrompt': 'Odaberite datum za rezervaciju',
+      'freeHoursCount': '{free} od {total} sati slobodno',
+      'allHoursFree': 'Svi termini slobodni',
     },
     'en': {
       // ── App ───────────────────────────────────
@@ -319,6 +339,26 @@ class AppStrings {
       'welcomeUser': 'Welcome, {name}!',
       'orderForStudent': 'Order for {student}',
       'slotTime': '{start} - {end}',
+
+      // ── Calendar ───────────────────────────
+      'month1': 'January',
+      'month2': 'February',
+      'month3': 'March',
+      'month4': 'April',
+      'month5': 'May',
+      'month6': 'June',
+      'month7': 'July',
+      'month8': 'August',
+      'month9': 'September',
+      'month10': 'October',
+      'month11': 'November',
+      'month12': 'December',
+      'calendarFree': 'Available',
+      'calendarPartial': 'Partial',
+      'calendarBooked': 'Booked',
+      'selectDatePrompt': 'Select a date to book',
+      'freeHoursCount': '{free} of {total} hours available',
+      'allHoursFree': 'All hours available',
     },
   };
 
@@ -499,4 +539,14 @@ class AppStrings {
 
   static String slotTime(String start, String end) =>
       _t('slotTime', params: {'start': start, 'end': end});
+
+  // ── Kalendar ───────────────────────────
+  static String monthName(int month) => _t('month$month');
+  static String get calendarFree => _t('calendarFree');
+  static String get calendarPartial => _t('calendarPartial');
+  static String get calendarBooked => _t('calendarBooked');
+  static String get selectDatePrompt => _t('selectDatePrompt');
+  static String freeHoursCount(String free, String total) =>
+      _t('freeHoursCount', params: {'free': free, 'total': total});
+  static String get allHoursFree => _t('allHoursFree');
 }

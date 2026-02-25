@@ -6,15 +6,61 @@ import 'package:helpi_senior/core/utils/mock_data.dart';
 import 'package:helpi_senior/features/booking/presentation/booking_flow_screen.dart';
 import 'package:helpi_senior/shared/widgets/student_card.dart';
 
-/// Detalji profila studenta — bio, recenzije, dostupnost, CTA gumb.
-class StudentDetailScreen extends StatelessWidget {
+/// Detalji profila studenta — bio, recenzije, kalendar dostupnosti, CTA gumb.
+class StudentDetailScreen extends StatefulWidget {
   const StudentDetailScreen({super.key, required this.student});
 
   final MockStudent student;
 
-  void _openTimePicker(BuildContext context, MockSlot slot) {
-    final startHour = int.parse(slot.startTime.split(':')[0]);
-    final endHour = int.parse(slot.endTime.split(':')[0]);
+  @override
+  State<StudentDetailScreen> createState() => _StudentDetailScreenState();
+}
+
+class _StudentDetailScreenState extends State<StudentDetailScreen> {
+  late DateTime _displayedMonth;
+  MockDateAvailability? _selectedAvailability;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    final daysLeft = DateTime(now.year, now.month + 1, 0).day - now.day;
+    _displayedMonth = daysLeft < 7
+        ? DateTime(now.year, now.month + 1)
+        : DateTime(now.year, now.month);
+    _autoSelectFirstAvailable();
+  }
+
+  void _autoSelectFirstAvailable() {
+    final avail = widget.student.getMonthAvailability(
+      _displayedMonth.year,
+      _displayedMonth.month,
+    );
+    final first = avail.where((a) => !a.isFullyBooked).firstOrNull;
+    _selectedAvailability = first;
+  }
+
+  bool get _canGoBack {
+    final now = DateTime.now();
+    return _displayedMonth.isAfter(DateTime(now.year, now.month));
+  }
+
+  bool get _canGoForward {
+    final now = DateTime.now();
+    final limit = DateTime(now.year, now.month + 2);
+    return _displayedMonth.isBefore(limit);
+  }
+
+  void _openTimePicker(MockDateAvailability avail) {
+    final slot = MockSlot(
+      dayLabel: avail.dayLabel,
+      date: avail.dateFormatted,
+      startTime: '${avail.startHour.toString().padLeft(2, '0')}:00',
+      endTime: '${avail.endHour.toString().padLeft(2, '0')}:00',
+      bookedHours: avail.bookedHours,
+    );
+    final startHour = avail.startHour;
+    final endHour = avail.endHour;
     final maxHours = endHour - startHour;
 
     showModalBottomSheet<void>(
@@ -26,12 +72,12 @@ class StudentDetailScreen extends StatelessWidget {
       builder: (sheetContext) {
         return _TimePickerSheet(
           slot: slot,
-          student: student,
+          student: widget.student,
           startHour: startHour,
           endHour: endHour,
           maxHours: maxHours,
-          hourlyRate: student.hourlyRate,
-          availableSlots: student.availableSlots,
+          hourlyRate: widget.student.hourlyRate,
+          availableSlots: widget.student.availableSlots,
         );
       },
     );
@@ -42,7 +88,7 @@ class StudentDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(student.fullName)),
+      appBar: AppBar(title: Text(widget.student.fullName)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -51,12 +97,12 @@ class StudentDetailScreen extends StatelessWidget {
             child: CircleAvatar(
               radius: 60,
               backgroundColor: theme.colorScheme.secondary.withAlpha(38),
-              backgroundImage: student.imageAsset != null
-                  ? AssetImage(student.imageAsset!)
+              backgroundImage: widget.student.imageAsset != null
+                  ? AssetImage(widget.student.imageAsset!)
                   : null,
-              child: student.imageAsset == null
+              child: widget.student.imageAsset == null
                   ? Text(
-                      student.initials,
+                      widget.student.initials,
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w700,
@@ -68,14 +114,17 @@ class StudentDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Center(
-            child: Text(student.fullName, style: theme.textTheme.headlineLarge),
+            child: Text(
+              widget.student.fullName,
+              style: theme.textTheme.headlineLarge,
+            ),
           ),
           const SizedBox(height: 8),
-          Center(child: RatingStars(rating: student.rating, size: 24)),
+          Center(child: RatingStars(rating: widget.student.rating, size: 24)),
           const SizedBox(height: 4),
           Center(
             child: Text(
-              AppStrings.ratingCount(student.reviewCount.toString()),
+              AppStrings.ratingCount(widget.student.reviewCount.toString()),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -84,34 +133,46 @@ class StudentDetailScreen extends StatelessWidget {
           // ── Bio ───────────────────────────────────
           Text(AppStrings.aboutStudent, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
-          Text(student.bio, style: theme.textTheme.bodyLarge),
+          Text(widget.student.bio, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 24),
 
-          // ── Dostupni termini ──────────────────────
+          // ── Kalendar dostupnosti ──────────────────
           Text(AppStrings.availability, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 12),
-          ...student.availableSlots.map(
-            (slot) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _SlotTile(slot: slot),
-            ),
-          ),
+          _buildCalendar(theme),
+          const SizedBox(height: 8),
+          _buildLegend(theme),
           const SizedBox(height: 16),
 
-          // ── CTA Rezerviraj ───────────────────────
-          ElevatedButton.icon(
-            onPressed: () {
-              HapticFeedback.mediumImpact();
-              _openTimePicker(context, student.availableSlots.first);
-            },
-            icon: const Icon(Icons.calendar_month),
-            label: Text(AppStrings.bookNow),
-          ),
+          // ── Odabrani datum info + Rezerviraj ──────
+          if (_selectedAvailability != null) ...[
+            _buildSelectedDateInfo(theme),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                _openTimePicker(_selectedAvailability!);
+              },
+              icon: const Icon(Icons.calendar_month),
+              label: Text(AppStrings.bookNow),
+            ),
+          ] else
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: Text(
+                  AppStrings.selectDatePrompt,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurface.withAlpha(153),
+                  ),
+                ),
+              ),
+            ),
           const SizedBox(height: 24),
 
           // ── Recenzije (mock) ──────────────────────
           Text(
-            '${AppStrings.reviews} (${student.reviewCount})',
+            '${AppStrings.reviews} (${widget.student.reviewCount})',
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: 12),
@@ -131,6 +192,319 @@ class StudentDetailScreen extends StatelessWidget {
                 'kako smo se dogovorili.',
           ),
           const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  // ── Calendar ───────────────────────────────────────────────────
+
+  Widget _buildCalendar(ThemeData theme) {
+    final year = _displayedMonth.year;
+    final month = _displayedMonth.month;
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+
+    final avail = widget.student.getMonthAvailability(year, month);
+    final availMap = <int, MockDateAvailability>{};
+    for (final a in avail) {
+      availMap[a.date.day] = a;
+    }
+
+    final firstOfMonth = DateTime(year, month, 1);
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    final startWeekday = firstOfMonth.weekday; // 1=Mon..7=Sun
+
+    // Build cells
+    final cells = <Widget>[];
+    for (var i = 0; i < startWeekday - 1; i++) {
+      cells.add(const SizedBox());
+    }
+    for (var day = 1; day <= daysInMonth; day++) {
+      final date = DateTime(year, month, day);
+      final isPast = date.isBefore(todayDate);
+      final isToday =
+          date.year == todayDate.year &&
+          date.month == todayDate.month &&
+          date.day == todayDate.day;
+      final availability = availMap[day];
+      final isSelected =
+          _selectedAvailability?.date.day == day &&
+          _selectedAvailability?.date.month == month &&
+          _selectedAvailability?.date.year == year;
+
+      final canTap =
+          !isPast && availability != null && !availability.isFullyBooked;
+
+      cells.add(
+        GestureDetector(
+          onTap: canTap
+              ? () => setState(() => _selectedAvailability = availability)
+              : null,
+          child: _buildDateCell(
+            theme: theme,
+            day: day,
+            isPast: isPast,
+            isToday: isToday,
+            availability: availability,
+            isSelected: isSelected,
+          ),
+        ),
+      );
+    }
+
+    // Build rows of 7
+    final rows = <Widget>[];
+    for (var i = 0; i < cells.length; i += 7) {
+      final end = (i + 7).clamp(0, cells.length);
+      final rowChildren = <Widget>[];
+      for (var j = i; j < end; j++) {
+        rowChildren.add(Expanded(child: cells[j]));
+      }
+      for (var j = end - i; j < 7; j++) {
+        rowChildren.add(const Expanded(child: SizedBox()));
+      }
+      rows.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 2),
+          child: Row(children: rowChildren),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildMonthHeader(theme),
+          const SizedBox(height: 16),
+          _buildWeekdayHeaders(theme),
+          const SizedBox(height: 8),
+          ...rows,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMonthHeader(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: _canGoBack
+              ? () => setState(() {
+                  _displayedMonth = DateTime(
+                    _displayedMonth.year,
+                    _displayedMonth.month - 1,
+                  );
+                  _selectedAvailability = null;
+                  _autoSelectFirstAvailable();
+                })
+              : null,
+        ),
+        Text(
+          '${AppStrings.monthName(_displayedMonth.month)} '
+          '${_displayedMonth.year}',
+          style: theme.textTheme.headlineSmall,
+        ),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          onPressed: _canGoForward
+              ? () => setState(() {
+                  _displayedMonth = DateTime(
+                    _displayedMonth.year,
+                    _displayedMonth.month + 1,
+                  );
+                  _selectedAvailability = null;
+                  _autoSelectFirstAvailable();
+                })
+              : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeekdayHeaders(ThemeData theme) {
+    final headers = [
+      AppStrings.dayMonShort,
+      AppStrings.dayTueShort,
+      AppStrings.dayWedShort,
+      AppStrings.dayThuShort,
+      AppStrings.dayFriShort,
+      AppStrings.daySatShort,
+      AppStrings.daySunShort,
+    ];
+    return Row(
+      children: headers
+          .map(
+            (h) => Expanded(
+              child: Center(
+                child: Text(
+                  h,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface.withAlpha(153),
+                  ),
+                ),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Widget _buildDateCell({
+    required ThemeData theme,
+    required int day,
+    required bool isPast,
+    required bool isToday,
+    MockDateAvailability? availability,
+    required bool isSelected,
+  }) {
+    Color bgColor;
+    Color textColor;
+
+    if (isSelected && availability != null && !availability.isFullyBooked) {
+      bgColor = theme.colorScheme.secondary;
+      textColor = Colors.white;
+    } else if (isPast) {
+      bgColor = Colors.transparent;
+      textColor = Colors.grey.shade300;
+    } else if (availability == null) {
+      bgColor = Colors.transparent;
+      textColor = Colors.grey.shade400;
+    } else if (availability.isFullyBooked) {
+      bgColor = Colors.red.shade50;
+      textColor = Colors.grey.shade500;
+    } else if (availability.isPartiallyBooked) {
+      bgColor = Colors.orange.shade50;
+      textColor = Colors.orange.shade800;
+    } else {
+      bgColor = theme.colorScheme.secondary.withAlpha(30);
+      textColor = theme.colorScheme.secondary;
+    }
+
+    return Container(
+      height: 44,
+      margin: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: bgColor,
+        shape: BoxShape.circle,
+        border: isToday && !isSelected
+            ? Border.all(color: theme.colorScheme.secondary, width: 2)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        '$day',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: isToday || isSelected ? FontWeight.w700 : FontWeight.w500,
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegend(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _legendItem(
+          theme.colorScheme.secondary.withAlpha(30),
+          AppStrings.calendarFree,
+          theme,
+        ),
+        const SizedBox(width: 16),
+        _legendItem(Colors.orange.shade50, AppStrings.calendarPartial, theme),
+        const SizedBox(width: 16),
+        _legendItem(Colors.red.shade50, AppStrings.calendarBooked, theme),
+      ],
+    );
+  }
+
+  Widget _legendItem(Color color, String label, ThemeData theme) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 4),
+        Text(label, style: theme.textTheme.bodySmall),
+      ],
+    );
+  }
+
+  Widget _buildSelectedDateInfo(ThemeData theme) {
+    final avail = _selectedAvailability!;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary.withAlpha(15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.secondary.withAlpha(60)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondary.withAlpha(30),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.event_available,
+              color: theme.colorScheme.secondary,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${avail.dayLabel} ${avail.dateFormatted}',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${avail.startHour.toString().padLeft(2, '0')}:00 – '
+                  '${avail.endHour.toString().padLeft(2, '0')}:00',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withAlpha(153),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            avail.isPartiallyBooked
+                ? AppStrings.freeHoursCount(
+                    avail.freeHourCount.toString(),
+                    avail.totalHours.toString(),
+                  )
+                : AppStrings.allHoursFree,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: avail.isPartiallyBooked
+                  ? Colors.orange.shade800
+                  : theme.colorScheme.secondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -288,9 +662,10 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
 
   /// Rezervirani sati za trenutni dan.
   Set<int> get _currentBookedHours {
-    final day = _isRecurring
-        ? (_expandedDay ?? _selectedDays.first)
-        : (_dayLabelToInt[widget.slot.dayLabel] ?? 1);
+    if (!_isRecurring) {
+      return widget.slot.bookedHours.toSet();
+    }
+    final day = _expandedDay ?? _selectedDays.first;
     return _bookedHoursForDay(day);
   }
 
@@ -952,65 +1327,6 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           ),
         );
       }),
-    );
-  }
-}
-
-class _SlotTile extends StatelessWidget {
-  const _SlotTile({required this.slot});
-
-  final MockSlot slot;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final subtitleColor = theme.colorScheme.onSurface.withAlpha(153);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.calendar_today_outlined,
-              color: theme.colorScheme.onSurface.withAlpha(180),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${slot.dayLabel} ${slot.date}',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  AppStrings.slotTime(slot.startTime, slot.endTime),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: subtitleColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

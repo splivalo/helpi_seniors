@@ -24,7 +24,6 @@ class MockData {
           date: '03.03.',
           startTime: '16:00',
           endTime: '20:00',
-          bookedHours: [17],
         ),
         MockSlot(
           dayLabel: 'Sri',
@@ -37,7 +36,6 @@ class MockData {
           date: '06.03.',
           startTime: '16:00',
           endTime: '20:00',
-          bookedHours: [16, 18],
         ),
         MockSlot(
           dayLabel: 'Pet',
@@ -71,7 +69,6 @@ class MockData {
           date: '03.03.',
           startTime: '08:00',
           endTime: '20:00',
-          bookedHours: [10, 11],
         ),
         MockSlot(
           dayLabel: 'Sri',
@@ -84,7 +81,6 @@ class MockData {
           date: '07.03.',
           startTime: '08:00',
           endTime: '12:00',
-          bookedHours: [9],
         ),
       ],
     ),
@@ -226,6 +222,79 @@ class MockStudent {
     final l = lastName.isNotEmpty ? lastName[0] : '';
     return '$f$l'.toUpperCase();
   }
+
+  // ── Generiranje dostupnosti po datumima ─────────────────────
+
+  static const _labelToWeekday = {
+    'Pon': 1,
+    'Uto': 2,
+    'Sri': 3,
+    'Čet': 4,
+    'Pet': 5,
+    'Sub': 6,
+    'Ned': 7,
+  };
+
+  /// Mock bookings per student per date (key: 'month-day').
+  static final Map<String, Map<String, List<int>>> _mockBookings = {
+    '5': {
+      // Petra (Mon/Wed/Thu/Fri 16-20)
+      '3-9': [16, 17, 18, 19], // Mon fully booked
+      '3-5': [16, 18], // Thu partially
+      '3-13': [18, 19], // Fri partially
+      '3-18': [16], // Wed partially
+    },
+    '3': {
+      // Maja (Mon 8-20, Wed 14-18, Fri 8-12)
+      '3-2': [10, 11], // Mon partially
+      '3-6': [9], // Fri partially
+      '3-16': [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], // Mon fully
+      '3-18': [14, 15, 16, 17], // Wed fully
+    },
+  };
+
+  /// Generate concrete date availability for a given month.
+  List<MockDateAvailability> getMonthAvailability(int year, int month) {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final lastDay = DateTime(year, month + 1, 0);
+
+    // Build weekly pattern from availableSlots
+    final patterns = <int, MockSlot>{};
+    for (final slot in availableSlots) {
+      final wd = _labelToWeekday[slot.dayLabel];
+      if (wd != null) patterns[wd] = slot;
+    }
+
+    final result = <MockDateAvailability>[];
+    for (
+      var d = DateTime(year, month, 1);
+      !d.isAfter(lastDay);
+      d = d.add(const Duration(days: 1))
+    ) {
+      if (d.isBefore(todayDate)) continue;
+
+      final pattern = patterns[d.weekday];
+      if (pattern == null) continue;
+
+      final startH = int.parse(pattern.startTime.split(':')[0]);
+      final endH = int.parse(pattern.endTime.split(':')[0]);
+
+      final key = '$month-${d.day}';
+      final booked = _mockBookings[id]?[key] ?? <int>[];
+
+      result.add(
+        MockDateAvailability(
+          date: d,
+          startHour: startH,
+          endHour: endH,
+          bookedHours: booked,
+        ),
+      );
+    }
+
+    return result;
+  }
 }
 
 class MockSlot {
@@ -247,6 +316,55 @@ class MockSlot {
   });
 
   String get label => '$dayLabel $date  $startTime – $endTime';
+}
+
+/// Concrete date availability (generated from weekly pattern + bookings).
+class MockDateAvailability {
+  final DateTime date;
+  final int startHour;
+  final int endHour;
+  final List<int> bookedHours;
+
+  const MockDateAvailability({
+    required this.date,
+    required this.startHour,
+    required this.endHour,
+    this.bookedHours = const [],
+  });
+
+  bool get isFullyBooked {
+    for (var h = startHour; h < endHour; h++) {
+      if (!bookedHours.contains(h)) return false;
+    }
+    return true;
+  }
+
+  bool get isPartiallyBooked => bookedHours.isNotEmpty && !isFullyBooked;
+
+  int get freeHourCount {
+    var count = 0;
+    for (var h = startHour; h < endHour; h++) {
+      if (!bookedHours.contains(h)) count++;
+    }
+    return count;
+  }
+
+  int get totalHours => endHour - startHour;
+
+  static const _weekdayToLabel = {
+    1: 'Pon',
+    2: 'Uto',
+    3: 'Sri',
+    4: 'Čet',
+    5: 'Pet',
+    6: 'Sub',
+    7: 'Ned',
+  };
+
+  String get dayLabel => _weekdayToLabel[date.weekday] ?? '';
+
+  String get dateFormatted =>
+      '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.';
 }
 
 enum ServiceType {
