@@ -93,10 +93,14 @@ class AppStrings {
       // ── Ponavljanje ──────────────────────────
       'oneTime': 'Jednokratno',
       'recurring': 'Ponavljajuće',
-      'selectDays': 'Odaberite dane',
+      'continuous': 'Kontinuirano',
+      'untilDate': 'Do datuma',
+      'selectEndDate': 'Odaberite zadnji termin',
+      'lastSessionLabel': 'Zadnji termin',
+      'recurringUntilDateInfo':
+          'Rezervacija traje do {date}. '
+          'Nakon tog datuma automatski prestaje.',
       'noEndDate': 'Bez kraja',
-      'selectEndDate': 'Odaberi datum',
-      'untilDate': 'Do {date}',
       'everyWeek': 'Svaki',
       'dayMon': 'Pon',
       'dayTue': 'Uto',
@@ -188,6 +192,22 @@ class AppStrings {
       'selectDatePrompt': 'Odaberite datum za rezervaciju',
       'freeHoursCount': '{free} od {total} sati slobodno',
       'allHoursFree': 'Svi termini slobodni',
+      'recurringConfirmed': 'Potvrđeno: {count} termina',
+      'recurringSkipped': 'Preskočeno: {count}',
+      'recurringFree': 'Slobodno',
+      'recurringOccupied': 'Zauzeto',
+      'recurringPartial': '{start}-{end} slobodno',
+      'recurringTotalPrice': 'Ukupno ({count} termina)',
+      'recurringPerVisitPrice': '{price} €/termin',
+      'recurringBillingInfo':
+          'Naplata karticom 30 min prije svakog dolaska.',
+      'recurringMonthTitle': 'Svaki {day} u mjesecu {month}',
+      'recurringDaysLabel': 'Dani',
+      'recurringOutsideWindow': 'Izvan termina',
+      'recurringAutoRenew':
+          'Ova rezervacija vrijedi do kraja mjeseca {month}. '
+          'Automatski se obnavlja sljedeći mjesec ako student '
+          'produži dostupnost. Možete otkazati bilo kada.',
     },
     'en': {
       // ── App ───────────────────────────────────
@@ -264,10 +284,14 @@ class AppStrings {
       // ── Ponavljanje ──────────────────────────
       'oneTime': 'One-time',
       'recurring': 'Recurring',
-      'selectDays': 'Select days',
+      'continuous': 'Continuous',
+      'untilDate': 'Until date',
+      'selectEndDate': 'Select last session',
+      'lastSessionLabel': 'Last session',
+      'recurringUntilDateInfo':
+          'Booking runs until {date}. '
+          'It stops automatically after that date.',
       'noEndDate': 'No end date',
-      'selectEndDate': 'Select date',
-      'untilDate': 'Until {date}',
       'everyWeek': 'Every',
       'dayMon': 'Mon',
       'dayTue': 'Tue',
@@ -359,6 +383,22 @@ class AppStrings {
       'selectDatePrompt': 'Select a date to book',
       'freeHoursCount': '{free} of {total} hours available',
       'allHoursFree': 'All hours available',
+      'recurringConfirmed': 'Confirmed: {count} sessions',
+      'recurringSkipped': 'Skipped: {count}',
+      'recurringFree': 'Available',
+      'recurringOccupied': 'Booked',
+      'recurringPartial': '{start}-{end} available',
+      'recurringTotalPrice': 'Total ({count} sessions)',
+      'recurringPerVisitPrice': '€{price}/session',
+      'recurringBillingInfo':
+          'Charged to your card 30 min before each visit.',
+      'recurringMonthTitle': 'Every {day} in {month}',
+      'recurringDaysLabel': 'Days',
+      'recurringOutsideWindow': 'Outside hours',
+      'recurringAutoRenew':
+          'This booking is valid until the end of {month}. '
+          'It auto-renews next month if the student extends '
+          'availability. You can cancel anytime.',
     },
   };
 
@@ -451,9 +491,13 @@ class AppStrings {
   // ── Ponavljanje ──────────────────────────────
   static String get oneTime => _t('oneTime');
   static String get recurring => _t('recurring');
-  static String get selectDays => _t('selectDays');
-  static String get noEndDate => _t('noEndDate');
+  static String get continuous => _t('continuous');
+  static String get untilDateLabel => _t('untilDate');
   static String get selectEndDate => _t('selectEndDate');
+  static String get lastSessionLabel => _t('lastSessionLabel');
+  static String recurringUntilDateInfo(String date) =>
+      _t('recurringUntilDateInfo', params: {'date': date});
+  static String get noEndDate => _t('noEndDate');
   static String untilDate(String date) =>
       _t('untilDate', params: {'date': date});
   static String get everyWeek => _t('everyWeek');
@@ -549,4 +593,23 @@ class AppStrings {
   static String freeHoursCount(String free, String total) =>
       _t('freeHoursCount', params: {'free': free, 'total': total});
   static String get allHoursFree => _t('allHoursFree');
+  static String recurringConfirmed(String count) =>
+      _t('recurringConfirmed', params: {'count': count});
+  static String recurringSkipped(String count) =>
+      _t('recurringSkipped', params: {'count': count});
+  static String get recurringFree => _t('recurringFree');
+  static String get recurringOccupied => _t('recurringOccupied');
+  static String recurringPartial(String start, String end) =>
+      _t('recurringPartial', params: {'start': start, 'end': end});
+  static String recurringTotalPrice(String count) =>
+      _t('recurringTotalPrice', params: {'count': count});
+  static String recurringPerVisitPrice(String price) =>
+      _t('recurringPerVisitPrice', params: {'price': price});
+  static String get recurringBillingInfo => _t('recurringBillingInfo');
+  static String recurringMonthTitle(String day, String month) =>
+      _t('recurringMonthTitle', params: {'day': day, 'month': month});
+  static String get recurringDaysLabel => _t('recurringDaysLabel');
+  static String get recurringOutsideWindow => _t('recurringOutsideWindow');
+  static String recurringAutoRenew(String month) =>
+      _t('recurringAutoRenew', params: {'month': month});
 }

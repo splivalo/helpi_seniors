@@ -18,7 +18,6 @@ class StudentDetailScreen extends StatefulWidget {
 
 class _StudentDetailScreenState extends State<StudentDetailScreen> {
   late DateTime _displayedMonth;
-  MockDateAvailability? _selectedAvailability;
 
   @override
   void initState() {
@@ -28,16 +27,6 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     _displayedMonth = daysLeft < 7
         ? DateTime(now.year, now.month + 1)
         : DateTime(now.year, now.month);
-    _autoSelectFirstAvailable();
-  }
-
-  void _autoSelectFirstAvailable() {
-    final avail = widget.student.getMonthAvailability(
-      _displayedMonth.year,
-      _displayedMonth.month,
-    );
-    final first = avail.where((a) => !a.isFullyBooked).firstOrNull;
-    _selectedAvailability = first;
   }
 
   bool get _canGoBack {
@@ -51,16 +40,11 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     return _displayedMonth.isBefore(limit);
   }
 
-  void _openTimePicker(MockDateAvailability avail) {
-    final slot = MockSlot(
-      dayLabel: avail.dayLabel,
-      date: avail.dateFormatted,
-      startTime: '${avail.startHour.toString().padLeft(2, '0')}:00',
-      endTime: '${avail.endHour.toString().padLeft(2, '0')}:00',
-      bookedHours: avail.bookedHours,
-    );
-    final startHour = avail.startHour;
-    final endHour = avail.endHour;
+  void _openTimePicker() {
+    // Use the first available slot from the student as default.
+    final firstSlot = widget.student.availableSlots.first;
+    final startHour = int.parse(firstSlot.startTime.split(':')[0]);
+    final endHour = int.parse(firstSlot.endTime.split(':')[0]);
     final maxHours = endHour - startHour;
 
     showModalBottomSheet<void>(
@@ -71,13 +55,12 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
       ),
       builder: (sheetContext) {
         return _TimePickerSheet(
-          slot: slot,
+          slot: firstSlot,
           student: widget.student,
           startHour: startHour,
           endHour: endHour,
           maxHours: maxHours,
           hourlyRate: widget.student.hourlyRate,
-          availableSlots: widget.student.availableSlots,
         );
       },
     );
@@ -142,32 +125,17 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
           _buildCalendar(theme),
           const SizedBox(height: 8),
           _buildLegend(theme),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
-          // ── Odabrani datum info + Rezerviraj ──────
-          if (_selectedAvailability != null) ...[
-            _buildSelectedDateInfo(theme),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                _openTimePicker(_selectedAvailability!);
-              },
-              icon: const Icon(Icons.calendar_month),
-              label: Text(AppStrings.bookNow),
-            ),
-          ] else
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: Text(
-                  AppStrings.selectDatePrompt,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface.withAlpha(153),
-                  ),
-                ),
-              ),
-            ),
+          // ── Rezerviraj ────────────────────────────
+          ElevatedButton.icon(
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              _openTimePicker();
+            },
+            icon: const Icon(Icons.calendar_month),
+            label: Text(AppStrings.bookNow),
+          ),
           const SizedBox(height: 24),
 
           // ── Recenzije (mock) ──────────────────────
@@ -228,27 +196,14 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
           date.month == todayDate.month &&
           date.day == todayDate.day;
       final availability = availMap[day];
-      final isSelected =
-          _selectedAvailability?.date.day == day &&
-          _selectedAvailability?.date.month == month &&
-          _selectedAvailability?.date.year == year;
-
-      final canTap =
-          !isPast && availability != null && !availability.isFullyBooked;
 
       cells.add(
-        GestureDetector(
-          onTap: canTap
-              ? () => setState(() => _selectedAvailability = availability)
-              : null,
-          child: _buildDateCell(
-            theme: theme,
-            day: day,
-            isPast: isPast,
-            isToday: isToday,
-            availability: availability,
-            isSelected: isSelected,
-          ),
+        _buildDateCell(
+          theme: theme,
+          day: day,
+          isPast: isPast,
+          isToday: isToday,
+          availability: availability,
         ),
       );
     }
@@ -303,8 +258,6 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                     _displayedMonth.year,
                     _displayedMonth.month - 1,
                   );
-                  _selectedAvailability = null;
-                  _autoSelectFirstAvailable();
                 })
               : null,
         ),
@@ -321,8 +274,6 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                     _displayedMonth.year,
                     _displayedMonth.month + 1,
                   );
-                  _selectedAvailability = null;
-                  _autoSelectFirstAvailable();
                 })
               : null,
         ),
@@ -365,15 +316,11 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     required bool isPast,
     required bool isToday,
     MockDateAvailability? availability,
-    required bool isSelected,
   }) {
     Color bgColor;
     Color textColor;
 
-    if (isSelected && availability != null && !availability.isFullyBooked) {
-      bgColor = theme.colorScheme.secondary;
-      textColor = Colors.white;
-    } else if (isPast) {
+    if (isPast) {
       bgColor = Colors.transparent;
       textColor = Colors.grey.shade300;
     } else if (availability == null) {
@@ -396,7 +343,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
       decoration: BoxDecoration(
         color: bgColor,
         shape: BoxShape.circle,
-        border: isToday && !isSelected
+        border: isToday
             ? Border.all(color: theme.colorScheme.secondary, width: 2)
             : null,
       ),
@@ -405,7 +352,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
         '$day',
         style: TextStyle(
           fontSize: 16,
-          fontWeight: isToday || isSelected ? FontWeight.w700 : FontWeight.w500,
+          fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
           color: textColor,
         ),
       ),
@@ -443,73 +390,10 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
       ],
     );
   }
-
-  Widget _buildSelectedDateInfo(ThemeData theme) {
-    final avail = _selectedAvailability!;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondary.withAlpha(15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.secondary.withAlpha(60)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.secondary.withAlpha(30),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.event_available,
-              color: theme.colorScheme.secondary,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${avail.dayLabel} ${avail.dateFormatted}',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${avail.startHour.toString().padLeft(2, '0')}:00 – '
-                  '${avail.endHour.toString().padLeft(2, '0')}:00',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withAlpha(153),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            avail.isPartiallyBooked
-                ? AppStrings.freeHoursCount(
-                    avail.freeHourCount.toString(),
-                    avail.totalHours.toString(),
-                  )
-                : AppStrings.allHoursFree,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: avail.isPartiallyBooked
-                  ? Colors.orange.shade800
-                  : theme.colorScheme.secondary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
+/// Status datuma za ponavljajuću rezervaciju.
+enum _RecurringDateStatus { confirmed, conflict, skipped, outsideWindow }
 
 /// Postavke vremena za jedan dan.
 class _DayTimeSettings {
@@ -549,7 +433,6 @@ class _TimePickerSheet extends StatefulWidget {
     required this.endHour,
     required this.maxHours,
     required this.hourlyRate,
-    required this.availableSlots,
   });
 
   final MockSlot slot;
@@ -558,21 +441,23 @@ class _TimePickerSheet extends StatefulWidget {
   final int endHour;
   final int maxHours;
   final double hourlyRate;
-  final List<MockSlot> availableSlots;
 
   @override
   State<_TimePickerSheet> createState() => _TimePickerSheetState();
 }
 
-class _TimePickerSheetState extends State<_TimePickerSheet> {
-  bool _isRecurring = false;
-  Set<int> _selectedDays = {}; // 1=Pon .. 7=Ned
-  bool _hasEndDate = false;
-  DateTime? _endDate;
-  int? _expandedDay; // koji dan je otvoren u recurring modu
+/// Booking mode for the time picker sheet.
+enum _BookingMode { oneTime, continuous, untilDate }
 
-  /// Per-day postavke (svaki dan ima svoj start i duration).
+class _TimePickerSheetState extends State<_TimePickerSheet> {
+  _BookingMode _bookingMode = _BookingMode.oneTime;
+  DateTime? _endDate; // For untilDate mode
   final Map<int, _DayTimeSettings> _daySettings = {};
+  late Set<int> _selectedDays; // 1=Pon .. 7=Ned (za recurring)
+  late int _primaryDay; // Dan koji je korisnik kliknuo u kalendaru
+
+  /// Convenience: any repeating mode (continuous or untilDate).
+  bool get _isRecurring => _bookingMode != _BookingMode.oneTime;
 
   static const _dayLabelToInt = {
     'Pon': 1,
@@ -584,25 +469,6 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
     'Ned': 7,
   };
 
-  static const _allDays = [
-    (1, 'dayMon'),
-    (2, 'dayTue'),
-    (3, 'dayWed'),
-    (4, 'dayThu'),
-    (5, 'dayFri'),
-    (6, 'daySat'),
-    (7, 'daySun'),
-  ];
-
-  /// Only the days the student is actually available.
-  List<(int, String)> get _studentAvailableDays {
-    final availableInts = widget.availableSlots
-        .map((s) => _dayLabelToInt[s.dayLabel])
-        .whereType<int>()
-        .toSet();
-    return _allDays.where((e) => availableInts.contains(e.$1)).toList();
-  }
-
   static const _intToShort = {
     1: 'dayMon',
     2: 'dayTue',
@@ -613,88 +479,80 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
     7: 'daySun',
   };
 
+  static const _intToDayLabel = {
+    1: 'Pon',
+    2: 'Uto',
+    3: 'Sri',
+    4: 'Čet',
+    5: 'Pet',
+    6: 'Sub',
+    7: 'Ned',
+  };
+
+  /// Dani na koje je student dostupan (iz availableSlots).
+  List<int> get _studentAvailableDays {
+    final days =
+        widget.student.availableSlots
+            .map((s) => _dayLabelToInt[s.dayLabel])
+            .whereType<int>()
+            .toSet()
+            .toList()
+          ..sort();
+    return days;
+  }
+
+  /// Find MockSlot for a specific weekday.
+  MockSlot? _slotForDay(int dayInt) {
+    final label = _intToDayLabel[dayInt];
+    if (label == null) return null;
+    return widget.student.availableSlots
+        .where((s) => s.dayLabel == label)
+        .firstOrNull;
+  }
+
+  /// Ensure settings exist for a day, using that day's available window.
+  void _ensureDaySettings(int dayInt) {
+    if (_daySettings.containsKey(dayInt)) return;
+    final slot = _slotForDay(dayInt);
+    final start = slot != null
+        ? int.parse(slot.startTime.split(':')[0])
+        : widget.startHour;
+    _daySettings[dayInt] = _DayTimeSettings(startHour: start);
+  }
+
+  /// Primary day's settings (the day user clicked in calendar).
+  _DayTimeSettings? get _primarySettingsOrNull => _daySettings[_primaryDay];
+  _DayTimeSettings get _primarySettings =>
+      _daySettings[_primaryDay] ??
+      _DayTimeSettings(startHour: widget.startHour);
+
+  /// Whether all selected days have been configured.
+  bool get _allConfigured =>
+      _selectedDays.isNotEmpty &&
+      _selectedDays.every((d) => _daySettings[d]?.configured ?? false);
+
+  /// Start hour of a day's available window.
+  int _dayStartHour(int dayInt) {
+    final slot = _slotForDay(dayInt);
+    return slot != null
+        ? int.parse(slot.startTime.split(':')[0])
+        : widget.startHour;
+  }
+
+  /// End hour of a day's available window.
+  int _dayEndHour(int dayInt) {
+    final slot = _slotForDay(dayInt);
+    return slot != null
+        ? int.parse(slot.endTime.split(':')[0])
+        : widget.endHour;
+  }
+
   @override
   void initState() {
     super.initState();
-    final dayInt = _dayLabelToInt[widget.slot.dayLabel] ?? 1;
-    _selectedDays = {dayInt};
-    _expandedDay = dayInt;
-    _ensureDaySettings(dayInt);
-  }
-
-  /// Osiguraj da dan ima _DayTimeSettings, ako nema — kreiraj default.
-  _DayTimeSettings _ensureDaySettings(int day) {
-    return _daySettings.putIfAbsent(
-      day,
-      () => _DayTimeSettings(startHour: widget.startHour),
-    );
-  }
-
-  /// Trenutni dan-settings (za jednokratni mod ili expanded dan).
-  _DayTimeSettings get _currentSettings {
-    final day = _isRecurring
-        ? (_expandedDay ?? _selectedDays.first)
-        : (_dayLabelToInt[widget.slot.dayLabel] ?? 1);
-    return _ensureDaySettings(day);
-  }
-
-  /// Mogući početni sati za dani settings.
-  List<int> _availableStartHoursFor(_DayTimeSettings s) {
-    final hours = <int>[];
-    for (var h = widget.startHour; h + s.duration <= widget.endHour; h++) {
-      hours.add(h);
-    }
-    return hours;
-  }
-
-  /// Rezervirani sati za dani (iz MockSlot.bookedHours).
-  Set<int> _bookedHoursForDay(int dayInt) {
-    final dayLabel = _dayLabelToInt.entries
-        .where((e) => e.value == dayInt)
-        .map((e) => e.key)
-        .firstOrNull;
-    if (dayLabel == null) return {};
-    final slot = widget.availableSlots
-        .where((s) => s.dayLabel == dayLabel)
-        .firstOrNull;
-    return slot?.bookedHours.toSet() ?? {};
-  }
-
-  /// Rezervirani sati za trenutni dan.
-  Set<int> get _currentBookedHours {
-    if (!_isRecurring) {
-      return widget.slot.bookedHours.toSet();
-    }
-    final day = _expandedDay ?? _selectedDays.first;
-    return _bookedHoursForDay(day);
-  }
-
-  List<int> _availableDurationsFor(_DayTimeSettings s, Set<int> bookedHours) {
-    final maxFromStart = widget.endHour - s.startHour;
-    // Limit to first booked hour after start.
-    int maxBeforeBooked = maxFromStart;
-    for (final b in bookedHours) {
-      if (b >= s.startHour) {
-        final limit = b - s.startHour;
-        if (limit < maxBeforeBooked) maxBeforeBooked = limit;
-      }
-    }
-    final durations = <int>[];
-    for (var d = 1; d <= maxBeforeBooked && d <= 4; d++) {
-      durations.add(d);
-    }
-    return durations;
-  }
-
-  double get _totalPrice => _currentSettings.duration * widget.hourlyRate;
-
-  /// Jesu li svi odabrani dani konfigurirani?
-  bool get _allConfigured {
-    if (!_isRecurring) {
-      final day = _dayLabelToInt[widget.slot.dayLabel] ?? 1;
-      return _daySettings[day]?.configured ?? false;
-    }
-    return _selectedDays.every((d) => _daySettings[d]?.configured ?? false);
+    _primaryDay = _dayLabelToInt[widget.slot.dayLabel] ?? 1;
+    _selectedDays = {};
+    _daySettings[_primaryDay] = _DayTimeSettings(startHour: widget.startHour);
   }
 
   String _durationLabel(int d) {
@@ -715,32 +573,70 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
     };
   }
 
-  String _dayShortString(String key) {
-    return switch (key) {
-      'dayMon' => AppStrings.dayMonShort,
-      'dayTue' => AppStrings.dayTueShort,
-      'dayWed' => AppStrings.dayWedShort,
-      'dayThu' => AppStrings.dayThuShort,
-      'dayFri' => AppStrings.dayFriShort,
-      'daySat' => AppStrings.daySatShort,
-      'daySun' => AppStrings.daySunShort,
-      _ => key,
-    };
-  }
-
   String _dayName(int day) => _dayString(_intToShort[day] ?? '');
 
-  String get _recurringSummary {
-    final sortedDays = _selectedDays.toList()..sort();
-    final dayNames = sortedDays.map(_dayName).join(', ');
-    final endText = _hasEndDate && _endDate != null
-        ? AppStrings.untilDate(_formatDate(_endDate!))
-        : AppStrings.noEndDate;
-    return '${AppStrings.everyWeek} $dayNames — $endText';
+  // ── Recurring helpers ──────────────────────────────────────────
+
+  DateTime get _displayMonth {
+    final now = DateTime.now();
+    final daysLeft = DateTime(now.year, now.month + 1, 0).day - now.day;
+    return daysLeft < 7
+        ? DateTime(now.year, now.month + 1)
+        : DateTime(now.year, now.month);
   }
 
-  String _formatDate(DateTime d) =>
-      '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}.';
+  /// Get all dates matching ANY selected weekday, sorted chronologically.
+  /// Filtered by _endDate when in untilDate mode.
+  List<MockDateAvailability> get _recurringDates {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dm = _displayMonth;
+
+    final allAvail = widget.student.getMonthAvailability(dm.year, dm.month);
+
+    return allAvail
+        .where((a) => _selectedDays.contains(a.date.weekday))
+        .where((a) => !a.date.isBefore(today))
+        .where((a) => _endDate == null || !a.date.isAfter(_endDate!))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  /// For a recurring date, check if the chosen start+duration fits.
+  /// Also checks if the time is within that day's work window.
+  _RecurringDateStatus _statusFor(MockDateAvailability avail) {
+    if (avail.isFullyBooked) return _RecurringDateStatus.skipped;
+
+    final dayInt = avail.date.weekday;
+    final settings = _daySettings[dayInt];
+    if (settings == null || !settings.configured) {
+      return _RecurringDateStatus.outsideWindow;
+    }
+
+    final start = settings.startHour;
+    final end = start + settings.duration;
+
+    // Check if time is outside this day's available window
+    if (start < avail.startHour || end > avail.endHour) {
+      return _RecurringDateStatus.outsideWindow;
+    }
+
+    final booked = avail.bookedHours.toSet();
+    for (var h = start; h < end; h++) {
+      if (booked.contains(h)) return _RecurringDateStatus.conflict;
+    }
+    return _RecurringDateStatus.confirmed;
+  }
+
+  int get _confirmedCount => _recurringDates
+      .where((a) => _statusFor(a) == _RecurringDateStatus.confirmed)
+      .length;
+
+  int get _skippedCount => _recurringDates
+      .where((a) => _statusFor(a) != _RecurringDateStatus.confirmed)
+      .length;
+
+  double get _oneTimePrice => _primarySettings.duration * widget.hourlyRate;
 
   // ─── BUILD ──────────────────────────────────────────────────────
 
@@ -798,23 +694,40 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
             ),
             const SizedBox(height: 20),
 
-            // ── Jednokratno / Ponavljajuće ─────
+            // ── Jednokratno / Kontinuirano / Do datuma ─────
             Row(
               children: [
                 Expanded(
                   child: _chip(
                     label: AppStrings.oneTime,
-                    isSelected: !_isRecurring,
-                    onTap: () => setState(() => _isRecurring = false),
+                    isSelected: _bookingMode == _BookingMode.oneTime,
+                    onTap: () => setState(() {
+                      _bookingMode = _BookingMode.oneTime;
+                      _endDate = null;
+                    }),
                     theme: theme,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Expanded(
                   child: _chip(
-                    label: AppStrings.recurring,
-                    isSelected: _isRecurring,
-                    onTap: () => setState(() => _isRecurring = true),
+                    label: AppStrings.continuous,
+                    isSelected: _bookingMode == _BookingMode.continuous,
+                    onTap: () => setState(() {
+                      _bookingMode = _BookingMode.continuous;
+                      _endDate = null;
+                    }),
+                    theme: theme,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _chip(
+                    label: AppStrings.untilDateLabel,
+                    isSelected: _bookingMode == _BookingMode.untilDate,
+                    onTap: () => setState(() {
+                      _bookingMode = _BookingMode.untilDate;
+                    }),
                     theme: theme,
                   ),
                 ),
@@ -822,330 +735,218 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
             ),
             const SizedBox(height: 20),
 
-            // ── JEDNOKRATNO: jedan time picker ──
-            if (!_isRecurring) ...[
-              _buildTimePickerFor(theme, _currentSettings, _currentBookedHours),
-            ],
-
-            // ── PONAVLJAJUĆE: dan chipovi + expandable kartice ──
+            // ── PONAVLJAJUĆE: chipovi dana ─────
             if (_isRecurring) ...[
               Text(
-                AppStrings.selectDays,
+                AppStrings.recurringDaysLabel,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 10),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final chipWidth =
-                      (constraints.maxWidth - 6 * 4) / 7; // 7 slots, 4px gap
-                  return Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: _studentAvailableDays.map((entry) {
-                      final (dayInt, keyName) = entry;
-                      final isSelected = _selectedDays.contains(dayInt);
-                      return SizedBox(
-                        width: chipWidth,
-                        child: _chip(
-                          label: _dayShortString(keyName),
-                          isSelected: isSelected,
-                          onTap: () {
-                            setState(() {
-                              if (!isSelected) {
-                                _selectedDays.add(dayInt);
-                                _ensureDaySettings(dayInt);
-                                _expandedDay = dayInt;
-                              } else if (_selectedDays.length > 1) {
-                                _selectedDays.remove(dayInt);
-                                _daySettings.remove(dayInt);
-                                if (_expandedDay == dayInt) {
-                                  _expandedDay = _selectedDays.first;
-                                }
-                              }
-                            });
-                          },
-                          theme: theme,
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Expandable kartice po danu
-              ...(_selectedDays.toList()..sort()).map((dayInt) {
-                final s = _ensureDaySettings(dayInt);
-                final isExpanded = _expandedDay == dayInt;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Column(
-                      children: [
-                        // ── Header (uvijek vidljiv) ──
-                        InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => setState(() {
-                            _expandedDay = isExpanded ? null : dayInt;
-                          }),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  isExpanded
-                                      ? Icons.expand_less
-                                      : Icons.expand_more,
-                                  color: theme.colorScheme.onSurface.withAlpha(
-                                    153,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  _dayName(dayInt),
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const Spacer(),
-                                if (s.configured) ...[
-                                  Text(
-                                    '${s.startTimeFormatted} – ${s.endTimeFormatted}',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: theme.colorScheme.onSurface
-                                          .withAlpha(153),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _durationLabel(s.duration),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onSurface
-                                          .withAlpha(120),
-                                    ),
-                                  ),
-                                ] else ...[
-                                  Icon(
-                                    Icons.warning_amber_rounded,
-                                    color: Colors.orange.shade700,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    AppStrings.notConfigured,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: Colors.orange.shade700,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                        // ── Expanded: time picker ──
-                        if (isExpanded)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: _buildTimePickerFor(
-                              theme,
-                              s,
-                              _bookedHoursForDay(dayInt),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-              const SizedBox(height: 8),
-
-              // Do kad?
-              Row(
-                children: [
-                  ChoiceChip(
-                    label: Text(AppStrings.noEndDate),
-                    selected: !_hasEndDate,
-                    onSelected: (_) => setState(() {
-                      _hasEndDate = false;
-                      _endDate = null;
-                    }),
-                    selectedColor: theme.colorScheme.primary,
-                    labelStyle: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: !_hasEndDate
-                          ? Colors.white
-                          : theme.colorScheme.onSurface,
-                    ),
-                    showCheckmark: false,
-                    side: _hasEndDate
-                        ? BorderSide(color: Colors.grey.shade300)
-                        : BorderSide.none,
-                  ),
-                  const SizedBox(width: 10),
-                  ChoiceChip(
-                    label: Text(
-                      _hasEndDate && _endDate != null
-                          ? _formatDate(_endDate!)
-                          : AppStrings.selectEndDate,
-                    ),
-                    selected: _hasEndDate,
-                    onSelected: (_) async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now().add(
-                          const Duration(days: 7),
-                        ),
-                        firstDate: DateTime.now().add(const Duration(days: 1)),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                      );
-                      if (!context.mounted) return;
-                      if (picked != null) {
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: _studentAvailableDays.map((dayInt) {
+                  final isSelected = _selectedDays.contains(dayInt);
+                  return SizedBox(
+                    width: (MediaQuery.of(context).size.width - 48 - 36) / 7,
+                    child: _chip(
+                      label: _dayName(dayInt),
+                      isSelected: isSelected,
+                      onTap: () {
                         setState(() {
-                          _hasEndDate = true;
-                          _endDate = picked;
+                          if (isSelected) {
+                            _selectedDays.remove(dayInt);
+                            _daySettings.remove(dayInt);
+                            // Update primaryDay if removed
+                            if (dayInt == _primaryDay &&
+                                _selectedDays.isNotEmpty) {
+                              _primaryDay =
+                                  (_selectedDays.toList()..sort()).first;
+                            }
+                          } else {
+                            _selectedDays.add(dayInt);
+                            _ensureDaySettings(dayInt);
+                          }
                         });
-                      }
-                    },
-                    selectedColor: theme.colorScheme.primary,
-                    labelStyle: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: _hasEndDate
-                          ? Colors.white
-                          : theme.colorScheme.onSurface,
+                      },
+                      theme: theme,
                     ),
-                    showCheckmark: false,
-                    side: !_hasEndDate
-                        ? BorderSide(color: Colors.grey.shade300)
-                        : BorderSide.none,
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
+              const SizedBox(height: 20),
             ],
+
+            // ── DO DATUMA: odabir krajnjeg datuma ──
+            if (_bookingMode == _BookingMode.untilDate &&
+                _selectedDays.isNotEmpty) ...[
+              _buildEndDatePicker(theme),
+              const SizedBox(height: 20),
+            ],
+
+            // ── Time picker (isti za oba moda) ──
+            _buildTimePicker(theme),
+
+            // ── PONAVLJAJUĆE: lista datuma (samo za 1 dan) ──
+            if (_isRecurring &&
+                _allConfigured &&
+                _selectedDays.length <= 1) ...[
+              const SizedBox(height: 20),
+              _buildRecurringDateList(theme),
+            ],
+
             const SizedBox(height: 24),
 
             // ── Sažetak ───────────────────────
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Column(
-                children: [
-                  if (!_isRecurring) ...[
-                    Text(
-                      '${_currentSettings.startTimeFormatted} – '
-                      '${_currentSettings.endTimeFormatted}',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
-                  Text(
-                    '${_totalPrice.toStringAsFixed(2)} €'
-                    '${_isRecurring ? AppStrings.perSession : ''}',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (_isRecurring) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      _recurringSummary,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withAlpha(153),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // ── Validacijska poruka ──
-            if (!_allConfigured)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
+            if ((_isRecurring
+                ? _allConfigured
+                : (_primarySettingsOrNull?.configured ?? false))) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.orange.shade700,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        AppStrings.configureAllDays,
+                    if (!_isRecurring) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${_dayName(_primaryDay)}: '
+                              '${_primarySettings.startTimeFormatted} – '
+                              '${_primarySettings.endTimeFormatted}',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '${_oneTimePrice.toStringAsFixed(2)} €',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (_isRecurring) ...[
+                      ...(_selectedDays.toList()..sort()).map((d) {
+                        final s = _daySettings[d]!;
+                        final dayPrice = (s.duration * widget.hourlyRate)
+                            .toStringAsFixed(2);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${_dayName(d)}: '
+                                '${s.startTimeFormatted} – '
+                                '${s.endTimeFormatted}',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '$dayPrice €',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                    if (_isRecurring) ...[
+                      const Divider(height: 20),
+                      Text(
+                        AppStrings.recurringConfirmed(
+                          _confirmedCount.toString(),
+                        ),
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.orange.shade700,
+                          color: theme.colorScheme.secondary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 16,
+                            color: theme.colorScheme.onSurface.withAlpha(130),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              AppStrings.recurringBillingInfo,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface.withAlpha(
+                                  130,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+            ],
 
             // ── CTA ────────────────────────────
             ElevatedButton.icon(
-              onPressed: _allConfigured
+              onPressed:
+                  ((_isRecurring
+                          ? _allConfigured
+                          : (_primarySettingsOrNull?.configured ?? false)) &&
+                      (!_isRecurring || _confirmedCount > 0))
                   ? () {
                       HapticFeedback.mediumImpact();
                       Navigator.of(context).pop();
 
-                      final s = _currentSettings;
                       final customSlot = MockSlot(
                         dayLabel: widget.slot.dayLabel,
                         date: widget.slot.date,
-                        startTime: s.startTimeFormatted,
-                        endTime: s.endTimeFormatted,
+                        startTime: _primarySettings.startTimeFormatted,
+                        endTime: _primarySettings.endTimeFormatted,
                       );
-
-                      // Build per-day schedule map for recurring
-                      Map<int, Map<String, String>>? daySchedules;
-                      if (_isRecurring) {
-                        daySchedules = {};
-                        for (final day in _selectedDays) {
-                          final ds = _ensureDaySettings(day);
-                          daySchedules[day] = {
-                            'start': ds.startTimeFormatted,
-                            'end': ds.endTimeFormatted,
-                            'duration': ds.duration.toString(),
-                          };
-                        }
-                      }
 
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => BookingFlowScreen(
                             student: widget.student,
                             selectedSlot: customSlot,
-                            durationHours: s.duration,
+                            durationHours: _primarySettings.duration,
                             isRecurring: _isRecurring,
                             recurringDays: _isRecurring
                                 ? (_selectedDays.toList()..sort())
                                 : null,
-                            recurringEndDate: _hasEndDate ? _endDate : null,
-                            daySchedules: daySchedules,
+                            daySchedules:
+                                _isRecurring && _selectedDays.length > 1
+                                ? {
+                                    for (final d in _selectedDays)
+                                      d: {
+                                        'start':
+                                            _daySettings[d]!.startTimeFormatted,
+                                        'end':
+                                            _daySettings[d]!.endTimeFormatted,
+                                        'duration': _daySettings[d]!.duration
+                                            .toString(),
+                                      },
+                                  }
+                                : null,
                           ),
                         ),
                       );
@@ -1153,7 +954,10 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                   : null,
               icon: const Icon(Icons.arrow_forward),
               label: Text(
-                '${AppStrings.next}  •  ${_totalPrice.toStringAsFixed(2)} €',
+                _isRecurring
+                    ? AppStrings.next
+                    : '${AppStrings.next}  •  '
+                          '${_oneTimePrice.toStringAsFixed(2)} €',
               ),
             ),
           ],
@@ -1162,27 +966,145 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
     );
   }
 
-  /// Reusable time picker widget za jedan dan.
-  Widget _buildTimePickerFor(
+  /// Time picker — per-day for multi-day recurring.
+  Widget _buildTimePicker(ThemeData theme) {
+    // Recurring with no days selected — show prompt
+    if (_isRecurring && _selectedDays.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    if (!_isRecurring || _selectedDays.length <= 1) {
+      final dayToShow = _isRecurring ? _selectedDays.first : _primaryDay;
+      return _buildDayTimePicker(
+        theme,
+        dayToShow,
+        showBookedHours: !_isRecurring,
+      );
+    }
+    // Multi-day: flat sections per day with inline dates
+    final sortedDays = _selectedDays.toList()..sort();
+    final allDates = _recurringDates;
+    final grouped = <int, List<MockDateAvailability>>{};
+    for (final d in sortedDays) {
+      grouped[d] = allDates.where((a) => a.date.weekday == d).toList();
+    }
+    final showDates = _allConfigured;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < sortedDays.length; i++) ...[
+          if (i > 0) const SizedBox(height: 24),
+          _buildDaySectionHeader(theme, sortedDays[i]),
+          const SizedBox(height: 12),
+          _buildDayTimePicker(theme, sortedDays[i]),
+          // Inline date rows for this day
+          if (showDates && (grouped[sortedDays[i]]?.isNotEmpty ?? false)) ...[
+            const SizedBox(height: 12),
+            ...grouped[sortedDays[i]]!.map((avail) {
+              final status = _statusFor(avail);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: _buildDateStatusRow(theme, avail, status),
+              );
+            }),
+          ],
+        ],
+        // Summary + auto-renewal after all days
+        if (showDates) ...[
+          const SizedBox(height: 20),
+          _buildRecurringSummaryBar(theme),
+          const SizedBox(height: 14),
+          _buildAutoRenewalCard(theme),
+        ],
+      ],
+    );
+  }
+
+  /// Header for a per-day section showing day name and available window.
+  Widget _buildDaySectionHeader(ThemeData theme, int dayInt) {
+    final slot = _slotForDay(dayInt);
+    final startStr =
+        slot?.startTime ?? '${widget.startHour.toString().padLeft(2, '0')}:00';
+    final endStr =
+        slot?.endTime ?? '${widget.endHour.toString().padLeft(2, '0')}:00';
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Text(
+            _dayName(dayInt),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '($startStr – $endStr)',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withAlpha(153),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Time picker for a single day — start hour + duration grids.
+  Widget _buildDayTimePicker(
     ThemeData theme,
-    _DayTimeSettings s,
-    Set<int> bookedHours,
-  ) {
-    final startHours = _availableStartHoursFor(s);
-    final durations = _availableDurationsFor(s, bookedHours);
+    int dayInt, {
+    bool showBookedHours = false,
+  }) {
+    final settings = _daySettings[dayInt];
+    if (settings == null) return const SizedBox.shrink();
+    final startH = _dayStartHour(dayInt);
+    final endH = _dayEndHour(dayInt);
+
+    // Available start hours
+    final startHours = <int>[];
+    for (var h = startH; h + settings.duration <= endH; h++) {
+      startHours.add(h);
+    }
+
+    // Booked hours (only for single-day / one-time)
+    final Set<int> bookedHours;
+    if (showBookedHours) {
+      bookedHours = widget.slot.bookedHours.toSet();
+    } else {
+      bookedHours = {};
+    }
+
+    // Available durations
+    final maxFromStart = endH - settings.startHour;
+    int maxBeforeBooked = maxFromStart;
+    for (final b in bookedHours) {
+      if (b >= settings.startHour) {
+        final limit = b - settings.startHour;
+        if (limit < maxBeforeBooked) maxBeforeBooked = limit;
+      }
+    }
+    final durations = <int>[];
+    for (var d = 1; d <= maxBeforeBooked && d <= 4; d++) {
+      durations.add(d);
+    }
+
     const spacing = 8.0;
 
-    // Auto-clamp duration if current exceeds max available.
-    if (s.configured &&
+    // Auto-clamp
+    if (settings.configured &&
         durations.isNotEmpty &&
-        !durations.contains(s.duration)) {
-      s.duration = durations.last;
+        !durations.contains(settings.duration)) {
+      settings.duration = durations.last;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Početni sat ──
         Text(
           AppStrings.startTimeLabel,
           style: theme.textTheme.bodyLarge?.copyWith(
@@ -1196,7 +1118,8 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           builder: (i) {
             final hour = startHours[i];
             final isBooked = bookedHours.contains(hour);
-            final isSelected = s.configured && hour == s.startHour;
+            final isSelected =
+                settings.configured && hour == settings.startHour;
             return _chip(
               label: '${hour.toString().padLeft(2, '0')}:00',
               isSelected: isSelected && !isBooked,
@@ -1205,9 +1128,9 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                   ? null
                   : () {
                       setState(() {
-                        s.startHour = hour;
-                        s.configured = true;
-                        s.clamp(widget.startHour, widget.endHour);
+                        settings.startHour = hour;
+                        settings.configured = true;
+                        settings.clamp(startH, endH);
                       });
                     },
               theme: theme,
@@ -1215,8 +1138,6 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           },
         ),
         const SizedBox(height: 16),
-
-        // ── Trajanje ──
         Text(
           AppStrings.durationLabel,
           style: theme.textTheme.bodyLarge?.copyWith(
@@ -1229,15 +1150,15 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           spacing: spacing,
           builder: (i) {
             final dur = durations[i];
-            final isSelected = s.configured && dur == s.duration;
+            final isSelected = settings.configured && dur == settings.duration;
             return _chip(
               label: _durationLabel(dur),
               isSelected: isSelected,
               onTap: () {
                 setState(() {
-                  s.duration = dur;
-                  s.configured = true;
-                  s.clamp(widget.startHour, widget.endHour);
+                  settings.duration = dur;
+                  settings.configured = true;
+                  settings.clamp(startH, endH);
                 });
               },
               theme: theme,
@@ -1245,6 +1166,285 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           },
         ),
       ],
+    );
+  }
+
+  /// Recurring date list — for single-day recurring mode.
+  Widget _buildRecurringDateList(ThemeData theme) {
+    final dates = _recurringDates;
+    if (dates.isEmpty) return const SizedBox.shrink();
+
+    final monthName = AppStrings.monthName(_displayMonth.month);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Naslov s mjesecom ──
+        Text(
+          monthName,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // ── Date rows ──
+        ...dates.map((avail) {
+          final status = _statusFor(avail);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: _buildDateStatusRow(theme, avail, status),
+          );
+        }),
+        const SizedBox(height: 14),
+
+        _buildRecurringSummaryBar(theme),
+        const SizedBox(height: 14),
+        _buildAutoRenewalCard(theme),
+      ],
+    );
+  }
+
+  /// Confirmed/skipped summary row.
+  Widget _buildRecurringSummaryBar(ThemeData theme) {
+    final confirmed = _confirmedCount;
+    final skipped = _skippedCount;
+    return Row(
+      children: [
+        Icon(Icons.check_circle, size: 18, color: theme.colorScheme.secondary),
+        const SizedBox(width: 6),
+        Text(
+          AppStrings.recurringConfirmed(confirmed.toString()),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.secondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        if (skipped > 0) ...[
+          const SizedBox(width: 16),
+          Icon(Icons.cancel_outlined, size: 18, color: Colors.red.shade400),
+          const SizedBox(width: 6),
+          Text(
+            AppStrings.recurringSkipped(skipped.toString()),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.red.shade400,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Blue auto-renewal info card (continuous) or until-date info card.
+  Widget _buildAutoRenewalCard(ThemeData theme) {
+    final isContinuous = _bookingMode == _BookingMode.continuous;
+    final String infoText;
+    if (isContinuous) {
+      final monthName = AppStrings.monthName(_displayMonth.month);
+      infoText = AppStrings.recurringAutoRenew(monthName);
+    } else {
+      // untilDate mode
+      final formatted = _endDate != null
+          ? '${_endDate!.day.toString().padLeft(2, '0')}.'
+                '${_endDate!.month.toString().padLeft(2, '0')}.'
+                '${_endDate!.year}.'
+          : '—';
+      infoText = AppStrings.recurringUntilDateInfo(formatted);
+    }
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.shade100),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 20, color: Colors.blue.shade700),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              infoText,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.blue.shade800,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// End-date picker row for "Do datuma" mode.
+  Widget _buildEndDatePicker(ThemeData theme) {
+    final hasDate = _endDate != null;
+    final dateText = hasDate
+        ? '${_endDate!.day.toString().padLeft(2, '0')}.'
+              '${_endDate!.month.toString().padLeft(2, '0')}.'
+              '${_endDate!.year}.'
+        : AppStrings.selectEndDate;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppStrings.lastSessionLabel,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            final now = DateTime.now();
+            final lastDay = DateTime(
+              _displayMonth.year,
+              _displayMonth.month + 1,
+              0,
+            );
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _endDate ?? lastDay,
+              firstDate: DateTime(now.year, now.month, now.day + 1),
+              lastDate: DateTime(
+                _displayMonth.year,
+                _displayMonth.month + 2,
+                0,
+              ),
+              locale: Locale(AppStrings.currentLocale),
+            );
+            if (!context.mounted) return;
+            if (picked != null) {
+              setState(() => _endDate = picked);
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: hasDate
+                    ? theme.colorScheme.secondary
+                    : Colors.grey.shade300,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 20,
+                  color: hasDate
+                      ? theme.colorScheme.secondary
+                      : Colors.grey.shade500,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  dateText,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: hasDate ? FontWeight.w600 : FontWeight.w400,
+                    color: hasDate
+                        ? theme.colorScheme.onSurface
+                        : Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateStatusRow(
+    ThemeData theme,
+    MockDateAvailability avail,
+    _RecurringDateStatus status,
+  ) {
+    final IconData icon;
+    final Color iconColor;
+    final String statusText;
+    final Color textColor;
+    final bool strikeDate;
+
+    switch (status) {
+      case _RecurringDateStatus.confirmed:
+        icon = Icons.check_circle;
+        iconColor = theme.colorScheme.secondary;
+        statusText = AppStrings.recurringFree;
+        textColor = theme.colorScheme.secondary;
+        strikeDate = false;
+      case _RecurringDateStatus.conflict:
+        final cSettings = _daySettings[avail.date.weekday];
+        icon = Icons.warning_amber_rounded;
+        iconColor = Colors.amber.shade800;
+        statusText =
+            '${cSettings?.startTimeFormatted ?? ''} ${AppStrings.recurringOccupied.toLowerCase()}';
+        textColor = Colors.amber.shade800;
+        strikeDate = false;
+      case _RecurringDateStatus.outsideWindow:
+        icon = Icons.schedule;
+        iconColor = Colors.amber.shade800;
+        statusText = AppStrings.recurringOutsideWindow;
+        textColor = Colors.amber.shade800;
+        strikeDate = false;
+      case _RecurringDateStatus.skipped:
+        icon = Icons.cancel_outlined;
+        iconColor = Colors.red.shade400;
+        statusText = AppStrings.recurringOccupied;
+        textColor = Colors.red.shade400;
+        strikeDate = true;
+    }
+
+    final isOk = status == _RecurringDateStatus.confirmed;
+    final isWarn =
+        status == _RecurringDateStatus.conflict ||
+        status == _RecurringDateStatus.outsideWindow;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isOk
+            ? theme.colorScheme.secondary.withAlpha(15)
+            : isWarn
+            ? Colors.amber.withAlpha(20)
+            : Colors.red.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isOk
+              ? theme.colorScheme.secondary.withAlpha(60)
+              : isWarn
+              ? Colors.amber.withAlpha(80)
+              : Colors.red.shade100,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: iconColor),
+          const SizedBox(width: 10),
+          Text(
+            avail.dateFormatted,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              decoration: strikeDate ? TextDecoration.lineThrough : null,
+              color: strikeDate ? Colors.grey.shade500 : null,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            statusText,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1276,7 +1476,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                 ? theme.colorScheme.primary
                 : Colors.grey.shade300,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           label,

@@ -147,7 +147,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                   height: 64,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: Text(
@@ -412,7 +412,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: theme.colorScheme.primary.withAlpha(26),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: theme.colorScheme.primary.withAlpha(77),
               width: 2,
@@ -484,7 +484,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                   theme.colorScheme.primary.withAlpha(200),
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,

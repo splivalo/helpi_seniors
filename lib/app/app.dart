@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:helpi_senior/app/main_shell.dart';
 import 'package:helpi_senior/app/theme.dart';
@@ -14,6 +15,13 @@ class HelpiApp extends StatelessWidget {
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       theme: HelpiTheme.light,
+      locale: const Locale('hr'),
+      supportedLocales: const [Locale('hr'), Locale('en')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const MainShell(),
     );
   }

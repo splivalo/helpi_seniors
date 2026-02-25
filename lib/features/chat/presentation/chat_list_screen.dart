@@ -61,7 +61,7 @@ class _ChatPreview extends StatelessWidget {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -71,7 +71,7 @@ class _ChatPreview extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
                   child: Text(emoji, style: const TextStyle(fontSize: 28)),

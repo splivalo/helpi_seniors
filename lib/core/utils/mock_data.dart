@@ -238,18 +238,14 @@ class MockStudent {
   /// Mock bookings per student per date (key: 'month-day').
   static final Map<String, Map<String, List<int>>> _mockBookings = {
     '5': {
-      // Petra (Mon/Wed/Thu/Fri 16-20)
-      '3-9': [16, 17, 18, 19], // Mon fully booked
-      '3-5': [16, 18], // Thu partially
-      '3-13': [18, 19], // Fri partially
-      '3-18': [16], // Wed partially
+      // Petra (Pon/Sri/Čet/Pet 16-20)
+      '3-16': [16, 17, 18, 19], // Pon 16.03. fully booked
+      '3-12': [17, 18], // Čet 12.03. partially (16 i 19 slobodni)
     },
     '3': {
-      // Maja (Mon 8-20, Wed 14-18, Fri 8-12)
-      '3-2': [10, 11], // Mon partially
-      '3-6': [9], // Fri partially
-      '3-16': [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], // Mon fully
-      '3-18': [14, 15, 16, 17], // Wed fully
+      // Maja (Pon 8-20, Sri 14-18, Pet 8-12)
+      '3-9': [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], // Pon 09.03. fully
+      '3-18': [14, 15], // Sri 18.03. partially (16 i 17 slobodni)
     },
   };
 

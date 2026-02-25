@@ -16,8 +16,8 @@ class HelpiTheme {
 
   // ─── Dimenzije gumba ────────────────────────────────────────────
   static const double buttonHeight = 56.0;
-  static const double buttonRadius = 16.0;
-  static const double cardRadius = 16.0;
+  static const double buttonRadius = 12.0;
+  static const double cardRadius = 12.0;
 
   // ─── Tema ───────────────────────────────────────────────────────
   static ThemeData get light => ThemeData(
