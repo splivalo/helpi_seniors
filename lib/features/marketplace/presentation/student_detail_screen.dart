@@ -399,6 +399,7 @@ enum _RecurringDateStatus { confirmed, conflict, skipped, outsideWindow }
 class _DayTimeSettings {
   int startHour;
   int duration = 1;
+  bool startSelected = false;
   bool configured = false;
 
   _DayTimeSettings({required this.startHour});
@@ -953,12 +954,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                     }
                   : null,
               icon: const Icon(Icons.arrow_forward),
-              label: Text(
-                _isRecurring
-                    ? AppStrings.next
-                    : '${AppStrings.next}  •  '
-                          '${_oneTimePrice.toStringAsFixed(2)} €',
-              ),
+              label: Text(AppStrings.next),
             ),
           ],
         ),
@@ -1119,7 +1115,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
             final hour = startHours[i];
             final isBooked = bookedHours.contains(hour);
             final isSelected =
-                settings.configured && hour == settings.startHour;
+                settings.startSelected && hour == settings.startHour;
             return _chip(
               label: '${hour.toString().padLeft(2, '0')}:00',
               isSelected: isSelected && !isBooked,
@@ -1129,7 +1125,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                   : () {
                       setState(() {
                         settings.startHour = hour;
-                        settings.configured = true;
+                        settings.startSelected = true;
                         settings.clamp(startH, endH);
                       });
                     },
