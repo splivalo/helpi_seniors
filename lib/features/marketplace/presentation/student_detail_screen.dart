@@ -1037,7 +1037,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
         ],
         // Summary + auto-renewal after all days
         if (showDates) ...[
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           _buildAutoRenewalCard(theme),
         ],
       ],
@@ -1220,7 +1220,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
             child: _buildDateStatusRow(theme, avail, status),
           );
         }),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
 
         _buildAutoRenewalCard(theme),
       ],
@@ -1289,7 +1289,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
       final formatted =
           '${_endDate!.day.toString().padLeft(2, '0')}.'
           '${_endDate!.month.toString().padLeft(2, '0')}.'
-          '${_endDate!.year}.';
+          '${_endDate!.year}';
       infoText = AppStrings.recurringUntilDateInfo(formatted);
     }
     return Container(
