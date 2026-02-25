@@ -380,13 +380,13 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
       bgColor = Colors.transparent;
       textColor = Colors.grey.shade400;
     } else if (availability.isFullyBooked) {
-      bgColor = Colors.red.shade50;
-      textColor = Colors.grey.shade500;
+      bgColor = Colors.red.shade100;
+      textColor = Colors.red.shade400;
     } else if (availability.isPartiallyBooked) {
-      bgColor = Colors.orange.shade50;
-      textColor = Colors.orange.shade800;
+      bgColor = Colors.amber.shade100;
+      textColor = Colors.amber.shade800;
     } else {
-      bgColor = theme.colorScheme.secondary.withAlpha(30);
+      bgColor = theme.colorScheme.secondary.withAlpha(50);
       textColor = theme.colorScheme.secondary;
     }
 
@@ -417,14 +417,14 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _legendItem(
-          theme.colorScheme.secondary.withAlpha(30),
+          theme.colorScheme.secondary,
           AppStrings.calendarFree,
           theme,
         ),
         const SizedBox(width: 16),
-        _legendItem(Colors.orange.shade50, AppStrings.calendarPartial, theme),
+        _legendItem(Colors.amber, AppStrings.calendarPartial, theme),
         const SizedBox(width: 16),
-        _legendItem(Colors.red.shade50, AppStrings.calendarBooked, theme),
+        _legendItem(Colors.red.shade400, AppStrings.calendarBooked, theme),
       ],
     );
   }
