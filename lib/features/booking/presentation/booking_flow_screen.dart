@@ -37,6 +37,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   int _currentStep = 0; // 0=pregled, 1=plaćanje, 2=potvrda
   final _notesController = TextEditingController();
   bool _isProcessing = false;
+  final Set<String> _selectedServiceChips = {};
 
   double get _totalPrice {
     return widget.student.hourlyRate * widget.durationHours;
@@ -305,13 +306,102 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         ],
         const SizedBox(height: 16),
 
-        // Napomene
+        // Napomene — s quick-tap chipovima
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.touch_app, color: theme.colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Text(
+                      AppStrings.bookingServiceHeader,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children:
+                      [
+                        AppStrings.bookingChipShopping,
+                        AppStrings.bookingChipPharmacy,
+                        AppStrings.bookingChipCleaning,
+                        AppStrings.bookingChipCompanionship,
+                        AppStrings.bookingChipWalk,
+                        AppStrings.bookingChipEscort,
+                        AppStrings.bookingChipOther,
+                      ].map((label) {
+                        final isSelected = _selectedServiceChips.contains(
+                          label,
+                        );
+                        return FilterChip(
+                          label: Text(label),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedServiceChips.add(label);
+                              } else {
+                                _selectedServiceChips.remove(label);
+                              }
+                            });
+                          },
+                          selectedColor: theme.colorScheme.primary,
+                          side: isSelected
+                              ? BorderSide.none
+                              : BorderSide(color: Colors.grey.shade300),
+                          labelStyle: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : theme.colorScheme.onSurface,
+                          ),
+                          showCheckmark: true,
+                          checkmarkColor: Colors.white,
+                        );
+                      }).toList(),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withAlpha(120),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        AppStrings.bookingDisclaimer,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface.withAlpha(120),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Napomene — slobodan tekst
         TextField(
           controller: _notesController,
           maxLines: 3,
           decoration: InputDecoration(
             labelText: AppStrings.orderNotes,
-            hintText: _notesHint,
+            hintText: AppStrings.bookingNotesHint,
             alignLabelWithHint: true,
           ),
         ),
@@ -523,7 +613,4 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   static String _confirmationSubtitle(String name, MockSlot slot) {
     return '$name dolazi\n${slot.dayLabel} ${slot.date} u ${slot.startTime}';
   }
-
-  // TODO(i18n): dodati u AppStrings
-  static const _notesHint = 'Npr. "Ključ je pod otiračem"';
 }

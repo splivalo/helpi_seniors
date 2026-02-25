@@ -28,14 +28,19 @@ class StudentCard extends StatelessWidget {
               CircleAvatar(
                 radius: 36,
                 backgroundColor: theme.colorScheme.secondary.withAlpha(38),
-                child: Text(
-                  student.initials,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: theme.colorScheme.secondary,
-                  ),
-                ),
+                backgroundImage: student.imageAsset != null
+                    ? AssetImage(student.imageAsset!)
+                    : null,
+                child: student.imageAsset == null
+                    ? Text(
+                        student.initials,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: theme.colorScheme.secondary,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: 16),
 
@@ -44,9 +49,24 @@ class StudentCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      student.fullName,
-                      style: theme.textTheme.headlineSmall,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            student.fullName,
+                            style: theme.textTheme.headlineSmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (student.rating >= 4.8) ...[
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.verified,
+                            size: 26,
+                            color: Colors.amber,
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 4),
                     RatingStars(rating: student.rating),

@@ -22,10 +22,13 @@ class AppStrings {
       // ── App ───────────────────────────────────
       'appName': 'Helpi',
       'appTagline': 'Pomoć na dlanu',
+      'quickActionsTitle': 'Što vam treba?',
+      'topBadge': 'Top',
 
       // ── Navigacija ────────────────────────────
-      'navHome': 'Početna',
+      'navHome': 'Pomoć',
       'navStudents': 'Studenti',
+      'navOrders': 'Narudžbe',
       'navMessages': 'Poruke',
       'navProfile': 'Profil',
 
@@ -62,7 +65,7 @@ class AppStrings {
       'filterTitle': 'Filtriraj',
       'filterService': 'Vrsta usluge',
       'filterDate': 'Datum',
-      'filterDay': 'Slobodan dan',
+      'filterDay': 'Dostupnost',
       'filterAnyDay': 'Bilo koji dan',
       'filterApply': 'Primijeni filtre',
       'filterClear': 'Očisti filtre',
@@ -121,8 +124,19 @@ class AppStrings {
       'orderSummary': 'Pregled narudžbe',
       'placeOrder': 'Naruči',
       'orderConfirmed': 'Narudžba potvrđena!',
-      'orderNotes': 'Napomene (opcionalno)',
+      'orderNotes': 'Dodatne napomene',
       'totalPrice': 'Ukupna cijena',
+      'bookingServiceHeader': 'Što vam treba?',
+      'bookingChipShopping': 'Dućan',
+      'bookingChipPharmacy': 'Ljekarna',
+      'bookingChipCleaning': 'Kućanski poslovi',
+      'bookingChipCompanionship': 'Društvo',
+      'bookingChipWalk': 'Šetnja',
+      'bookingChipEscort': 'Pratnja',
+      'bookingChipOther': 'Ostalo',
+      'bookingDisclaimer': 'Studenti ne pružaju medicinsku njegu.',
+      'bookingNotesHint': 'Npr. "Mlijeko i kruh iz Konzuma"',
+      'bookNow': 'Rezerviraj',
 
       // ── Payment ───────────────────────────────
       'payment': 'Plaćanje',
@@ -139,6 +153,9 @@ class AppStrings {
       // ── Profil ────────────────────────────────
       'profile': 'Moj profil',
       'editProfile': 'Uredi profil',
+      'myOrders': 'Moje narudžbe',
+      'noOrders': 'Još nemate narudžbi',
+      'noOrdersSubtitle': 'Kada naručite uslugu, pojavit će se ovdje.',
       'logout': 'Odjava',
       'settings': 'Postavke',
       'language': 'Jezik',
@@ -156,10 +173,13 @@ class AppStrings {
       // ── App ───────────────────────────────────
       'appName': 'Helpi',
       'appTagline': 'Help at your fingertips',
+      'quickActionsTitle': 'What do you need?',
+      'topBadge': 'Top',
 
       // ── Navigacija ────────────────────────────
-      'navHome': 'Home',
+      'navHome': 'Help',
       'navStudents': 'Students',
+      'navOrders': 'Orders',
       'navMessages': 'Messages',
       'navProfile': 'Profile',
 
@@ -196,7 +216,7 @@ class AppStrings {
       'filterTitle': 'Filter',
       'filterService': 'Service type',
       'filterDate': 'Date',
-      'filterDay': 'Available day',
+      'filterDay': 'Availability',
       'filterAnyDay': 'Any day',
       'filterApply': 'Apply filters',
       'filterClear': 'Clear filters',
@@ -255,8 +275,19 @@ class AppStrings {
       'orderSummary': 'Order summary',
       'placeOrder': 'Place order',
       'orderConfirmed': 'Order confirmed!',
-      'orderNotes': 'Notes (optional)',
+      'orderNotes': 'Additional notes',
       'totalPrice': 'Total price',
+      'bookingServiceHeader': 'What do you need?',
+      'bookingChipShopping': 'Groceries',
+      'bookingChipPharmacy': 'Pharmacy',
+      'bookingChipCleaning': 'Household chores',
+      'bookingChipCompanionship': 'Company',
+      'bookingChipWalk': 'Walk',
+      'bookingChipEscort': 'Escort',
+      'bookingChipOther': 'Other',
+      'bookingDisclaimer': 'Students do not provide medical care.',
+      'bookingNotesHint': 'E.g. "Milk and bread from the store"',
+      'bookNow': 'Book now',
 
       // ── Payment ───────────────────────────────
       'payment': 'Payment',
@@ -273,6 +304,9 @@ class AppStrings {
       // ── Profil ────────────────────────────────
       'profile': 'My profile',
       'editProfile': 'Edit profile',
+      'myOrders': 'My orders',
+      'noOrders': 'No orders yet',
+      'noOrdersSubtitle': 'When you order a service, it will appear here.',
       'logout': 'Log out',
       'settings': 'Settings',
       'language': 'Language',
@@ -306,10 +340,13 @@ class AppStrings {
   // ── App ───────────────────────────────────────
   static String get appName => _t('appName');
   static String get appTagline => _t('appTagline');
+  static String get quickActionsTitle => _t('quickActionsTitle');
+  static String get topBadge => _t('topBadge');
 
   // ── Navigacija ────────────────────────────────
   static String get navHome => _t('navHome');
   static String get navStudents => _t('navStudents');
+  static String get navOrders => _t('navOrders');
   static String get navMessages => _t('navMessages');
   static String get navProfile => _t('navProfile');
 
@@ -409,7 +446,17 @@ class AppStrings {
   static String get orderConfirmed => _t('orderConfirmed');
   static String get orderNotes => _t('orderNotes');
   static String get totalPrice => _t('totalPrice');
-
+  static String get bookingServiceHeader => _t('bookingServiceHeader');
+  static String get bookingChipShopping => _t('bookingChipShopping');
+  static String get bookingChipPharmacy => _t('bookingChipPharmacy');
+  static String get bookingChipCleaning => _t('bookingChipCleaning');
+  static String get bookingChipCompanionship => _t('bookingChipCompanionship');
+  static String get bookingChipWalk => _t('bookingChipWalk');
+  static String get bookingChipEscort => _t('bookingChipEscort');
+  static String get bookingChipOther => _t('bookingChipOther');
+  static String get bookingDisclaimer => _t('bookingDisclaimer');
+  static String get bookingNotesHint => _t('bookingNotesHint');
+  static String get bookNow => _t('bookNow');
   // ── Payment ───────────────────────────────────
   static String get payment => _t('payment');
   static String get payNow => _t('payNow');
@@ -425,6 +472,9 @@ class AppStrings {
   // ── Profil ────────────────────────────────────
   static String get profile => _t('profile');
   static String get editProfile => _t('editProfile');
+  static String get myOrders => _t('myOrders');
+  static String get noOrders => _t('noOrders');
+  static String get noOrdersSubtitle => _t('noOrdersSubtitle');
   static String get logout => _t('logout');
   static String get settings => _t('settings');
   static String get language => _t('language');

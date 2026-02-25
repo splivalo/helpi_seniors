@@ -92,26 +92,26 @@ class HelpiTheme {
     // ─── Elevated Button (veliki, zaobljeni) ───────
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: _primary,
+        backgroundColor: _accent,
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, buttonHeight),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(buttonRadius),
         ),
         textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        elevation: 2,
+        elevation: 0,
       ),
     ),
 
     // ─── Outlined Button ────────────────────────────
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: _primary,
+        foregroundColor: _accent,
         minimumSize: const Size(double.infinity, buttonHeight),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(buttonRadius),
         ),
-        side: const BorderSide(color: _primary, width: 2),
+        side: const BorderSide(color: _accent, width: 2),
         textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       ),
     ),
@@ -164,7 +164,7 @@ class HelpiTheme {
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _surface,
       selectedItemColor: _primary,
-      unselectedItemColor: _textSecondary,
+      unselectedItemColor: _textPrimary,
       selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
       unselectedLabelStyle: TextStyle(fontSize: 14),
       type: BottomNavigationBarType.fixed,

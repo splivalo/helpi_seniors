@@ -14,31 +14,17 @@ class MarketplaceScreen extends StatefulWidget {
 }
 
 class MarketplaceScreenState extends State<MarketplaceScreen> {
-  final Set<ServiceType> _selectedServices = {};
-  String? _selectedDayLabel; // null = bilo koji dan
+  final Set<String> _selectedDays = {};
   List<MockStudent> _filtered = MockData.students;
 
   static const _filterDays = ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'];
 
-  /// Postavi filter usluge izvana (npr. klik s HomeScreen).
-  void applyServiceFilter(ServiceType type) {
-    _selectedServices
-      ..clear()
-      ..add(type);
-    _selectedDayLabel = null;
-    _applyFilters();
-  }
-
   void _applyFilters() {
     setState(() {
       _filtered = MockData.students.where((s) {
-        if (_selectedServices.isNotEmpty &&
-            !_selectedServices.every((t) => s.services.contains(t))) {
-          return false;
-        }
-        if (_selectedDayLabel != null &&
-            !s.availableSlots.any(
-              (slot) => slot.dayLabel == _selectedDayLabel,
+        if (_selectedDays.isNotEmpty &&
+            !_selectedDays.every(
+              (day) => s.availableSlots.any((slot) => slot.dayLabel == day),
             )) {
           return false;
         }
@@ -49,8 +35,7 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
 
   void _clearFilters() {
     setState(() {
-      _selectedServices.clear();
-      _selectedDayLabel = null;
+      _selectedDays.clear();
       _filtered = MockData.students;
     });
   }
@@ -89,48 +74,7 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Vrsta usluge ──────────────────
-                  Text(
-                    AppStrings.filterService,
-                    style: Theme.of(builderContext).textTheme.bodyLarge
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: ServiceType.values.map((type) {
-                      final isSelected = _selectedServices.contains(type);
-                      return FilterChip(
-                        label: Text(_serviceLabel(type)),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          setSheetState(() {
-                            if (selected) {
-                              _selectedServices.add(type);
-                            } else {
-                              _selectedServices.remove(type);
-                            }
-                          });
-                        },
-                        selectedColor: Theme.of(
-                          builderContext,
-                        ).colorScheme.primary,
-                        labelStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected
-                              ? Colors.white
-                              : Theme.of(builderContext).colorScheme.primary,
-                        ),
-                        showCheckmark: true,
-                        checkmarkColor: Colors.white,
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // ── Slobodan dan ─────────────────
+                  // ── Dostupnost ─────────────────
                   Text(
                     AppStrings.filterDay,
                     style: Theme.of(builderContext).textTheme.bodyLarge
@@ -140,51 +84,37 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: [
-                      ChoiceChip(
-                        label: Text(AppStrings.filterAnyDay),
-                        selected: _selectedDayLabel == null,
-                        onSelected: (_) {
+                    children: _filterDays.map((day) {
+                      final isSelected = _selectedDays.contains(day);
+                      return FilterChip(
+                        label: Text(day),
+                        selected: isSelected,
+                        onSelected: (selected) {
                           setSheetState(() {
-                            _selectedDayLabel = null;
+                            if (selected) {
+                              _selectedDays.add(day);
+                            } else {
+                              _selectedDays.remove(day);
+                            }
                           });
                         },
                         selectedColor: Theme.of(
                           builderContext,
                         ).colorScheme.primary,
+                        side: isSelected
+                            ? BorderSide.none
+                            : BorderSide(color: Colors.grey.shade300),
                         labelStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: _selectedDayLabel == null
+                          color: isSelected
                               ? Colors.white
-                              : Theme.of(builderContext).colorScheme.primary,
+                              : Theme.of(builderContext).colorScheme.onSurface,
                         ),
-                        showCheckmark: false,
-                      ),
-                      ..._filterDays.map((day) {
-                        final isSelected = _selectedDayLabel == day;
-                        return ChoiceChip(
-                          label: Text(day),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setSheetState(() {
-                              _selectedDayLabel = selected ? day : null;
-                            });
-                          },
-                          selectedColor: Theme.of(
-                            builderContext,
-                          ).colorScheme.primary,
-                          labelStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? Colors.white
-                                : Theme.of(builderContext).colorScheme.primary,
-                          ),
-                          showCheckmark: false,
-                        );
-                      }),
-                    ],
+                        showCheckmark: true,
+                        checkmarkColor: Colors.white,
+                      );
+                    }).toList(),
                   ),
                   const SizedBox(height: 24),
 
@@ -218,12 +148,11 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasFilters =
-        _selectedServices.isNotEmpty || _selectedDayLabel != null;
+    final hasFilters = _selectedDays.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.marketplace),
+        title: Text(AppStrings.navStudents),
         actions: [
           Stack(
             children: [
@@ -239,8 +168,8 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
                   child: Container(
                     width: 10,
                     height: 10,
-                    decoration: const BoxDecoration(
-                      color: Colors.amber,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -294,22 +223,5 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
               },
             ),
     );
-  }
-
-  String _serviceLabel(ServiceType type) {
-    switch (type) {
-      case ServiceType.activities:
-        return AppStrings.serviceActivities;
-      case ServiceType.shopping:
-        return AppStrings.serviceShopping;
-      case ServiceType.household:
-        return AppStrings.serviceHousehold;
-      case ServiceType.companionship:
-        return AppStrings.serviceCompanionship;
-      case ServiceType.techHelp:
-        return AppStrings.serviceTechHelp;
-      case ServiceType.pets:
-        return AppStrings.servicePets;
-    }
   }
 }

@@ -52,11 +52,6 @@ class ProfileScreen extends StatelessWidget {
             onTap: () {},
           ),
           _ProfileTile(
-            icon: Icons.receipt_long,
-            label: _myOrders,
-            onTap: () {},
-          ),
-          _ProfileTile(
             icon: Icons.language,
             label: AppStrings.language,
             trailing: 'HR',
@@ -84,7 +79,6 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // TODO(i18n): dodati u AppStrings
-  static const _myOrders = 'Moje narudžbe';
 }
 
 class _ProfileTile extends StatelessWidget {

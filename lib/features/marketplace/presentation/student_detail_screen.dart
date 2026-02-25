@@ -31,6 +31,7 @@ class StudentDetailScreen extends StatelessWidget {
           endHour: endHour,
           maxHours: maxHours,
           hourlyRate: student.hourlyRate,
+          availableSlots: student.availableSlots,
         );
       },
     );
@@ -50,14 +51,19 @@ class StudentDetailScreen extends StatelessWidget {
             child: CircleAvatar(
               radius: 60,
               backgroundColor: theme.colorScheme.secondary.withAlpha(38),
-              child: Text(
-                student.initials,
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w700,
-                  color: theme.colorScheme.secondary,
-                ),
-              ),
+              backgroundImage: student.imageAsset != null
+                  ? AssetImage(student.imageAsset!)
+                  : null,
+              child: student.imageAsset == null
+                  ? Text(
+                      student.initials,
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.secondary,
+                      ),
+                    )
+                  : null,
             ),
           ),
           const SizedBox(height: 16),
@@ -81,34 +87,25 @@ class StudentDetailScreen extends StatelessWidget {
           Text(student.bio, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 24),
 
-          // ── Usluge ────────────────────────────────
-          Text(AppStrings.filterService, style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: student.services
-                .map(
-                  (s) => ServiceChip(service: s, subtle: true, showIcon: false),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: 24),
-
           // ── Dostupni termini ──────────────────────
           Text(AppStrings.availability, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 12),
           ...student.availableSlots.map(
             (slot) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: _SlotTile(
-                slot: slot,
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  _openTimePicker(context, slot);
-                },
-              ),
+              child: _SlotTile(slot: slot),
             ),
+          ),
+          const SizedBox(height: 16),
+
+          // ── CTA Rezerviraj ───────────────────────
+          ElevatedButton.icon(
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              _openTimePicker(context, student.availableSlots.first);
+            },
+            icon: const Icon(Icons.calendar_month),
+            label: Text(AppStrings.bookNow),
           ),
           const SizedBox(height: 24),
 
@@ -143,36 +140,28 @@ class StudentDetailScreen extends StatelessWidget {
 /// Postavke vremena za jedan dan.
 class _DayTimeSettings {
   int startHour;
-  bool halfHour = false;
   int duration = 1;
   bool configured = false;
 
   _DayTimeSettings({required this.startHour});
 
-  double get startAsDouble => startHour + (halfHour ? 0.5 : 0);
-  double get endAsDouble => startAsDouble + duration;
+  int get endHour => startHour + duration;
 
-  String get startTimeFormatted => _fmt(startAsDouble);
-  String get endTimeFormatted => _fmt(endAsDouble);
+  String get startTimeFormatted => _fmt(startHour);
+  String get endTimeFormatted => _fmt(endHour);
 
-  static String _fmt(double t) {
-    final h = t.truncate();
-    final m = ((t - h) * 60).round();
-    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+  static String _fmt(int h) {
+    return '${h.toString().padLeft(2, '0')}:00';
   }
 
   /// Klamp sve da bude validno unutar [windowStart..windowEnd].
   void clamp(int windowStart, int windowEnd) {
-    if (halfHour && startAsDouble + duration > windowEnd) {
-      halfHour = false;
-    }
-    final maxDur = (windowEnd - startAsDouble).floor();
+    final maxDur = windowEnd - startHour;
     if (duration > maxDur) {
       duration = maxDur.clamp(1, 4);
     }
-    if (startAsDouble + duration > windowEnd) {
-      startHour = (windowEnd - duration).floor();
-      halfHour = false;
+    if (startHour + duration > windowEnd) {
+      startHour = windowEnd - duration;
     }
   }
 }
@@ -186,6 +175,7 @@ class _TimePickerSheet extends StatefulWidget {
     required this.endHour,
     required this.maxHours,
     required this.hourlyRate,
+    required this.availableSlots,
   });
 
   final MockSlot slot;
@@ -194,6 +184,7 @@ class _TimePickerSheet extends StatefulWidget {
   final int endHour;
   final int maxHours;
   final double hourlyRate;
+  final List<MockSlot> availableSlots;
 
   @override
   State<_TimePickerSheet> createState() => _TimePickerSheetState();
@@ -206,7 +197,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
   DateTime? _endDate;
   int? _expandedDay; // koji dan je otvoren u recurring modu
 
-  /// Per-day postavke (svaki dan ima svoj start, halfHour, duration).
+  /// Per-day postavke (svaki dan ima svoj start i duration).
   final Map<int, _DayTimeSettings> _daySettings = {};
 
   static const _dayLabelToInt = {
@@ -228,6 +219,15 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
     (6, 'daySat'),
     (7, 'daySun'),
   ];
+
+  /// Only the days the student is actually available.
+  List<(int, String)> get _studentAvailableDays {
+    final availableInts = widget.availableSlots
+        .map((s) => _dayLabelToInt[s.dayLabel])
+        .whereType<int>()
+        .toSet();
+    return _allDays.where((e) => availableInts.contains(e.$1)).toList();
+  }
 
   static const _intToShort = {
     1: 'dayMon',
@@ -267,24 +267,45 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
   /// Mogući početni sati za dani settings.
   List<int> _availableStartHoursFor(_DayTimeSettings s) {
     final hours = <int>[];
-    final minOffset = s.halfHour ? 0.5 : 0.0;
-    for (
-      var h = widget.startHour;
-      h + minOffset + s.duration <= widget.endHour;
-      h++
-    ) {
+    for (var h = widget.startHour; h + s.duration <= widget.endHour; h++) {
       hours.add(h);
     }
     return hours;
   }
 
-  bool _canPickHalfHourFor(_DayTimeSettings s) =>
-      s.startHour + 0.5 + s.duration <= widget.endHour;
+  /// Rezervirani sati za dani (iz MockSlot.bookedHours).
+  Set<int> _bookedHoursForDay(int dayInt) {
+    final dayLabel = _dayLabelToInt.entries
+        .where((e) => e.value == dayInt)
+        .map((e) => e.key)
+        .firstOrNull;
+    if (dayLabel == null) return {};
+    final slot = widget.availableSlots
+        .where((s) => s.dayLabel == dayLabel)
+        .firstOrNull;
+    return slot?.bookedHours.toSet() ?? {};
+  }
 
-  List<int> _availableDurationsFor(_DayTimeSettings s) {
-    final maxFromStart = (widget.endHour - s.startAsDouble).floor();
+  /// Rezervirani sati za trenutni dan.
+  Set<int> get _currentBookedHours {
+    final day = _isRecurring
+        ? (_expandedDay ?? _selectedDays.first)
+        : (_dayLabelToInt[widget.slot.dayLabel] ?? 1);
+    return _bookedHoursForDay(day);
+  }
+
+  List<int> _availableDurationsFor(_DayTimeSettings s, Set<int> bookedHours) {
+    final maxFromStart = widget.endHour - s.startHour;
+    // Limit to first booked hour after start.
+    int maxBeforeBooked = maxFromStart;
+    for (final b in bookedHours) {
+      if (b >= s.startHour) {
+        final limit = b - s.startHour;
+        if (limit < maxBeforeBooked) maxBeforeBooked = limit;
+      }
+    }
     final durations = <int>[];
-    for (var d = 1; d <= maxFromStart && d <= 4; d++) {
+    for (var d = 1; d <= maxBeforeBooked && d <= 4; d++) {
       durations.add(d);
     }
     return durations;
@@ -403,60 +424,32 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
             const SizedBox(height: 20),
 
             // ── Jednokratno / Ponavljajuće ─────
-            SizedBox(
-              width: double.infinity,
-              child: SegmentedButton<bool>(
-                segments: [
-                  ButtonSegment(
-                    value: false,
-                    label: Text(AppStrings.oneTime),
-                    icon: const Icon(Icons.looks_one, size: 20),
-                  ),
-                  ButtonSegment(
-                    value: true,
-                    label: Text(AppStrings.recurring),
-                    icon: const Icon(Icons.repeat, size: 20),
-                  ),
-                ],
-                selected: {_isRecurring},
-                onSelectionChanged: (sel) =>
-                    setState(() => _isRecurring = sel.first),
-                style: ButtonStyle(
-                  visualDensity: VisualDensity.compact,
-                  backgroundColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return theme.colorScheme.primary;
-                    }
-                    return theme.colorScheme.surface;
-                  }),
-                  foregroundColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return Colors.white;
-                    }
-                    return theme.colorScheme.onSurface;
-                  }),
-                  iconColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return Colors.white;
-                    }
-                    return theme.colorScheme.onSurface.withAlpha(153);
-                  }),
-                  side: WidgetStatePropertyAll(
-                    BorderSide(color: Colors.grey.shade300),
-                  ),
-                  textStyle: WidgetStatePropertyAll(
-                    theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: _chip(
+                    label: AppStrings.oneTime,
+                    isSelected: !_isRecurring,
+                    onTap: () => setState(() => _isRecurring = false),
+                    theme: theme,
                   ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _chip(
+                    label: AppStrings.recurring,
+                    isSelected: _isRecurring,
+                    onTap: () => setState(() => _isRecurring = true),
+                    theme: theme,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
 
             // ── JEDNOKRATNO: jedan time picker ──
             if (!_isRecurring) ...[
-              _buildTimePickerFor(theme, _currentSettings),
+              _buildTimePickerFor(theme, _currentSettings, _currentBookedHours),
             ],
 
             // ── PONAVLJAJUĆE: dan chipovi + expandable kartice ──
@@ -468,36 +461,42 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                children: _allDays.map((entry) {
-                  final (dayInt, keyName) = entry;
-                  final isSelected = _selectedDays.contains(dayInt);
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: dayInt < 7 ? 4 : 0),
-                      child: _chip(
-                        label: _dayShortString(keyName),
-                        isSelected: isSelected,
-                        onTap: () {
-                          setState(() {
-                            if (!isSelected) {
-                              _selectedDays.add(dayInt);
-                              _ensureDaySettings(dayInt);
-                              _expandedDay = dayInt;
-                            } else if (_selectedDays.length > 1) {
-                              _selectedDays.remove(dayInt);
-                              _daySettings.remove(dayInt);
-                              if (_expandedDay == dayInt) {
-                                _expandedDay = _selectedDays.first;
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final chipWidth =
+                      (constraints.maxWidth - 6 * 4) / 7; // 7 slots, 4px gap
+                  return Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: _studentAvailableDays.map((entry) {
+                      final (dayInt, keyName) = entry;
+                      final isSelected = _selectedDays.contains(dayInt);
+                      return SizedBox(
+                        width: chipWidth,
+                        child: _chip(
+                          label: _dayShortString(keyName),
+                          isSelected: isSelected,
+                          onTap: () {
+                            setState(() {
+                              if (!isSelected) {
+                                _selectedDays.add(dayInt);
+                                _ensureDaySettings(dayInt);
+                                _expandedDay = dayInt;
+                              } else if (_selectedDays.length > 1) {
+                                _selectedDays.remove(dayInt);
+                                _daySettings.remove(dayInt);
+                                if (_expandedDay == dayInt) {
+                                  _expandedDay = _selectedDays.first;
+                                }
                               }
-                            }
-                          });
-                        },
-                        theme: theme,
-                      ),
-                    ),
+                            });
+                          },
+                          theme: theme,
+                        ),
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                },
               ),
               const SizedBox(height: 16),
 
@@ -583,7 +582,11 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                         if (isExpanded)
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: _buildTimePickerFor(theme, s),
+                            child: _buildTimePickerFor(
+                              theme,
+                              s,
+                              _bookedHoursForDay(dayInt),
+                            ),
                           ),
                       ],
                     ),
@@ -785,11 +788,21 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
   }
 
   /// Reusable time picker widget za jedan dan.
-  Widget _buildTimePickerFor(ThemeData theme, _DayTimeSettings s) {
+  Widget _buildTimePickerFor(
+    ThemeData theme,
+    _DayTimeSettings s,
+    Set<int> bookedHours,
+  ) {
     final startHours = _availableStartHoursFor(s);
-    final canHalf = _canPickHalfHourFor(s);
-    final durations = _availableDurationsFor(s);
+    final durations = _availableDurationsFor(s, bookedHours);
     const spacing = 8.0;
+
+    // Auto-clamp duration if current exceeds max available.
+    if (s.configured &&
+        durations.isNotEmpty &&
+        !durations.contains(s.duration)) {
+      s.duration = durations.last;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -807,53 +820,23 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           spacing: spacing,
           builder: (i) {
             final hour = startHours[i];
+            final isBooked = bookedHours.contains(hour);
             final isSelected = s.configured && hour == s.startHour;
             return _chip(
               label: '${hour.toString().padLeft(2, '0')}:00',
-              isSelected: isSelected,
-              onTap: () {
-                setState(() {
-                  s.startHour = hour;
-                  s.configured = true;
-                  s.clamp(widget.startHour, widget.endHour);
-                });
-              },
-              theme: theme,
-            );
-          },
-        ),
-        const SizedBox(height: 10),
-
-        // ── :00 / :30 toggle ──
-        _buildChipGrid(
-          itemCount: 2,
-          spacing: spacing,
-          builder: (i) {
-            if (i == 0) {
-              return _chip(
-                label: ':00',
-                isSelected: s.configured && !s.halfHour,
-                onTap: () => setState(() {
-                  s.halfHour = false;
-                  s.configured = true;
-                  s.clamp(widget.startHour, widget.endHour);
-                }),
-                theme: theme,
-              );
-            } else {
-              return _chip(
-                label: ':30',
-                isSelected: s.configured && s.halfHour,
-                onTap: canHalf
-                    ? () => setState(() {
-                        s.halfHour = true;
+              isSelected: isSelected && !isBooked,
+              isBooked: isBooked,
+              onTap: isBooked
+                  ? null
+                  : () {
+                      setState(() {
+                        s.startHour = hour;
                         s.configured = true;
                         s.clamp(widget.startHour, widget.endHour);
-                      })
-                    : null,
-                theme: theme,
-              );
-            }
+                      });
+                    },
+              theme: theme,
+            );
           },
         ),
         const SizedBox(height: 16),
@@ -896,6 +879,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
     required bool isSelected,
     required VoidCallback? onTap,
     required ThemeData theme,
+    bool isBooked = false,
   }) {
     final enabled = onTap != null;
     return GestureDetector(
@@ -905,11 +889,15 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected
+          color: isBooked
+              ? Colors.grey.shade100
+              : isSelected
               ? theme.colorScheme.primary
               : theme.colorScheme.surface,
           border: Border.all(
-            color: isSelected
+            color: isBooked
+                ? Colors.grey.shade200
+                : isSelected
                 ? theme.colorScheme.primary
                 : Colors.grey.shade300,
           ),
@@ -920,7 +908,10 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: isSelected
+            decoration: isBooked ? TextDecoration.lineThrough : null,
+            color: isBooked
+                ? Colors.grey.shade400
+                : isSelected
                 ? Colors.white
                 : enabled
                 ? theme.colorScheme.onSurface
@@ -966,72 +957,59 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
 }
 
 class _SlotTile extends StatelessWidget {
-  const _SlotTile({required this.slot, required this.onTap});
+  const _SlotTile({required this.slot});
 
   final MockSlot slot;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final subtitleColor = theme.colorScheme.onSurface.withAlpha(153);
 
-    return Material(
-      color: theme.colorScheme.surface,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.calendar_today_outlined,
+              color: theme.colorScheme.onSurface.withAlpha(180),
+              size: 20,
+            ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(10),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${slot.dayLabel} ${slot.date}',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                child: Icon(
-                  Icons.calendar_today_outlined,
-                  color: theme.colorScheme.onSurface.withAlpha(180),
-                  size: 20,
+                const SizedBox(height: 2),
+                Text(
+                  AppStrings.slotTime(slot.startTime, slot.endTime),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: subtitleColor,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${slot.dayLabel} ${slot.date}',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      AppStrings.slotTime(slot.startTime, slot.endTime),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: subtitleColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: theme.colorScheme.primary,
-                size: 18,
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
