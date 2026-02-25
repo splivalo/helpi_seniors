@@ -1463,13 +1463,13 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
           color: isBooked
               ? Colors.grey.shade100
               : isSelected
-              ? theme.colorScheme.primary
+              ? const Color(0xFF009D9D)
               : theme.colorScheme.surface,
           border: Border.all(
             color: isBooked
                 ? Colors.grey.shade200
                 : isSelected
-                ? theme.colorScheme.primary
+                ? const Color(0xFF009D9D)
                 : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(12),
