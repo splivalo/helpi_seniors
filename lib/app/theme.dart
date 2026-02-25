@@ -162,9 +162,9 @@ class HelpiTheme {
 
     // ─── Bottom Navigation ──────────────────────────
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: _surface,
+      backgroundColor: Color(0xFF1E1E1E),
       selectedItemColor: _primary,
-      unselectedItemColor: _textPrimary,
+      unselectedItemColor: Colors.white,
       selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
       unselectedLabelStyle: TextStyle(fontSize: 14),
       type: BottomNavigationBarType.fixed,
