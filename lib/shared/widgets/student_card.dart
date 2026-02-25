@@ -49,24 +49,10 @@ class StudentCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            student.fullName,
-                            style: theme.textTheme.headlineSmall,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (student.rating >= 4.8) ...[
-                          const SizedBox(width: 8),
-                          const Icon(
-                            Icons.verified,
-                            size: 26,
-                            color: Colors.amber,
-                          ),
-                        ],
-                      ],
+                    Text(
+                      student.fullName,
+                      style: theme.textTheme.headlineSmall,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     RatingStars(rating: student.rating),
@@ -78,6 +64,43 @@ class StudentCard extends StatelessWidget {
                   ],
                 ),
               ),
+
+              // ── Badge ─────────────────────────
+              if (student.rating >= 4.8) ...[
+                const SizedBox(width: 8),
+                Column(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/award.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.amber,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        AppStrings.topBadge,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),

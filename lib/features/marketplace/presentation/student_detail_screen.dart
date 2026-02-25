@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/core/utils/mock_data.dart';
 import 'package:helpi_senior/features/booking/presentation/booking_flow_screen.dart';
@@ -77,22 +76,53 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
         children: [
           // ── Avatar + osnovni info ─────────────────
           Center(
-            child: CircleAvatar(
-              radius: 60,
-              backgroundColor: theme.colorScheme.secondary.withAlpha(38),
-              backgroundImage: widget.student.imageAsset != null
-                  ? AssetImage(widget.student.imageAsset!)
-                  : null,
-              child: widget.student.imageAsset == null
-                  ? Text(
-                      widget.student.initials,
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.secondary,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CircleAvatar(
+                  radius: 60,
+                  backgroundColor: theme.colorScheme.secondary.withAlpha(38),
+                  backgroundImage: widget.student.imageAsset != null
+                      ? AssetImage(widget.student.imageAsset!)
+                      : null,
+                  child: widget.student.imageAsset == null
+                      ? Text(
+                          widget.student.initials,
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        )
+                      : null,
+                ),
+                if (widget.student.rating >= 4.8)
+                  Positioned(
+                    bottom: -8,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          AppStrings.topBadge,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
-                    )
-                  : null,
+                    ),
+                  ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -102,7 +132,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
               style: theme.textTheme.headlineLarge,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Center(child: RatingStars(rating: widget.student.rating, size: 24)),
           const SizedBox(height: 4),
           Center(
