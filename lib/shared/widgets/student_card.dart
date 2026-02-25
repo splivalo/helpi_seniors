@@ -54,7 +54,7 @@ class StudentCard extends StatelessWidget {
                       style: theme.textTheme.headlineSmall,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     RatingStars(rating: student.rating),
                     const SizedBox(height: 2),
                     Text(

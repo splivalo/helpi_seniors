@@ -44,14 +44,16 @@ class MarketplaceScreenState extends State<MarketplaceScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (sheetContext) {
+        final bottomPad = MediaQuery.of(sheetContext).viewPadding.bottom;
         return StatefulBuilder(
           builder: (builderContext, setSheetState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+              padding: EdgeInsets.fromLTRB(24, 16, 24, 32 + bottomPad),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,

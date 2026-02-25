@@ -49,6 +49,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -680,7 +681,12 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          16,
+          24,
+          32 + MediaQuery.of(context).viewPadding.bottom,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -828,7 +834,7 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
               _buildRecurringDateList(theme),
             ],
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // ── Sažetak ───────────────────────
             if ((_isRecurring
@@ -899,24 +905,16 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                     ],
                     if (_isRecurring) ...[
                       const Divider(height: 20),
-                      Text(
-                        AppStrings.recurringConfirmed(
-                          _confirmedCount.toString(),
-                        ),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      _buildRecurringSummaryBar(theme),
                       const SizedBox(height: 6),
                       Row(
                         children: [
                           Icon(
                             Icons.info_outline,
-                            size: 16,
+                            size: 20,
                             color: theme.colorScheme.onSurface.withAlpha(130),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               AppStrings.recurringBillingInfo,
@@ -942,7 +940,9 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
                   ((_isRecurring
                           ? _allConfigured
                           : (_primarySettingsOrNull?.configured ?? false)) &&
-                      (!_isRecurring || _confirmedCount > 0))
+                      (!_isRecurring || _confirmedCount > 0) &&
+                      (_bookingMode != _BookingMode.untilDate ||
+                          _endDate != null))
                   ? () {
                       HapticFeedback.mediumImpact();
                       Navigator.of(context).pop();
@@ -1038,8 +1038,6 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
         // Summary + auto-renewal after all days
         if (showDates) ...[
           const SizedBox(height: 20),
-          _buildRecurringSummaryBar(theme),
-          const SizedBox(height: 14),
           _buildAutoRenewalCard(theme),
         ],
       ],
@@ -1224,40 +1222,54 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
         }),
         const SizedBox(height: 14),
 
-        _buildRecurringSummaryBar(theme),
-        const SizedBox(height: 14),
         _buildAutoRenewalCard(theme),
       ],
     );
   }
 
-  /// Confirmed/skipped summary row.
+  /// Confirmed/skipped summary row with header.
   Widget _buildRecurringSummaryBar(ThemeData theme) {
     final confirmed = _confirmedCount;
     final skipped = _skippedCount;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.check_circle, size: 18, color: theme.colorScheme.secondary),
-        const SizedBox(width: 6),
         Text(
-          AppStrings.recurringConfirmed(confirmed.toString()),
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.secondary,
+          AppStrings.sessionsLabel,
+          style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
-        if (skipped > 0) ...[
-          const SizedBox(width: 16),
-          Icon(Icons.cancel_outlined, size: 18, color: Colors.red.shade400),
-          const SizedBox(width: 6),
-          Text(
-            AppStrings.recurringSkipped(skipped.toString()),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.red.shade400,
-              fontWeight: FontWeight.w600,
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(
+              Icons.check_circle,
+              size: 20,
+              color: theme.colorScheme.secondary,
             ),
-          ),
-        ],
+            const SizedBox(width: 6),
+            Text(
+              AppStrings.recurringConfirmed(confirmed.toString()),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.secondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (skipped > 0) ...[
+              const SizedBox(width: 16),
+              Icon(Icons.cancel_outlined, size: 20, color: Colors.red.shade400),
+              const SizedBox(width: 6),
+              Text(
+                AppStrings.recurringSkipped(skipped.toString()),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Colors.red.shade400,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
       ],
     );
   }
@@ -1265,17 +1277,19 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
   /// Blue auto-renewal info card (continuous) or until-date info card.
   Widget _buildAutoRenewalCard(ThemeData theme) {
     final isContinuous = _bookingMode == _BookingMode.continuous;
+
+    // Don't show until-date info card when no date is selected yet.
+    if (!isContinuous && _endDate == null) return const SizedBox.shrink();
+
     final String infoText;
     if (isContinuous) {
       final monthName = AppStrings.monthName(_displayMonth.month);
       infoText = AppStrings.recurringAutoRenew(monthName);
     } else {
-      // untilDate mode
-      final formatted = _endDate != null
-          ? '${_endDate!.day.toString().padLeft(2, '0')}.'
-                '${_endDate!.month.toString().padLeft(2, '0')}.'
-                '${_endDate!.year}.'
-          : '—';
+      final formatted =
+          '${_endDate!.day.toString().padLeft(2, '0')}.'
+          '${_endDate!.month.toString().padLeft(2, '0')}.'
+          '${_endDate!.year}.';
       infoText = AppStrings.recurringUntilDateInfo(formatted);
     }
     return Container(

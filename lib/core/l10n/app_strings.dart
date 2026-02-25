@@ -91,9 +91,9 @@ class AppStrings {
       'aboutStudent': 'O studentu',
 
       // ── Ponavljanje ──────────────────────────
-      'oneTime': 'Jednokratno',
+      'oneTime': 'Jednom',
       'recurring': 'Ponavljajuće',
-      'continuous': 'Kontinuirano',
+      'continuous': 'Stalno',
       'untilDate': 'Do datuma',
       'selectEndDate': 'Odaberite zadnji termin',
       'lastSessionLabel': 'Zadnji termin',
@@ -192,15 +192,15 @@ class AppStrings {
       'selectDatePrompt': 'Odaberite datum za rezervaciju',
       'freeHoursCount': '{free} od {total} sati slobodno',
       'allHoursFree': 'Svi termini slobodni',
-      'recurringConfirmed': 'Potvrđeno: {count} termina',
+      'recurringConfirmed': 'Potvrđeno: {count}',
       'recurringSkipped': 'Preskočeno: {count}',
+      'sessionsLabel': 'Termini',
       'recurringFree': 'Slobodno',
       'recurringOccupied': 'Zauzeto',
       'recurringPartial': '{start}-{end} slobodno',
       'recurringTotalPrice': 'Ukupno ({count} termina)',
       'recurringPerVisitPrice': '{price} €/termin',
-      'recurringBillingInfo':
-          'Naplata karticom 30 min prije svakog dolaska.',
+      'recurringBillingInfo': 'Naplata karticom 30 min prije svakog dolaska.',
       'recurringMonthTitle': 'Svaki {day} u mjesecu {month}',
       'recurringDaysLabel': 'Dani',
       'recurringOutsideWindow': 'Izvan termina',
@@ -282,9 +282,9 @@ class AppStrings {
       'aboutStudent': 'About student',
 
       // ── Ponavljanje ──────────────────────────
-      'oneTime': 'One-time',
+      'oneTime': 'Once',
       'recurring': 'Recurring',
-      'continuous': 'Continuous',
+      'continuous': 'Weekly',
       'untilDate': 'Until date',
       'selectEndDate': 'Select last session',
       'lastSessionLabel': 'Last session',
@@ -383,15 +383,15 @@ class AppStrings {
       'selectDatePrompt': 'Select a date to book',
       'freeHoursCount': '{free} of {total} hours available',
       'allHoursFree': 'All hours available',
-      'recurringConfirmed': 'Confirmed: {count} sessions',
+      'recurringConfirmed': 'Confirmed: {count}',
       'recurringSkipped': 'Skipped: {count}',
+      'sessionsLabel': 'Sessions',
       'recurringFree': 'Available',
       'recurringOccupied': 'Booked',
       'recurringPartial': '{start}-{end} available',
       'recurringTotalPrice': 'Total ({count} sessions)',
       'recurringPerVisitPrice': '€{price}/session',
-      'recurringBillingInfo':
-          'Charged to your card 30 min before each visit.',
+      'recurringBillingInfo': 'Charged to your card 30 min before each visit.',
       'recurringMonthTitle': 'Every {day} in {month}',
       'recurringDaysLabel': 'Days',
       'recurringOutsideWindow': 'Outside hours',
@@ -597,6 +597,7 @@ class AppStrings {
       _t('recurringConfirmed', params: {'count': count});
   static String recurringSkipped(String count) =>
       _t('recurringSkipped', params: {'count': count});
+  static String get sessionsLabel => _t('sessionsLabel');
   static String get recurringFree => _t('recurringFree');
   static String get recurringOccupied => _t('recurringOccupied');
   static String recurringPartial(String start, String end) =>
