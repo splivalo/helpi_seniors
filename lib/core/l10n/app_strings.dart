@@ -35,7 +35,52 @@ class AppStrings {
 
       // ── Naruči ekran ─────────────────────────
       'orderTitle': 'Naruči pomoć',
-      'orderSubtitle': 'Odaberite što vam treba i mi ćemo vam poslati najboljeg pomoćnika.',
+      'orderSubtitle':
+          'Odaberite što vam treba i mi ćemo vam poslati najboljeg pomoćnika.',
+
+      // ── Order flow ─────────────────────────────
+      'newOrder': 'Nova narudžba',
+      'orderFlowStep1': 'Kada?',
+      'orderFlowStep2': 'Što vam treba?',
+      'orderFlowStep3': 'Pregled',
+      'stepIndicator': 'Korak {current} od {total}',
+      'frequency': 'Učestalost',
+      'addDay': 'Dodaj dan',
+      'selectDay': 'Odaberite dan',
+      'fromTime': 'Od',
+      'durationChoice': 'Trajanje',
+      'hour1': '1 sat',
+      'hour2': '2 sata',
+      'hour3': '3 sata',
+      'hour4': '4 sata',
+      'selectDate': 'Odaberite datum',
+      'selectStartDate': 'Početak usluge',
+      'firstServiceDate': 'Prva usluga: {date}',
+      'dayMonFull': 'Ponedjeljak',
+      'dayTueFull': 'Utorak',
+      'dayWedFull': 'Srijeda',
+      'dayThuFull': 'Četvrtak',
+      'dayFriFull': 'Petak',
+      'daySatFull': 'Subota',
+      'daySunFull': 'Nedjelja',
+      'serviceNoteHint':
+          'Opišite što vam treba (npr. "Trebam pomoć s usisavanjem i pospremanjem")',
+      'escortInfo':
+          'Pratnja može potrajati dulje od odabranog trajanja (npr. čekanje kod liječnika). Ako usluga traje dulje, razlika se naplaćuje dodatno.',
+      'overtimeDisclaimer':
+          'Ako usluga traje dulje od odabranog trajanja, dodatno vrijeme se naplaćuje prema dogovoru.',
+      'orderSummaryFrequency': 'Učestalost',
+      'orderSummaryDays': 'Odabrani dani',
+      'orderSummaryServices': 'Odabrane usluge',
+      'orderSummaryNotes': 'Napomena',
+      'orderSummaryDate': 'Datum',
+      'orderSummaryTime': 'Vrijeme',
+      'orderSummaryDuration': 'Trajanje',
+      'orderSummaryStartDate': 'Početak',
+      'orderSummaryEndDate': 'Kraj',
+      'noNotes': 'Nema napomene',
+      'orderMessage': 'Poruka (neobavezno)',
+      'orderMessageHint': 'Napišite poruku ili dodatne informacije...',
 
       // ── Općenito ──────────────────────────────
       'loading': 'Učitavanje...',
@@ -100,7 +145,10 @@ class AppStrings {
       'recurring': 'Ponavljajuće',
       'continuous': 'Stalno',
       'untilDate': 'Do datuma',
+      'hasEndDate': 'Do određenog datuma',
       'selectEndDate': 'Odaberite zadnji termin',
+      'recurringNoEnd': 'Ponavljajuće',
+      'recurringWithEnd': 'Ponavljajuće do {date}',
       'lastSessionLabel': 'Zadnji termin',
       'recurringUntilDateInfo':
           'Rezervacija traje do {date}. '
@@ -231,7 +279,52 @@ class AppStrings {
 
       // ── Order screen ─────────────────────────
       'orderTitle': 'Order help',
-      'orderSubtitle': 'Choose what you need and we will send you the best helper.',
+      'orderSubtitle':
+          'Choose what you need and we will send you the best helper.',
+
+      // ── Order flow ─────────────────────────────
+      'newOrder': 'New order',
+      'orderFlowStep1': 'When?',
+      'orderFlowStep2': 'What do you need?',
+      'orderFlowStep3': 'Summary',
+      'stepIndicator': 'Step {current} of {total}',
+      'frequency': 'Frequency',
+      'addDay': 'Add day',
+      'selectDay': 'Select a day',
+      'fromTime': 'From',
+      'durationChoice': 'Duration',
+      'hour1': '1 hour',
+      'hour2': '2 hours',
+      'hour3': '3 hours',
+      'hour4': '4 hours',
+      'selectDate': 'Select date',
+      'selectStartDate': 'Service start date',
+      'firstServiceDate': 'First service: {date}',
+      'dayMonFull': 'Monday',
+      'dayTueFull': 'Tuesday',
+      'dayWedFull': 'Wednesday',
+      'dayThuFull': 'Thursday',
+      'dayFriFull': 'Friday',
+      'daySatFull': 'Saturday',
+      'daySunFull': 'Sunday',
+      'serviceNoteHint':
+          'Describe what you need (e.g. "I need help with vacuuming and tidying up")',
+      'escortInfo':
+          'Escort services may take longer than the selected duration (e.g. waiting at the doctor). If the service takes longer, the difference is charged additionally.',
+      'overtimeDisclaimer':
+          'If the service takes longer than the selected duration, additional time is charged by agreement.',
+      'orderSummaryFrequency': 'Frequency',
+      'orderSummaryDays': 'Selected days',
+      'orderSummaryServices': 'Selected services',
+      'orderSummaryNotes': 'Note',
+      'orderSummaryDate': 'Date',
+      'orderSummaryTime': 'Time',
+      'orderSummaryDuration': 'Duration',
+      'orderSummaryStartDate': 'Start',
+      'orderSummaryEndDate': 'End',
+      'noNotes': 'No notes',
+      'orderMessage': 'Message (optional)',
+      'orderMessageHint': 'Write a message or additional information...',
 
       // ── Općenito ──────────────────────────────
       'loading': 'Loading...',
@@ -296,7 +389,10 @@ class AppStrings {
       'recurring': 'Recurring',
       'continuous': 'Weekly',
       'untilDate': 'Until date',
+      'hasEndDate': 'Until a specific date',
       'selectEndDate': 'Select last session',
+      'recurringNoEnd': 'Recurring',
+      'recurringWithEnd': 'Recurring until {date}',
       'lastSessionLabel': 'Last session',
       'recurringUntilDateInfo':
           'Booking runs until {date}. '
@@ -444,6 +540,52 @@ class AppStrings {
   // ── Naruči ekran ──────────────────────────────
   static String get orderTitle => _t('orderTitle');
   static String get orderSubtitle => _t('orderSubtitle');
+  // ── Order flow ────────────────────────────
+  static String get newOrder => _t('newOrder');
+  static String get orderFlowStep1 => _t('orderFlowStep1');
+  static String get orderFlowStep2 => _t('orderFlowStep2');
+  static String get orderFlowStep3 => _t('orderFlowStep3');
+  static String stepIndicator(String current, String total) =>
+      _t('stepIndicator', params: {'current': current, 'total': total});
+  static String get frequency => _t('frequency');
+  static String get addDay => _t('addDay');
+  static String get selectDay => _t('selectDay');
+  static String get fromTime => _t('fromTime');
+  static String get durationChoice => _t('durationChoice');
+  static String get hour1 => _t('hour1');
+  static String get hour2 => _t('hour2');
+  static String get hour3 => _t('hour3');
+  static String get hour4 => _t('hour4');
+  static String get selectDate => _t('selectDate');
+  static String get dayMonFull => _t('dayMonFull');
+  static String get dayTueFull => _t('dayTueFull');
+  static String get dayWedFull => _t('dayWedFull');
+  static String get dayThuFull => _t('dayThuFull');
+  static String get dayFriFull => _t('dayFriFull');
+  static String get daySatFull => _t('daySatFull');
+  static String get daySunFull => _t('daySunFull');
+  static String get hasEndDate => _t('hasEndDate');
+  static String get recurringNoEnd => _t('recurringNoEnd');
+  static String recurringWithEnd(String date) =>
+      _t('recurringWithEnd', params: {'date': date});
+  static String get serviceNoteHint => _t('serviceNoteHint');
+  static String get selectStartDate => _t('selectStartDate');
+  static String firstServiceDate(String date) =>
+      _t('firstServiceDate', params: {'date': date});
+  static String get escortInfo => _t('escortInfo');
+  static String get overtimeDisclaimer => _t('overtimeDisclaimer');
+  static String get orderSummaryFrequency => _t('orderSummaryFrequency');
+  static String get orderSummaryDays => _t('orderSummaryDays');
+  static String get orderSummaryServices => _t('orderSummaryServices');
+  static String get orderSummaryNotes => _t('orderSummaryNotes');
+  static String get orderSummaryDate => _t('orderSummaryDate');
+  static String get orderSummaryTime => _t('orderSummaryTime');
+  static String get orderSummaryDuration => _t('orderSummaryDuration');
+  static String get orderSummaryStartDate => _t('orderSummaryStartDate');
+  static String get orderSummaryEndDate => _t('orderSummaryEndDate');
+  static String get noNotes => _t('noNotes');
+  static String get orderMessage => _t('orderMessage');
+  static String get orderMessageHint => _t('orderMessageHint');
 
   // ── Općenito ──────────────────────────────────
   static String get loading => _t('loading');
