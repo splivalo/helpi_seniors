@@ -71,8 +71,23 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   // ── Helpers ───────────────────────────────────
   Set<int> get _usedDays => _dayEntries.map((e) => e.day).toSet();
 
-  List<int> get _availableDays =>
-      [1, 2, 3, 4, 5, 6, 7].where((d) => !_usedDays.contains(d)).toList();
+  List<int> get _availableDays {
+    final all = [1, 2, 3, 4, 5, 6, 7].where((d) => !_usedDays.contains(d));
+    // When end date is set, only show days that fall within the range
+    if (_hasEndDate && _endDate != null && _startDate != null) {
+      return all.where((d) => _isDayInRange(d)).toList();
+    }
+    return all.toList();
+  }
+
+  /// Returns true if [weekday] has at least one occurrence between
+  /// [_startDate] and [_endDate].
+  bool _isDayInRange(int weekday) {
+    if (_startDate == null) return true;
+    final first = _firstOccurrence(weekday, _startDate!);
+    if (!_hasEndDate || _endDate == null) return true;
+    return !first.isAfter(_endDate!);
+  }
 
   String _dayFullName(int day) {
     switch (day) {
@@ -122,6 +137,13 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     return '$d.$m.${date.year}';
   }
 
+  /// Removes day entries whose weekday no longer falls between
+  /// [_startDate] and [_endDate].
+  void _removeInvalidDayEntries() {
+    if (_startDate == null) return;
+    _dayEntries.removeWhere((e) => !_isDayInRange(e.day));
+  }
+
   /// Finds the first occurrence of [weekday] (1=Mon… 7=Sun) on or after [from].
   DateTime _firstOccurrence(int weekday, DateTime from) {
     // DateTime.weekday: 1=Mon … 7=Sun (matches our convention)
@@ -152,8 +174,12 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     }
     if (_startDate == null) return false;
     if (_hasEndDate && _endDate == null) return false;
-    return _dayEntries.isNotEmpty &&
-        _dayEntries.every((e) => e.fromHour != null && e.duration != null);
+    if (_dayEntries.isEmpty) return false;
+    // Safety: ensure all day entries actually fall within the date range
+    if (_hasEndDate && _endDate != null) {
+      if (!_dayEntries.every((e) => _isDayInRange(e.day))) return false;
+    }
+    return _dayEntries.every((e) => e.fromHour != null && e.duration != null);
   }
 
   Future<void> _pickOneTimeDate() async {
@@ -182,7 +208,11 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     );
     if (!context.mounted) return;
     if (picked != null) {
-      setState(() => _endDate = picked);
+      setState(() {
+        _endDate = picked;
+        // Remove day entries that no longer fit in the date range
+        _removeInvalidDayEntries();
+      });
     }
   }
 
@@ -203,6 +233,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         if (_endDate != null && _endDate!.isBefore(picked)) {
           _endDate = null;
         }
+        // Remove day entries that no longer fit in the date range
+        _removeInvalidDayEntries();
       });
     }
   }
@@ -947,8 +979,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: HelpiTheme.cardCream,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE0E0E0)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1105,15 +1138,15 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               children: [
                 const Icon(
                   Icons.info_outline,
-                  size: 18,
-                  color: Color(0xFF757575),
+                  size: 20,
+                  color: Color(0xFF1976D2),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     AppStrings.overtimeDisclaimer,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF616161),
+                      color: const Color(0xFF1565C0),
                       height: 1.4,
                     ),
                   ),

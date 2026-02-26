@@ -9,8 +9,7 @@
 ### Decision: Architecture design and DB schema
 
 - **Context:** Start of Helpi Senior mobile app development connecting seniors with students for everyday help.
-- **Decision:** Defined complete logical DB schema (11 tables), layered Flutter architecture (Clean Architecture + feature-first), and 15-step User Journey.
-- **Key tables:** `users`, `student_profiles`, `student_services`, `availability_slots`, `availability_exceptions`, `bookings`, `payments`, `reviews`, `chat_rooms`, `chat_messages`, `notifications`.
+- **Decision:** Defined complete logical DB schema (11 tables), layered Flutter architecture (Clean Architecture + feature-first), and user journey.
 - **Rationale:** Solid foundation before writing any production code. Seniors are target users -> UX principles defined from start (high contrast, large buttons, max 3 steps).
 - **Stack:** Flutter + Bloc/Cubit, Supabase/Node.js backend, PostgreSQL, Stripe, Firebase FCM.
 - **Chat model:** Senior <-> Admin <-> Student (admin as intermediary for safety).
@@ -18,77 +17,13 @@
 
 ---
 
-## 2026-02-24 UI Prototype v1
+## 2026-02-24 UI Prototype v1 (Marketplace)
 
-### Decision: Complete UI prototype with mock data
+### Decision: Build marketplace with student browsing
 
-- **Context:** Need for visual UX validation before backend development.
-- **Result:** 9 screens, 4 tabs, 3-step booking flow, custom time picker, mock data for 5 students.
-- **Screens:** Home, Marketplace (with filters), Student Detail (profile + calendar), Booking Flow (3 steps), Chat list + room, Profile.
-- **Key UX decision:** Everything must be maximally simple for seniors minimal steps, large buttons, clear colors.
-- **Status:** All prototype screens complete.
-
----
-
-## 2026-02-24 Categories removed
-
-### Decision: All students do everything
-
-- **Context:** Initially students had service categories (SVG icons). Decided all students are generalists.
-- **Rationale:** Simplifies UX senior doesn't need to choose a category, just a student. Backend doesn't need to filter by `service_type`.
-- **Impact:** Category chip system removed, `service_type` filter becomes irrelevant for v1.
-- **Status:** Implemented.
-
----
-
-## 2026-02-24/25 Booking Sheet complete redesign
-
-### Decision: 3 booking modes + per-day configuration
-
-- **Context:** Initial booking was one-time only. Added recurring support.
-- **3 modes:** One-time, Continuous (auto-renew monthly), Until date (fixed end).
-- **Per-day:** Each selected day has its own start time + duration. Flat section design with inline date preview.
-- **Chip-based selection:** Days, Start time, Duration ALL chip interface, no dropdowns or pickers.
-- **Pricing:** Per-day display in summary card. CTA "Next" without price.
-- **Billing info:** "Card charged 30 min before each visit."
-- **DatePicker:** HR localization (`flutter_localizations` SDK package).
-- **Duration fix:** Duration chip has no default (requires explicit click).
-- **Status:** Implemented.
-
----
-
-## 2026-02-25 Calendar made read-only
-
-### Decision: Calendar only displays info, not interactive
-
-- **Context:** Calendar on student detail screen had tap-to-select functionality. But day selection happens in the booking sheet.
-- **Decision:** Calendar is pure info shows free/partial/booked per date. No selection.
-- **Rationale:** Dual UX (calendar + booking sheet) is confusing for seniors.
-- **"Book now" button:** Always visible below legend, not dependent on date selection.
-- **Status:** Implemented.
-
----
-
-## 2026-02-25 Unified borderRadius = 12
-
-### Decision: All rounded corners set to 12
-
-- **Context:** Mix of borderRadius values (8, 10, 12, 16) across the app inconsistent.
-- **Decision:** Everything set to 12. Exceptions: chat input bubble (24), tiny accent bars (2).
-- **Files:** theme.dart, student_card.dart, home_screen.dart, student_detail_screen.dart, booking_flow_screen.dart, chat_list_screen.dart, profile_screen.dart.
-- **Status:** Implemented.
-
----
-
-## 2026-02-25 Chip color: coral -> teal
-
-### Decision: Selected chips in teal (#009D9D) instead of coral (#EF5B5B)
-
-- **Context:** When all chips (mode, day, time, duration) are coral, the screen "screams" too much red.
-- **Decision:** Selected chips use teal (secondary color). Coral stays for branding (app bar, logo).
-- **Impact:** Single change in `_chip()` method all chips automatically switched to teal.
-- **Visual effect:** Much calmer look, chips visually "lead" toward the teal CTA button.
-- **Status:** Implemented.
+- **Context:** Initial approach — seniors browse student profiles, select one, book directly.
+- **Result:** 9 screens, 4 tabs, 3 booking modes, per-day config, custom time picker.
+- **Status:** ARCHIVED to branch `archive/marketplace-v1`.
 
 ---
 
@@ -96,18 +31,8 @@
 
 ### Decision: All MD files moved to `docs/` folder
 
-- **Context:** PROGRESS.md, PROJECT_HISTORY.md, ARCHITECTURE.md, ROADMAP.md were in root folder cluttering the structure.
-- **Decision:** Created `docs/` folder and moved all project MDs there. README.md stays in root.
-- **Status:** Implemented.
-
----
-
-## 2026-02-25 All documentation translated to English
-
-### Decision: MD files written in English
-
-- **Context:** Developer(s) joining the project will be non-Croatian speakers.
-- **Decision:** All documentation in `docs/` translated from Croatian to English.
+- **Context:** MD files cluttering root folder.
+- **Decision:** Created `docs/` folder, moved PROGRESS/HISTORY/ARCHITECTURE/ROADMAP there. README stays in root.
 - **Status:** Implemented.
 
 ---
@@ -116,17 +41,78 @@
 
 ### Decision: Remove student marketplace, adopt admin-assigned model
 
-- **Context:** The marketplace (browse students, view profiles, pick slots, book specific student) introduced too much complexity for seniors. Key insights:
+- **Context:** Marketplace (browse students, view profiles, pick slots) was too complex for seniors. Key insights:
   - First-time users don't know any students — browsing profiles creates false expectations.
   - Seniors want to **order help**, not **shop for a person**.
   - A simpler flow ("I need X on Y date") with admin assigning the best student is much more senior-friendly.
-  - Previous prototype (screenshot from earlier app version) showed this simpler approach — just pick date, days, time range, done.
 - **Decision:**
-  - Full marketplace code **archived** to branch `archive/marketplace-v1`.
-  - First tab changed from "Studenti" (marketplace) to "Naruči" (Order).
-  - New `OrderScreen` placeholder created under `lib/features/order/`.
-  - Order flow to be designed from scratch — minimal steps, no student selection.
-  - Admin dashboard will handle student assignment.
-- **Archived code:** HomeScreen (quick actions + recommended students), MarketplaceScreen (filters, student list), StudentDetailScreen (profile, calendar, 3-mode time picker), StudentCard widget.
-- **Impact:** Major UX simplification. Progress % dropped from 40% to 30% as marketplace work is archived.
-- **Status:** Implemented. OrderScreen placeholder live.
+  - Marketplace code **archived** to branch `archive/marketplace-v1`.
+  - First tab changed from "Studenti" to "Naruči" (Order).
+  - New OrderScreen + OrderFlowScreen created.
+  - Admin dashboard handles student assignment.
+- **Impact:** Major UX simplification.
+- **Status:** Implemented.
+
+---
+
+## 2026-02-26 Full 3-step Order Flow implemented
+
+### Decision: Complete order flow with validation
+
+- **OrderFlowScreen** — ~1226 lines, 3 steps:
+  - **Step 1 "Kada?"**: Booking mode (one-time / recurring), date pickers, day/time/duration chips per day entry.
+  - **Step 2 "Što vam treba?"**: Service type chips (kuhanje, čišćenje, kupovina, društvo, pratnja, tehnika, vrtlarstvo), free-text note, escort/overtime info cards.
+  - **Step 3 "Pregled"**: Full order summary with all details.
+- **Booking modes**: `oneTime` (single date + time) and `recurring` (weekly, with optional end date via Switch toggle).
+- **Per-day config**: Each day entry has its own from-hour and duration.
+- **Chip-based UI**: Everything is chip selection — no dropdowns.
+- **Status:** Implemented.
+
+---
+
+## 2026-02-26 Pastel design overhaul
+
+### Decision: New color system and visual identity
+
+- **Context:** Original design was too harsh (dark nav, high-contrast teal chips).
+- **New design system:**
+  - Background: warm off-white `#F9F7F4`
+  - borderRadius: 16 everywhere (up from 12)
+  - Color split: coral `#EF5B5B` for progress/action, teal `#009D9D` for interactive/form
+  - Chips selected: pastel teal fill `#E0F5F5` + teal border + teal text
+  - Cards: white bg + grey border `#E0E0E0` (no pastel backgrounds)
+  - No shadows on chips, cards, or date buttons
+  - CTA buttons: coral
+  - Switch, outlined buttons, FAB: teal
+  - Bottom nav: white with subtle shadow
+  - Step indicator bars: coral
+  - Frequency tabs: tab bar style (coral active underline)
+- **Status:** Implemented.
+
+---
+
+## 2026-02-26 Day range validation (bug fix)
+
+### Decision: Filter day picker by date range
+
+- **Context:** Bug discovered: when recurring mode has end date (e.g. 26.02-28.02), user could select Ponedjeljak (Monday) which doesn't exist in that period. App would show "Prva usluga: 02.03.2026" — AFTER the end date.
+- **Fix (3-layer defense):**
+  1. **Day picker filtering** — only shows weekdays that actually fall within start-end range.
+  2. **Auto-cleanup** — when dates change, removes existing day entries that no longer fit.
+  3. **Validation safety net** — Dalje button stays disabled if any day entry is out of range.
+- **New helper:** `_isDayInRange(int weekday)` — checks if first occurrence falls before end date.
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-02-26 Dead code cleanup
+
+### Decision: Delete all marketplace/student code from lib/
+
+- **Context:** Old marketplace code (archived to branch) was still sitting in lib/ as dead files.
+- **Deleted files:**
+  - `lib/features/marketplace/` — entire folder (home_screen, marketplace_screen, student_detail_screen + empty data/domain dirs)
+  - `lib/features/booking/presentation/booking_flow_screen.dart` — old booking flow from marketplace
+  - `lib/shared/widgets/student_card.dart` — only used by deleted marketplace code
+- **Verification:** `flutter analyze` → 0 errors after deletion.
+- **Status:** Implemented.

@@ -56,6 +56,7 @@ class AppStrings {
       'selectDate': 'Odaberite datum',
       'selectStartDate': 'Početak usluge',
       'firstServiceDate': 'Prva usluga: {date}',
+      'dayNotInRange': '{day} ne pada u odabrani period',
       'dayMonFull': 'Ponedjeljak',
       'dayTueFull': 'Utorak',
       'dayWedFull': 'Srijeda',
@@ -300,6 +301,7 @@ class AppStrings {
       'selectDate': 'Select date',
       'selectStartDate': 'Service start date',
       'firstServiceDate': 'First service: {date}',
+      'dayNotInRange': '{day} does not fall within the selected period',
       'dayMonFull': 'Monday',
       'dayTueFull': 'Tuesday',
       'dayWedFull': 'Wednesday',
@@ -572,6 +574,8 @@ class AppStrings {
   static String get selectStartDate => _t('selectStartDate');
   static String firstServiceDate(String date) =>
       _t('firstServiceDate', params: {'date': date});
+  static String dayNotInRange(String day) =>
+      _t('dayNotInRange', params: {'day': day});
   static String get escortInfo => _t('escortInfo');
   static String get overtimeDisclaimer => _t('overtimeDisclaimer');
   static String get orderSummaryFrequency => _t('orderSummaryFrequency');

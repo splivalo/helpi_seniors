@@ -3,7 +3,7 @@
 > WARNING: It is STRICTLY FORBIDDEN to start any task from the Roadmap without explicit user confirmation.
 > Every step requires explicit approval from the product owner.
 
-> Last updated: 2026-02-25
+> Last updated: 2026-02-26
 
 ---
 
@@ -11,8 +11,8 @@
 
 - [x] 1.1 Reorganize `lib/` folder structure (feature-first Clean Arch)
 - [ ] 1.2 Add packages to `pubspec.yaml` (bloc, go_router, dio, etc.)
-- [x] 1.3 `AppStrings` i18n (Gemini Hybrid pattern, HR + EN, 140+ keys)
-- [x] 1.4 Senior-friendly theme (high contrast, large fonts, borderRadius 12)
+- [x] 1.3 `AppStrings` i18n (Gemini Hybrid pattern, HR + EN, 200+ keys)
+- [x] 1.4 Senior-friendly theme (pastel overhaul, borderRadius 16, coral/teal split)
 - [x] 1.4b `flutter_localizations` SDK package (HR locale)
 - [ ] 1.5 GoRouter setup with placeholder screens
 - [ ] 1.6 DI setup (GetIt + injectable)
@@ -26,71 +26,72 @@
 - [ ] 2.4 Token storage (flutter_secure_storage)
 - [ ] 2.5 Auto-login on splash
 
-## Phase 3 - Order Flow (NEW - replaces Marketplace)
+## Phase 3 - Order Flow
 
-- [ ] 3.1 Design simplified order flow (service type, date/time, recurrence)
-- [ ] 3.2 Order screen implementation
-- [ ] 3.3 Order confirmation screen
-- [ ] 3.4 Order Cubit + repository
-- [ ] 3.5 Backend integration
+- [x] 3.1 OrderScreen — landing page with "Nova narudžba" CTA
+- [x] 3.2 OrderFlowScreen — 3-step flow (Kada → Što → Pregled)
+- [x] 3.3 Booking modes (one-time + recurring with optional end date)
+- [x] 3.4 Per-day configuration (time + duration per day entry)
+- [x] 3.5 Day range validation (filter picker + auto-cleanup + safety net)
+- [ ] 3.6 Order confirmation screen (success after submit)
+- [ ] 3.7 Order Cubit + repository
+- [ ] 3.8 Backend integration (POST /orders)
 
-## Phase 3-ARCHIVE - Marketplace (archived to `archive/marketplace-v1`)
+## Phase 4 - Orders Management
 
-- [x] Student list, filters, detail, calendar, 3-mode booking sheet
-- **Status:** Fully archived. May be revisited later for "choose your student" feature.
+- [ ] 4.1 "Moje narudžbe" screen (order list with statuses)
+- [ ] 4.2 Order detail screen
+- [ ] 4.3 Order status updates (push notifications)
+- [ ] 4.4 Orders Cubit + repository
 
-## Phase 4 - Booking & Payment
+## Phase 5 - Payment
 
-- [ ] 4.1 Slot Picker (calendar + time slots)
-- [ ] 4.2 Order review screen
-- [ ] 4.3 Stripe Payment Sheet integration
-- [ ] 4.4 Booking Cubit + repository
-- [ ] 4.5 Payment Cubit + Stripe service
-- [ ] 4.6 Order confirmation screen
-- [ ] 4.7 "My orders" screen (session list with statuses)
+- [ ] 5.1 Stripe Payment Sheet integration
+- [ ] 5.2 Payment Cubit + Stripe service
+- [ ] 5.3 Payment confirmation flow
 
-## Phase 5 - Chat
+## Phase 6 - Chat
 
-- [ ] 5.1 Chat list screen
-- [ ] 5.2 Chat room screen (messages)
-- [ ] 5.3 WebSocket integration
-- [ ] 5.4 Chat Cubit + repository
-- [ ] 5.5 Admin-mediated chat model
+- [ ] 6.1 Chat list screen (UI done, needs backend)
+- [ ] 6.2 Chat room screen (UI done, needs backend)
+- [ ] 6.3 WebSocket integration
+- [ ] 6.4 Chat Cubit + repository
+- [ ] 6.5 Admin-mediated chat model
 
-## Phase 6 - Reviews & Profile
+## Phase 7 - Reviews & Profile
 
-- [ ] 6.1 Review form (stars + comment)
-- [ ] 6.2 Senior profile screen
-- [ ] 6.3 Edit profile
-- [ ] 6.4 Notifications screen
+- [ ] 7.1 Review form (stars + comment)
+- [ ] 7.2 Senior profile screen (UI done, needs backend)
+- [ ] 7.3 Edit profile
+- [ ] 7.4 Notifications screen
 
-## Phase 7 - Recurring Booking Management
+## Phase 8 - Recurring Booking Management
 
-- [ ] 7.1 Push notification when student cancels a session
-- [ ] 7.2 Senior options: Skip session / Cancel all
-- [ ] 7.3 "My orders" with recurring view (session list + per-date statuses)
-- [ ] 7.4 Backend: `booking_status` extension (`skipped`, `cancelled_by_student`)
-- [ ] 7.5 Travel buffer: fixed 30 min between sessions (backend logic, invisible to senior)
+- [ ] 8.1 Push notification when student cancels a session
+- [ ] 8.2 Senior options: Skip session / Cancel all
+- [ ] 8.3 "Moje narudžbe" with recurring view (session list + per-date statuses)
+- [ ] 8.4 Backend: `booking_status` extension (`skipped`, `cancelled_by_student`)
+- [ ] 8.5 Travel buffer: fixed 30 min between sessions (backend logic)
 
-## Phase 7.5 - Replacement Student (v1.5+)
+## Phase 8.5 - Replacement Student (v1.5+)
 
-- [ ] 7.5.1 Backend endpoint: `GET /students/available?date=X&start=Y&duration=Z&city=W`
-- [ ] 7.5.2 Mini-list of replacement students (filtered by day/time/city, NO service type filter since all students do everything)
-- [ ] 7.5.3 Senior picks replacement with one click -> one-time booking
-- [ ] 7.5.4 Original recurring stays unchanged, only that date gets status `replaced`
-- [ ] 7.5.5 UI in "My orders": swap icon for replaced sessions
+- [ ] 8.5.1 Backend endpoint: `GET /students/available?date=X&start=Y&duration=Z&city=W`
+- [ ] 8.5.2 Mini-list of replacement students (filtered by day/time/city)
+- [ ] 8.5.3 Senior picks replacement with one click → one-time booking
+- [ ] 8.5.4 Original recurring stays unchanged, only that date gets status `replaced`
+- [ ] 8.5.5 UI in "Moje narudžbe": swap icon for replaced sessions
 
-## Phase 7.6 - Configurable Travel Buffer (v1.5+)
+## Phase 8.6 - Configurable Travel Buffer (v1.5+)
 
-- [ ] 7.6.1 Student app: setting "Time between sessions" (15/30/45/60 min, default 30)
-- [ ] 7.6.2 Backend uses per-student buffer instead of fixed 30 min
-- [ ] 7.6.3 DB: `student_profiles.travel_buffer_min INT DEFAULT 30`
+- [ ] 8.6.1 Student app: setting "Time between sessions" (15/30/45/60 min, default 30)
+- [ ] 8.6.2 Backend uses per-student buffer instead of fixed 30 min
+- [ ] 8.6.3 DB: `student_profiles.travel_buffer_min INT DEFAULT 30`
 
-## Phase 8 - Polish & Launch
+## Phase 9 - Polish & Launch
 
-- [ ] 8.1 Push notifications (Firebase FCM)
-- [ ] 8.2 Error handling & offline mode
-- [ ] 8.3 Performance optimization
-- [ ] 8.4 Accessibility audit
-- [ ] 8.5 Beta testing
-- [ ] 8.6 Play Store / App Store deployment
+- [ ] 9.1 Push notifications (Firebase FCM)
+- [ ] 9.2 Error handling & offline mode
+- [ ] 9.3 Performance optimization
+- [ ] 9.4 Accessibility audit
+- [ ] 9.5 Beta testing
+- [ ] 9.6 Play Store / App Store deployment

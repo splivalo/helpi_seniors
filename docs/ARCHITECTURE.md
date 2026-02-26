@@ -1,6 +1,6 @@
 # Helpi Senior — System Architecture
 
-> Version: 0.2.0 | Date: 2026-02-25
+> Version: 0.3.0 | Date: 2026-02-26
 
 ---
 
@@ -22,11 +22,11 @@
 
 ### Three apps, one backend
 
-| Application      | User    | Description                               |
-| ---------------- | ------- | ----------------------------------------- |
-| **helpi_senior** | Senior  | Browses students, orders services         |
-| helpi_student    | Student | Manages availability, receives orders     |
-| helpi_admin      | Admin   | Moderates, coordinates, resolves disputes |
+| Application      | User    | Description                                    |
+| ---------------- | ------- | ---------------------------------------------- |
+| **helpi_senior** | Senior  | Orders services, admin assigns student         |
+| helpi_student    | Student | Manages availability, receives assigned orders |
+| helpi_admin      | Admin   | Assigns students, moderates, resolves disputes |
 
 ---
 
@@ -211,11 +211,11 @@ The table exists for future use when specialization may be needed.
 
 ```
 lib/
-├── main.dart                    # Entry point, DI setup
+├── main.dart                    # Entry point
 ├── app/
 │   ├── app.dart                 # MaterialApp, theme, routes
-│   ├── router.dart              # GoRouter definition
-│   └── theme.dart               # Senior-friendly theme (high contrast)
+│   ├── main_shell.dart          # BottomNavigationBar shell (4 tabs)
+│   └── theme.dart               # Senior-friendly theme (pastel overhaul)
 │
 ├── core/
 │   ├── constants/               # API URLs, keys
@@ -223,7 +223,7 @@ lib/
 │   ├── network/                 # Dio HTTP client, interceptors
 │   ├── utils/                   # Helpers, formatters
 │   └── l10n/
-│       └── app_strings.dart     # Gemini Hybrid i18n (HR/EN)
+│       └── app_strings.dart     # Gemini Hybrid i18n (HR/EN, 200+ keys)
 │
 ├── features/
 │   ├── auth/
@@ -231,15 +231,14 @@ lib/
 │   │   ├── domain/              # User entity, AuthRepository interface
 │   │   └── presentation/        # LoginScreen, RegisterScreen, AuthCubit
 │   │
-│   ├── marketplace/
-│   │   ├── data/                # StudentRemoteDataSource, repo impl
-│   │   ├── domain/              # Student entity, filters VO
-│   │   └── presentation/        # StudentListScreen, StudentCard, FilterSheet, MarketplaceCubit
+│   ├── order/                   # ★ Core feature — simplified order flow
+│   │   └── presentation/
+│   │       ├── order_screen.dart       # Landing ("Nova narudžba" CTA)
+│   │       └── order_flow_screen.dart  # 3-step flow (Kada → Što → Pregled)
 │   │
 │   ├── booking/
-│   │   ├── data/                # BookingRemoteDataSource, repo impl
-│   │   ├── domain/              # Booking entity, repo interface
-│   │   └── presentation/        # BookingFlowScreen, SlotPicker, ConfirmationScreen, BookingCubit
+│   │   └── presentation/
+│   │       └── orders_screen.dart      # "Moje narudžbe" tab (placeholder)
 │   │
 │   ├── payment/
 │   │   ├── data/                # StripeService, PaymentRepository impl
@@ -249,7 +248,9 @@ lib/
 │   ├── chat/
 │   │   ├── data/                # ChatRemoteDataSource (WebSocket)
 │   │   ├── domain/              # ChatRoom, Message entities
-│   │   └── presentation/        # ChatScreen, ChatBubble, ChatCubit
+│   │   └── presentation/
+│   │       ├── chat_list_screen.dart   # Chat list (teal/mint bubbles)
+│   │       └── chat_room_screen.dart   # Chat room with messages
 │   │
 │   ├── reviews/
 │   │   ├── data/
@@ -257,16 +258,18 @@ lib/
 │   │   └── presentation/        # ReviewForm, StarRating widget
 │   │
 │   └── profile/
-│       ├── data/
-│       ├── domain/
-│       └── presentation/        # ProfileScreen, EditProfileScreen
+│       └── presentation/
+│           └── profile_screen.dart     # Senior profile, settings, logout
 │
 ├── shared/
-│   └── widgets/                 # BigButton, SeniorCard, RatingStars, LoadingOverlay
+│   └── widgets/                 # BigButton, SeniorCard, LoadingOverlay
 │
 └── di/
     └── injection.dart           # GetIt / injectable setup
 ```
+
+**Note:** Marketplace feature was removed (archived to branch `archive/marketplace-v1`).
+Dead code (home_screen, marketplace_screen, student_detail_screen, student_card, booking_flow_screen) has been deleted.
 
 ### Key Packages (pubspec.yaml plan)
 
@@ -289,47 +292,64 @@ lib/
 
 ## 4. Senior-Friendly UX Principles
 
-| Principle             | Implementation                                                      |
-| --------------------- | ------------------------------------------------------------------- |
-| **High contrast**     | Dark text on white background                                       |
-| **Colors**            | Primary: #EF5B5B (coral), Secondary/Accent: #009D9D (teal)          |
-| **Chips**             | Selected = teal #009D9D, unselected = white with grey border        |
-| **Large buttons**     | Min. 56dp height, border-radius 12, bold labels 18sp+               |
-| **borderRadius**      | Unified 12 everywhere. Exceptions: chat input (24), accent bars (2) |
-| **Minimal steps**     | Max 3 steps to confirmed order (select → time → confirm)            |
-| **Font**              | Min. 16sp body, 24sp headings, `fontWeight: w600`                   |
-| **Icons + text**      | Every button has icon AND text, never icon alone                    |
-| **Feedback**          | Haptic feedback on every tap, SnackBar confirmations                |
-| **Simple navigation** | BottomNavigationBar with max 4 tabs                                 |
-| **Error states**      | Clear messages in Croatian (user language), no technical jargon     |
-| **Calendar**          | Read-only (info only), colors: teal=free, amber=partial, red=booked |
+| Principle             | Implementation                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| **Background**        | Warm off-white #F9F7F4                                                                       |
+| **Colors**            | Primary/CTA: #EF5B5B (coral), Secondary/Interactive: #009D9D (teal)                          |
+| **Color split**       | Coral = progress/action (steps, tabs, CTA). Teal = interactive/form (switch, chips, buttons) |
+| **Chips selected**    | Pastel teal fill (#E0F5F5) + teal border + teal text                                         |
+| **Chips unselected**  | White fill + grey border (#E0E0E0)                                                           |
+| **Large buttons**     | Min. 56dp height, border-radius 16, bold labels 18sp+                                        |
+| **borderRadius**      | Unified 16 everywhere                                                                        |
+| **Cards**             | White background + grey border (#E0E0E0), no shadows                                         |
+| **Minimal steps**     | Max 3 steps to confirmed order (Kada → Što → Pregled)                                        |
+| **Font**              | Min. 16sp body, 24sp headings, `fontWeight: w600`                                            |
+| **Icons + text**      | Every button has icon AND text, never icon alone                                             |
+| **Feedback**          | Haptic feedback on every tap, SnackBar confirmations                                         |
+| **Simple navigation** | BottomNavigationBar with 4 tabs                                                              |
+| **Error states**      | Clear messages in Croatian (user language), no technical jargon                              |
+| **No shadows**        | Chips, cards, date buttons — all flat, no boxShadow                                          |
 
 ### Bottom Navigation (4 tabs)
 
 ```
-[ 🏠 Home ]  [ 🔍 Students ]  [ 💬 Messages ]  [ 👤 Profile ]
+[ ➕ Naruči ]  [ 📋 Narudžbe ]  [ 💬 Poruke ]  [ 👤 Profil ]
 ```
+
+### Order Flow (3 steps)
+
+| Step | Screen     | Content                                                     |
+| ---- | ---------- | ----------------------------------------------------------- |
+| 1    | Kada?      | Booking mode (one-time/recurring), dates, day/time/duration |
+| 2    | Što treba? | Service chips, free-text note, escort info                  |
+| 3    | Pregled    | Full order summary, submit button                           |
 
 ### Booking Modes
 
-| Mode           | Description                         | Behavior                              |
-| -------------- | ----------------------------------- | ------------------------------------- |
-| **One-time**   | Single session, single day          | Standard reservation                  |
-| **Continuous** | Repeats weekly, auto-renews monthly | Runs until end of month, auto-extends |
-| **Until date** | Repeats weekly until fixed date     | DatePicker for end date, stops auto   |
+| Mode          | Description                    | Behavior                          |
+| ------------- | ------------------------------ | --------------------------------- |
+| **One-time**  | Single session, single day     | Pick date + time + duration       |
+| **Recurring** | Repeats weekly                 | Pick start date, add day entries  |
+| + End date    | Optional: recurring until date | Switch toggle, DatePicker for end |
 
-#### Chip-based selection (booking sheet)
+#### Day range validation
+
+When recurring mode has an end date, the day picker only shows weekdays that
+actually fall within the start–end range. If dates change and an existing day
+entry no longer fits, it is automatically removed.
+
+#### Chip-based selection
 
 ```
-[One-time] [Continuous] [Until date]          ← Mode
-[Mon] [Wed] [Thu] [Fri]                        ← Days (multi-select)
-[16:00] [17:00] [18:00] [19:00]               ← Start time (per-day)
-[1 hr] [2 hrs] [3 hrs] [4 hrs]               ← Duration (per-day)
+[Jednokratno] [Ponavljajuće]                   ← Mode (tab bar style, coral active)
+[Pon] [Uto] [Sri] [Čet] [Pet] [Sub] [Ned]     ← Days (filtered by date range)
+[08:00] [09:00] ... [19:00]                    ← Start time (per-day)
+[1 sat] [2 sata] [3 sata] [4 sata]            ← Duration (per-day)
 ```
 
-- Chips: teal when selected, white when not
+- Chips: pastel teal (#E0F5F5) when selected, white when not
 - Duration has no default — requires explicit click
-- Summary + CTA only visible when both start AND duration are selected
+- CTA only enabled when all required fields are filled
 
 ### Recurring Cancellation Flow (planned)
 
@@ -370,65 +390,55 @@ Step    Screen                   User Action                           Backend E
 ──────  ───────────────────────  ────────────────────────────────────  ────────────────────────────
   1     Splash Screen            Auto-login check                      GET /auth/me
   2     Login / Register         Enter email + password                POST /auth/login
-  3     Home Screen              See recommended students              GET /students?sort=rating&limit=5
-  4     "Students" Tab           Open marketplace list                 GET /students?page=1
-  5     Filter Sheet             Select filters:
-        (Bottom Sheet)           - Date (DatePicker)
-                                 - Proximity (slider 1-20km)           GET /students?date=2026-03-01
-                                                                         &lat=45.81&lng=15.98
-                                                                         &radius=10
-  6     Results                  See filtered students
-                                 (photo, name, rating, price/h)
-  7     Student Profile          Tap card → details:                   GET /students/{id}
-                                 bio, reviews, available slots         GET /students/{id}/availability
-                                                                       GET /students/{id}/reviews
-  8     Select Time              Tap "Book now" → booking sheet        -
-  9     Order Confirmation       Review: student, service, time,       POST /bookings
-                                 price, address. Tap "Order"           → status: 'pending'
- 10     Stripe Payment Sheet     Enter card / Apple Pay                POST /payments/create-intent
-                                                                       → Stripe PaymentIntent
- 11     Payment Success          See "Order confirmed! ✓"              Webhook: payment.succeeded
-                                                                       → booking.status = 'confirmed'
-                                                                       → push notification to student
-                                                                       → auto-create chat_room with admin
- 12     Chat with Admin          Can send messages/instructions        POST /chat/messages
- 13     (Service Day)            Push reminder 1h before               CRON → push notification
- 14     Service Complete         Student marks "Done"                  PATCH /bookings/{id}/complete
- 15     Review                   Senior rates (1-5 ⭐ + comment)       POST /reviews
+  3     "Naruči" Tab             See landing page with CTA             —
+  4     Order Flow Step 1        Pick booking mode (one-time/recurring)—
+                                 Pick date(s), days, time, duration
+  5     Order Flow Step 2        Select services (chips)               —
+                                 Optional: add note
+  6     Order Flow Step 3        Review full order summary             —
+                                 Tap "Naruči"                         POST /orders
+  7     Order Confirmation       See "Narudžba zaprimljena! ✓"        → status: 'pending'
+                                                                       → admin notified
+  8     Admin Assignment         (Admin assigns student)               PATCH /orders/{id}/assign
+                                                                       → push notification to senior
+  9     Chat with Admin          Senior can message admin              POST /chat/messages
+ 10     (Service Day)            Push reminder 1h before               CRON → push notification
+ 11     Service Complete         Student marks "Done"                  PATCH /bookings/{id}/complete
+ 12     Review                   Senior rates (1-5 ⭐ + comment)       POST /reviews
 ```
+
+**Key difference from v1:** Senior does NOT browse or select students.
+Senior places an order → Admin assigns the best available student.
 
 ### Visual Flow (wireframe concept)
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   MARKETPLACE    │    │ STUDENT PROFILE  │    │  SELECT TIME     │
+│   NARUČI (TAB)   │    │  STEP 1: KADA?   │    │ STEP 2: ŠTO?    │
 │                  │    │                  │    │                  │
-│ ┌──────────────┐ │    │  [Photo]         │    │  March 2026      │
-│ │ [Pic] Ana M. │ │    │  Ana Markovic    │    │  ┌──┬──┬──┬──┐  │
-│ │ ⭐ 4.8  15€/h│ │───►│  ⭐ 4.8 (23)     │    │  │Mo│Tu│We│Th│  │
-│ │ Tech help    │ │    │                  │───►│  ├──┼──┼──┼──┤  │
-│ │              │ │    │  "Med student    │    │  │  │✓ │  │✓ │  │
-│ └──────────────┘ │    │   love helping…" │    │  └──┴──┴──┴──┘  │
-│                  │    │                  │    │                  │
-│ ┌──────────────┐ │    │  Availability:   │    │  09:00 - 13:00  │
-│ │ [Pic] Ivan K.│ │    │  Mon, Wed, Fri   │    │                  │
-│ │ ⭐ 4.5  12€/h│ │    │  09:00-13:00     │    │ [CONTINUE ►]    │
-│ └──────────────┘ │    │                  │    │                  │
-│                  │    │ [SELECT TIME]    │    └─────────────────┘
-│ [🔽 FILTER]      │    │                  │              │
-└─────────────────┘    └─────────────────┘              │
-                                                         ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   CONFIRMED ✓    │    │  STRIPE SHEET    │    │  ORDER REVIEW    │
-│                  │    │                  │    │                  │
-│  Order           │    │  Card:           │    │                  │
-│  confirmed!      │◄───│  **** 4242       │◄───│  Ana Markovic    │
-│                  │    │                  │    │  Tech help       │
-│  Ana M. arrives  │    │  [PAY €15]       │    │  01.03. 09-13h   │
-│  01.03. at 09:00 │    │                  │    │  €15.00          │
-│                  │    └─────────────────┘    │                  │
-│  [💬 MESSAGES]   │                           │  [ORDER €15 ►]   │
-│  [🏠 HOME]       │                           └─────────────────┘
+│     [➕ icon]     │    │  [Jednokr|Ponavl]│    │ [Kuhanje]        │
+│                  │    │                  │    │ [Čišćenje]       │
+│  "Trebate li     │    │  📅 26.02.2026   │    │ [Kupovina]       │
+│   pomoć?"        │───►│                  │───►│ [Društvo]        │
+│                  │    │  [Pon] [Sri]     │    │ [Pratnja]        │
+│  [NOVA NARUDŽBA] │    │  08:00 / 2 sata  │    │                  │
+│                  │    │                  │    │  📝 Napomena...   │
+│                  │    │  [DALJE ►]       │    │  [DALJE ►]       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                                              │
+         │                                              ▼
+┌─────────────────┐                           ┌─────────────────┐
+│   POTVRDA ✓      │                           │  STEP 3: PREGLED │
+│                  │                           │                  │
+│  Narudžba        │                           │  Datum: 26.02.   │
+│  zaprimljena!    │◄──────────────────────────│  Vrijeme: 08:00  │
+│                  │                           │  Trajanje: 2h    │
+│  Admin će vam    │                           │  Usluge: ...     │
+│  javiti kad      │                           │                  │
+│  nađe studenta.  │                           │  [NARUČI ►]      │
+│                  │                           │                  │
+│  [💬 PORUKE]     │                           └─────────────────┘
+│  [🏠 POČETNA]    │
 └─────────────────┘
 ```
 
@@ -436,24 +446,25 @@ Step    Screen                   User Action                           Backend E
 
 ## 6. Key API Endpoints (plan)
 
-| Method | Endpoint                      | Description                 |
-| ------ | ----------------------------- | --------------------------- |
-| POST   | `/auth/register`              | Register senior             |
-| POST   | `/auth/login`                 | Login                       |
-| GET    | `/auth/me`                    | Current user                |
-| GET    | `/students`                   | Student list (with filters) |
-| GET    | `/students/{id}`              | Student details             |
-| GET    | `/students/{id}/availability` | Available slots             |
-| GET    | `/students/{id}/reviews`      | Reviews for student         |
-| POST   | `/bookings`                   | Create booking              |
-| PATCH  | `/bookings/{id}/status`       | Change booking status       |
-| POST   | `/payments/create-intent`     | Create Stripe PaymentIntent |
-| POST   | `/payments/webhook`           | Stripe webhook handler      |
-| GET    | `/chat/rooms`                 | List chat rooms             |
-| GET    | `/chat/rooms/{id}/messages`   | Messages in room            |
-| POST   | `/chat/rooms/{id}/messages`   | Send message                |
-| POST   | `/reviews`                    | Leave review                |
-| GET    | `/notifications`              | List notifications          |
+| Method | Endpoint                    | Description                   |
+| ------ | --------------------------- | ----------------------------- |
+| POST   | `/auth/register`            | Register senior               |
+| POST   | `/auth/login`               | Login                         |
+| GET    | `/auth/me`                  | Current user                  |
+| POST   | `/orders`                   | Create order (senior submits) |
+| GET    | `/orders`                   | List senior's orders          |
+| GET    | `/orders/{id}`              | Order details                 |
+| PATCH  | `/orders/{id}/assign`       | Admin assigns student         |
+| PATCH  | `/orders/{id}/status`       | Change order status           |
+| POST   | `/payments/create-intent`   | Create Stripe PaymentIntent   |
+| POST   | `/payments/webhook`         | Stripe webhook handler        |
+| GET    | `/chat/rooms`               | List chat rooms               |
+| GET    | `/chat/rooms/{id}/messages` | Messages in room              |
+| POST   | `/chat/rooms/{id}/messages` | Send message                  |
+| POST   | `/reviews`                  | Leave review                  |
+| GET    | `/notifications`            | List notifications            |
+
+**Removed:** `/students`, `/students/{id}`, `/students/{id}/availability`, `/students/{id}/reviews` — senior no longer browses students.
 
 ---
 
@@ -491,35 +502,22 @@ Senior  ──────►  Admin  ──────►  Student
 
 ---
 
-## 9. Student Filtering — Logic
+## 9. Student Assignment — Admin Logic (backend)
 
-```sql
--- Example query for filtered students
-SELECT u.id, u.first_name, u.last_name, u.avatar_url,
-       sp.bio, sp.avg_rating, ss.hourly_rate,
-       -- Haversine formula for distance
-       (6371 * acos(cos(radians(:lat)) * cos(radians(u.latitude))
-        * cos(radians(u.longitude) - radians(:lng))
-        + sin(radians(:lat)) * sin(radians(u.latitude)))) AS distance_km
-FROM users u
-JOIN student_profiles sp ON sp.user_id = u.id
-JOIN student_services ss ON ss.student_id = sp.id
-JOIN availability_slots avs ON avs.student_id = sp.id
-LEFT JOIN availability_exceptions ae
-  ON ae.student_id = sp.id AND ae.exception_date = :requested_date
-WHERE u.role = 'student'
-  AND u.is_active = TRUE
-  AND sp.verified = TRUE
-  AND ss.is_active = TRUE
-  AND avs.day_of_week = EXTRACT(DOW FROM :requested_date::DATE)
-  AND avs.start_time <= :requested_start
-  AND avs.end_time >= :requested_end
-  AND avs.is_available = TRUE
-  AND (avs.valid_from <= :requested_date)
-  AND (avs.valid_until IS NULL OR avs.valid_until >= :requested_date)
-  AND ae.id IS NULL                            -- no exception for that date
-HAVING distance_km <= :max_radius_km           -- filter: location
-ORDER BY sp.avg_rating DESC, distance_km ASC;
+Senior does NOT select a student. Admin receives the order and assigns a student based on:
+
+- Availability (day/time match)
+- Location proximity
+- Student workload balance
+- Past ratings
+
+This logic runs on the admin dashboard / backend, not in the senior app.
+
 ```
-
-Note: `service_type` filter removed from v1 query since all students do everything.
+Senior places order → Backend creates order (status: 'pending')
+                    → Admin gets notification
+                    → Admin reviews available students
+                    → Admin assigns student (PATCH /orders/{id}/assign)
+                    → Senior gets push notification with student info
+                    → Chat room created (senior + admin + student)
+```
