@@ -29,30 +29,42 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          HapticFeedback.selectionClick();
-          setState(() => _currentIndex = index);
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.add_circle_outline, size: 28),
-            label: AppStrings.navOrder,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.receipt_outlined, size: 28),
-            label: AppStrings.navOrders,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.chat_bubble_outline, size: 28),
-            label: AppStrings.navMessages,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.account_circle_outlined, size: 28),
-            label: AppStrings.navProfile,
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(10),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            HapticFeedback.selectionClick();
+            setState(() => _currentIndex = index);
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.add_circle_outline, size: 28),
+              label: AppStrings.navOrder,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.receipt_outlined, size: 28),
+              label: AppStrings.navOrders,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.chat_bubble_outline, size: 28),
+              label: AppStrings.navMessages,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.account_circle_outlined, size: 28),
+              label: AppStrings.navProfile,
+            ),
+          ],
+        ),
       ),
     );
   }

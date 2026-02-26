@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
 /// Profil ekran seniora — prikaz podataka, postavke, odjava.
@@ -22,8 +23,8 @@ class ProfileScreen extends StatelessWidget {
             child: Container(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
+              decoration: const BoxDecoration(
+                color: HelpiTheme.cardLavender,
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -101,7 +102,7 @@ class _ProfileTile extends StatelessWidget {
     final theme = Theme.of(context);
     final color = isDestructive
         ? theme.colorScheme.error
-        : theme.colorScheme.primary;
+        : theme.colorScheme.secondary;
 
     return Card(
       child: InkWell(
@@ -126,7 +127,7 @@ class _ProfileTile extends StatelessWidget {
                 Text(
                   trailing!,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
+                    color: theme.colorScheme.secondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

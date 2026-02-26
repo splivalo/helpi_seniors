@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
 // ─── Model za jednu stavku dana s vremenom ──────────────────────
@@ -338,7 +339,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     );
   }
 
-  /// Generic chip — crno-bijeli, edge-to-edge.
+  /// Generic chip — soft style, edge-to-edge.
   Widget _buildChip({
     required String label,
     required bool isSelected,
@@ -350,20 +351,29 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF212121) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? const Color(0xFF2D2D2D) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF212121)
-                : const Color(0xFFBDBDBD),
+                ? const Color(0xFF2D2D2D)
+                : const Color(0xFFE0E0E0),
           ),
+          boxShadow: isSelected
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(8),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF212121),
+            color: isSelected ? Colors.white : const Color(0xFF2D2D2D),
           ),
         ),
       ),
@@ -455,8 +465,10 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   if (!val) _endDate = null;
                 });
               },
-              activeThumbColor: _teal,
-              activeTrackColor: _teal.withValues(alpha: 0.4),
+              activeThumbColor: Colors.white,
+              activeTrackColor: _teal,
+              inactiveThumbColor: _teal,
+              trackOutlineColor: WidgetStateProperty.all(_teal),
             ),
           ],
         ),
@@ -498,8 +510,15 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFBDBDBD)),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(8),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -597,7 +616,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
       child: Column(
@@ -679,8 +698,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
       child: Column(
@@ -750,15 +769,15 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF212121), width: 2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _teal, width: 2),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
               Icons.add_circle_outline,
-              color: Color(0xFF212121),
+              color: Color(0xFF009D9D),
               size: 24,
             ),
             const SizedBox(width: 10),
@@ -767,7 +786,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF212121),
+                color: Color(0xFF009D9D),
               ),
             ),
           ],
@@ -858,9 +877,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3F2FD),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF90CAF9)),
+                color: HelpiTheme.cardBlue,
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -922,9 +940,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE0E0E0)),
+              color: HelpiTheme.cardCream,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1033,8 +1050,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF212121),
-                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xFF2D2D2D),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
                         label,
@@ -1073,8 +1090,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(12),
+              color: HelpiTheme.cardBlue,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

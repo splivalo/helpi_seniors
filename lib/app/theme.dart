@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 
-/// Senior-friendly tema s visokim kontrastom, velikim gumbima i fontovima.
+/// Senior-friendly tema — soft, topla, pristupačna.
 class HelpiTheme {
   HelpiTheme._();
 
   // ─── Boje ───────────────────────────────────────────────────────
   static const Color _primary = Color(0xFFEF5B5B);
-  static const Color _primaryDark = Color(0xFFD94545);
   static const Color _accent = Color(0xFF009D9D);
   static const Color _error = Color(0xFFC62828);
-  static const Color _background = Color(0xFFF5F5F5);
+  static const Color _background = Color(0xFFF9F7F4); // warm off-white
   static const Color _surface = Colors.white;
-  static const Color _textPrimary = Color(0xFF212121);
-  static const Color _textSecondary = Color(0xFF616161);
+  static const Color _textPrimary = Color(0xFF2D2D2D);
+  static const Color _textSecondary = Color(0xFF757575);
+
+  // Pastelne boje za kartice
+  static const Color cardMint = Color(0xFFE8F5F1);
+  static const Color cardLavender = Color(0xFFF0EBFA);
+  static const Color cardCream = Color(0xFFFFF8E7);
+  static const Color cardBlue = Color(0xFFE8F1FB);
 
   // ─── Dimenzije gumba ────────────────────────────────────────────
   static const double buttonHeight = 56.0;
-  static const double buttonRadius = 12.0;
-  static const double cardRadius = 12.0;
+  static const double buttonRadius = 16.0;
+  static const double cardRadius = 16.0;
 
   // ─── Tema ───────────────────────────────────────────────────────
   static ThemeData get light => ThemeData(
@@ -25,9 +30,9 @@ class HelpiTheme {
     brightness: Brightness.light,
     colorScheme: const ColorScheme.light(
       primary: _primary,
-      primaryContainer: Color(0xFFFFDAD6),
+      primaryContainer: Color(0xFFFFE8E5),
       secondary: _accent,
-      secondaryContainer: Color(0xFFC8E6C9),
+      secondaryContainer: Color(0xFFD4F0F0),
       error: _error,
       surface: _surface,
       onPrimary: Colors.white,
@@ -39,32 +44,33 @@ class HelpiTheme {
 
     // ─── AppBar ─────────────────────────────────────
     appBarTheme: const AppBarTheme(
-      backgroundColor: _primary,
-      foregroundColor: Colors.white,
-      elevation: 2,
+      backgroundColor: _background,
+      foregroundColor: _textPrimary,
+      elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
         fontSize: 22,
-        fontWeight: FontWeight.w600,
-        color: Colors.white,
+        fontWeight: FontWeight.w700,
+        color: _textPrimary,
       ),
     ),
 
     // ─── Tekst ─────────────────────────────────────
     textTheme: const TextTheme(
       headlineLarge: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
+        fontSize: 30,
+        fontWeight: FontWeight.w800,
         color: _textPrimary,
       ),
       headlineMedium: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
+        fontSize: 26,
+        fontWeight: FontWeight.w700,
         color: _textPrimary,
       ),
       headlineSmall: TextStyle(
         fontSize: 20,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         color: _textPrimary,
       ),
       bodyLarge: TextStyle(
@@ -119,7 +125,7 @@ class HelpiTheme {
     // ─── Text Button ───────────────────────────────
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: _primary,
+        foregroundColor: _accent,
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
@@ -130,8 +136,8 @@ class HelpiTheme {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        side: const BorderSide(color: Color(0xFFE0E0E0)),
       ),
+      shadowColor: Colors.black.withAlpha(15),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     ),
 
@@ -142,15 +148,15 @@ class HelpiTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: const BorderSide(color: _primary, width: 2),
+        borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: BorderSide(color: _primary.withAlpha(128), width: 2),
+        borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: const BorderSide(color: _primaryDark, width: 2),
+        borderSide: const BorderSide(color: _accent, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
@@ -161,26 +167,29 @@ class HelpiTheme {
     ),
 
     // ─── Bottom Navigation ──────────────────────────
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF1E1E1E),
-      selectedItemColor: _primary,
-      unselectedItemColor: Colors.white,
-      selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-      unselectedLabelStyle: TextStyle(fontSize: 14),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: _surface,
+      selectedItemColor: _accent,
+      unselectedItemColor: const Color(0xFFB0B0B0),
+      selectedLabelStyle: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+      ),
+      unselectedLabelStyle: const TextStyle(fontSize: 14),
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
+      elevation: 0,
     ),
 
     // ─── Floating Action Button ─────────────────────
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: _primary,
+      backgroundColor: _accent,
       foregroundColor: Colors.white,
-      elevation: 4,
+      elevation: 2,
     ),
 
     // ─── Divider ────────────────────────────────────
     dividerTheme: const DividerThemeData(
-      color: Color(0xFFE0E0E0),
+      color: Color(0xFFEEEEEE),
       thickness: 1,
       space: 1,
     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
 /// Placeholder za chat ekran — lista razgovora.
@@ -70,8 +71,8 @@ class _ChatPreview extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  color: HelpiTheme.cardMint,
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
                   child: Text(emoji, style: const TextStyle(fontSize: 28)),
@@ -111,7 +112,7 @@ class _ChatPreview extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
+                        color: theme.colorScheme.secondary,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -258,9 +259,7 @@ class _ChatBubble extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: isMe
-                ? theme.colorScheme.primary
-                : theme.colorScheme.primaryContainer,
+            color: isMe ? theme.colorScheme.secondary : HelpiTheme.cardMint,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
               topRight: const Radius.circular(16),
