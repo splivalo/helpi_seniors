@@ -1,10 +1,10 @@
 ﻿# Helpi Senior  Progress
 
-> Last updated: 2026-02-25
+> Last updated: 2026-02-26
 
 ---
 
-## Overall progress: ~40%
+## Overall progress: ~30%
 
 ### Completed
 
@@ -18,52 +18,38 @@
 
 #### Phase 1  Foundation
 - [x] 1.1 Folder structure (feature-first Clean Architecture)
-- [x] 1.3 AppStrings i18n (Gemini Hybrid, HR + EN, 140+ keys)
+- [x] 1.3 AppStrings i18n (Gemini Hybrid, HR + EN, 150+ keys)
 - [x] 1.4 Senior-friendly theme (high contrast, 56dp buttons, 16sp+ font)
 - [x] `flutter_localizations` SDK package integrated (HR locale for DatePicker)
 
-#### UI Prototype  Screens (9 screens)
-- [x] Navigation shell (4 tabs with BottomNavigationBar)
-- [x] Home screen (greeting, quick actions, recommended students)
-- [x] Marketplace screen (student list, filter bottom sheet, multi-select days AND logic)
-- [x] Student detail screen (profile, reviews, read-only calendar, time picker bottom sheet)
-- [x] Booking flow (3 steps: services -> order summary -> mock payment -> confirmation)
+#### UI Prototype v1  Marketplace (ARCHIVED)
+- [x] Full marketplace with student profiles, filters, booking sheet, calendar
+- [x] 3 booking modes, per-day config, recurring support
+- [x] **Archived to branch `archive/marketplace-v1`**
+- [x] **Decision: marketplace removed in favor of simplified order flow**
+
+#### UI Prototype v2  Simplified Order Flow (IN PROGRESS)
+- [x] "Naruči" (Order) tab replaces Marketplace as first tab
+- [x] Empty OrderScreen placeholder created
+- [ ] Order flow design & implementation (TBD)
+
+#### Remaining Screens (kept from v1)
 - [x] Chat list + chat room with messages
 - [x] Profile screen (senior profile, settings, logout)
-- [x] Shared widgets: StudentCard, RatingStars, ServiceChip
-
-#### UI Prototype  Calendar
-- [x] Read-only calendar with color-coded dates (free/partial/booked)
-- [x] Legend below calendar (teal/amber/red)
-- [x] Monthly navigation (< March >)
-- [x] "Book now" button always visible below legend
-
-#### UI Prototype  Booking Sheet (Time Picker)
-- [x] 3 booking modes: One-time / Continuous / Until date
-- [x] Chip-based day selection (Mon/Wed/Thu/Fri)
-- [x] Per-day time picker (Start time + Duration chips)
-- [x] Per-day flat sections with inline date rows
-- [x] Duration chip with no default selection (requires explicit click)
-- [x] Per-day pricing in summary card (no total price)
-- [x] CTA "Next" without price on all modes
-- [x] "Until date" mode: DatePicker with HR localization, filtered recurring dates
-- [x] Info card per mode (auto-renew vs until-date text)
-- [x] Card billing 30 min before info text
-- [x] Booked hours overlap protection (strikethrough chips)
+- [x] Orders screen (narudžbe tab)
 
 #### UI Polish
-- [x] Unified borderRadius = 12 across entire app (theme + all screens)
-- [x] Selected chips: teal #009D9D (instead of coral)  calmer look
-- [x] Mock data: 5 students, realistic data, recurring slots
-- [x] Booking service chips (Groceries, Pharmacy, Household, Company, Walk, Escort, Other)
-- [x] Grey header backgrounds for day sections
-- [x] Circle avatars on student cards
+- [x] Unified borderRadius = 12 across entire app
+- [x] Selected chips: teal #009D9D
+- [x] Dark bottom nav bar (#1E1E1E)
+- [x] SafeArea on all standalone screens
+- [x] Bottom sheet safe area fix
 
 ### Next Steps
 
-1. UX review and iteration based on testing
-2. "My orders" screen with session list and statuses
-3. GoRouter setup (1.5)  replace Navigator.push
+1. **Design simplified order flow** (user picks service, date/time, done)
+2. Remove dead marketplace code from lib/ (home_screen, marketplace_screen, student_detail, student_card)
+3. GoRouter setup (1.5)
 4. Auth flow (login/register screens)
 5. Backend integration (Supabase)
 
@@ -75,12 +61,10 @@
 | ------------------ | -------------------------------- | -------- |
 | Architecture & Docs| Done                             | 100%     |
 | Foundation         | In progress                      | 60%      |
-| UI Prototype       | Done (mock, polished)            | 100%     |
-| Booking UX         | Done (3 modes, per-day)          | 100%     |
+| Order Flow (v2)    | Placeholder only                 | 5%       |
+| Marketplace (v1)   | **Archived** (archive/marketplace-v1) | N/A |
 | Auth               | Waiting                          | 0%       |
-| Marketplace (prod) | Waiting for backend              | 0%       |
 | Booking (prod)     | Waiting for backend              | 0%       |
 | Payment (prod)     | Waiting for Stripe               | 0%       |
 | Chat (prod)        | Waiting for WebSocket            | 0%       |
-| Reviews (prod)     | Waiting for backend              | 0%       |
 | Profile (prod)     | Waiting for backend              | 0%       |

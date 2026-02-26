@@ -27,10 +27,15 @@ class AppStrings {
 
       // ── Navigacija ────────────────────────────
       'navHome': 'Pomoć',
+      'navOrder': 'Naruči',
       'navStudents': 'Studenti',
       'navOrders': 'Narudžbe',
       'navMessages': 'Poruke',
       'navProfile': 'Profil',
+
+      // ── Naruči ekran ─────────────────────────
+      'orderTitle': 'Naruči pomoć',
+      'orderSubtitle': 'Odaberite što vam treba i mi ćemo vam poslati najboljeg pomoćnika.',
 
       // ── Općenito ──────────────────────────────
       'loading': 'Učitavanje...',
@@ -218,10 +223,15 @@ class AppStrings {
 
       // ── Navigacija ────────────────────────────
       'navHome': 'Help',
+      'navOrder': 'Order',
       'navStudents': 'Students',
       'navOrders': 'Orders',
       'navMessages': 'Messages',
       'navProfile': 'Profile',
+
+      // ── Order screen ─────────────────────────
+      'orderTitle': 'Order help',
+      'orderSubtitle': 'Choose what you need and we will send you the best helper.',
 
       // ── Općenito ──────────────────────────────
       'loading': 'Loading...',
@@ -425,10 +435,15 @@ class AppStrings {
 
   // ── Navigacija ────────────────────────────────
   static String get navHome => _t('navHome');
+  static String get navOrder => _t('navOrder');
   static String get navStudents => _t('navStudents');
   static String get navOrders => _t('navOrders');
   static String get navMessages => _t('navMessages');
   static String get navProfile => _t('navProfile');
+
+  // ── Naruči ekran ──────────────────────────────
+  static String get orderTitle => _t('orderTitle');
+  static String get orderSubtitle => _t('orderSubtitle');
 
   // ── Općenito ──────────────────────────────────
   static String get loading => _t('loading');

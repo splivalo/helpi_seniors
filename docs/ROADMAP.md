@@ -26,13 +26,18 @@
 - [ ] 2.4 Token storage (flutter_secure_storage)
 - [ ] 2.5 Auto-login on splash
 
-## Phase 3 - Marketplace
+## Phase 3 - Order Flow (NEW - replaces Marketplace)
 
-- [ ] 3.1 Student list screen (cards with photo, name, rating, price)
-- [ ] 3.2 Filter Bottom Sheet (date, proximity, availability)
-- [ ] 3.3 Student detail screen (bio, reviews, availability)
-- [ ] 3.4 Marketplace Cubit + repository
+- [ ] 3.1 Design simplified order flow (service type, date/time, recurrence)
+- [ ] 3.2 Order screen implementation
+- [ ] 3.3 Order confirmation screen
+- [ ] 3.4 Order Cubit + repository
 - [ ] 3.5 Backend integration
+
+## Phase 3-ARCHIVE - Marketplace (archived to `archive/marketplace-v1`)
+
+- [x] Student list, filters, detail, calendar, 3-mode booking sheet
+- **Status:** Fully archived. May be revisited later for "choose your student" feature.
 
 ## Phase 4 - Booking & Payment
 

@@ -109,3 +109,24 @@
 - **Context:** Developer(s) joining the project will be non-Croatian speakers.
 - **Decision:** All documentation in `docs/` translated from Croatian to English.
 - **Status:** Implemented.
+
+---
+
+## 2026-02-26  MAJOR PIVOT: Marketplace removed, simplified order flow
+
+### Decision: Remove student marketplace, adopt admin-assigned model
+
+- **Context:** The marketplace (browse students, view profiles, pick slots, book specific student) introduced too much complexity for seniors. Key insights:
+  - First-time users don't know any students — browsing profiles creates false expectations.
+  - Seniors want to **order help**, not **shop for a person**.
+  - A simpler flow ("I need X on Y date") with admin assigning the best student is much more senior-friendly.
+  - Previous prototype (screenshot from earlier app version) showed this simpler approach — just pick date, days, time range, done.
+- **Decision:**
+  - Full marketplace code **archived** to branch `archive/marketplace-v1`.
+  - First tab changed from "Studenti" (marketplace) to "Naruči" (Order).
+  - New `OrderScreen` placeholder created under `lib/features/order/`.
+  - Order flow to be designed from scratch — minimal steps, no student selection.
+  - Admin dashboard will handle student assignment.
+- **Archived code:** HomeScreen (quick actions + recommended students), MarketplaceScreen (filters, student list), StudentDetailScreen (profile, calendar, 3-mode time picker), StudentCard widget.
+- **Impact:** Major UX simplification. Progress % dropped from 40% to 30% as marketplace work is archived.
+- **Status:** Implemented. OrderScreen placeholder live.

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/features/booking/presentation/orders_screen.dart';
 import 'package:helpi_senior/features/chat/presentation/chat_list_screen.dart';
-import 'package:helpi_senior/features/marketplace/presentation/marketplace_screen.dart';
+import 'package:helpi_senior/features/order/presentation/order_screen.dart';
 import 'package:helpi_senior/features/profile/presentation/profile_screen.dart';
 
 /// Glavni ekran s BottomNavigationBar — 4 taba.
@@ -19,7 +19,7 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   final _screens = const <Widget>[
-    MarketplaceScreen(),
+    OrderScreen(),
     OrdersScreen(),
     ChatListScreen(),
     ProfileScreen(),
@@ -37,8 +37,8 @@ class _MainShellState extends State<MainShell> {
         },
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.search, size: 28),
-            label: AppStrings.navStudents,
+            icon: const Icon(Icons.add_circle_outline, size: 28),
+            label: AppStrings.navOrder,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.receipt_outlined, size: 28),
