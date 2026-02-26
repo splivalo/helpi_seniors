@@ -264,7 +264,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               height: 4,
               margin: EdgeInsets.only(right: i < 2 ? 8 : 0),
               decoration: BoxDecoration(
-                color: isActive ? _teal : const Color(0xFFE0E0E0),
+                color: isActive
+                    ? const Color(0xFFEF5B5B)
+                    : const Color(0xFFE0E0E0),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -351,29 +353,18 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2D2D2D) : Colors.white,
+          color: isSelected ? const Color(0xFFE0F5F5) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF2D2D2D)
-                : const Color(0xFFE0E0E0),
+            color: isSelected ? _teal : const Color(0xFFE0E0E0),
           ),
-          boxShadow: isSelected
-              ? null
-              : [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(8),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF2D2D2D),
+            color: isSelected ? _teal : const Color(0xFF2D2D2D),
           ),
         ),
       ),
@@ -478,7 +469,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           const SizedBox(height: 8),
           _buildDateButton(date: _endDate, onTap: _pickEndDate),
           const SizedBox(height: 24),
-        ],
+        ] else
+          const SizedBox(height: 8),
 
         // Existing day entries
         ..._dayEntries.asMap().entries.map((mapEntry) {
@@ -512,13 +504,6 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFFE0E0E0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(8),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Row(
           children: [
