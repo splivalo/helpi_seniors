@@ -158,73 +158,76 @@ class _ChatRoomScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // Poruke
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _ChatBubble(
-                  text:
-                      'Dobrodošli! Ja sam vaš Helpi koordinator. '
-                      'Sve dogovore oko narudžbe vodimo ovdje.',
-                  isMe: false,
-                  time: '14:30',
-                ),
-                _ChatBubble(
-                  text: 'Hvala! Imam pitanje oko termina.',
-                  isMe: true,
-                  time: '14:32',
-                ),
-                _ChatBubble(
-                  text: 'Naravno, slobodno pitajte! Tu smo za vas. 😊',
-                  isMe: false,
-                  time: '14:33',
-                ),
-              ],
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            // Poruke
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _ChatBubble(
+                    text:
+                        'Dobrodošli! Ja sam vaš Helpi koordinator. '
+                        'Sve dogovore oko narudžbe vodimo ovdje.',
+                    isMe: false,
+                    time: '14:30',
+                  ),
+                  _ChatBubble(
+                    text: 'Hvala! Imam pitanje oko termina.',
+                    isMe: true,
+                    time: '14:32',
+                  ),
+                  _ChatBubble(
+                    text: 'Naravno, slobodno pitajte! Tu smo za vas. 😊',
+                    isMe: false,
+                    time: '14:33',
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // Input
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 8, 8, 24),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(15),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: AppStrings.typeMessage,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
+            // Input
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 8, 8, 16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(15),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: AppStrings.typeMessage,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                FloatingActionButton(
-                  mini: true,
-                  onPressed: () {},
-                  child: const Icon(Icons.send),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  FloatingActionButton(
+                    mini: true,
+                    onPressed: () {},
+                    child: const Icon(Icons.send),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

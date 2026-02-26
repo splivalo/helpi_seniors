@@ -72,126 +72,129 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.student.fullName)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // ── Avatar + osnovni info ─────────────────
-          Center(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundColor: theme.colorScheme.secondary.withAlpha(38),
-                  backgroundImage: widget.student.imageAsset != null
-                      ? AssetImage(widget.student.imageAsset!)
-                      : null,
-                  child: widget.student.imageAsset == null
-                      ? Text(
-                          widget.student.initials,
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.secondary,
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            // ── Avatar + osnovni info ─────────────────
+            Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundColor: theme.colorScheme.secondary.withAlpha(38),
+                    backgroundImage: widget.student.imageAsset != null
+                        ? AssetImage(widget.student.imageAsset!)
+                        : null,
+                    child: widget.student.imageAsset == null
+                        ? Text(
+                            widget.student.initials,
+                            style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.secondary,
+                            ),
+                          )
+                        : null,
+                  ),
+                  if (widget.student.rating >= 4.8)
+                    Positioned(
+                      bottom: -8,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 3,
                           ),
-                        )
-                      : null,
-                ),
-                if (widget.student.rating >= 4.8)
-                  Positioned(
-                    bottom: -8,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          AppStrings.topBadge,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            AppStrings.topBadge,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              widget.student.fullName,
-              style: theme.textTheme.headlineLarge,
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                widget.student.fullName,
+                style: theme.textTheme.headlineLarge,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Center(child: RatingStars(rating: widget.student.rating, size: 24)),
-          const SizedBox(height: 4),
-          Center(
-            child: Text(
-              AppStrings.ratingCount(widget.student.reviewCount.toString()),
-              style: theme.textTheme.bodyMedium,
+            const SizedBox(height: 4),
+            Center(child: RatingStars(rating: widget.student.rating, size: 24)),
+            const SizedBox(height: 4),
+            Center(
+              child: Text(
+                AppStrings.ratingCount(widget.student.reviewCount.toString()),
+                style: theme.textTheme.bodyMedium,
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // ── Bio ───────────────────────────────────
-          Text(AppStrings.aboutStudent, style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 8),
-          Text(widget.student.bio, style: theme.textTheme.bodyLarge),
-          const SizedBox(height: 24),
+            // ── Bio ───────────────────────────────────
+            Text(AppStrings.aboutStudent, style: theme.textTheme.headlineSmall),
+            const SizedBox(height: 8),
+            Text(widget.student.bio, style: theme.textTheme.bodyLarge),
+            const SizedBox(height: 24),
 
-          // ── Kalendar dostupnosti ──────────────────
-          Text(AppStrings.availability, style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 12),
-          _buildCalendar(theme),
-          const SizedBox(height: 8),
-          _buildLegend(theme),
-          const SizedBox(height: 20),
+            // ── Kalendar dostupnosti ──────────────────
+            Text(AppStrings.availability, style: theme.textTheme.headlineSmall),
+            const SizedBox(height: 12),
+            _buildCalendar(theme),
+            const SizedBox(height: 8),
+            _buildLegend(theme),
+            const SizedBox(height: 20),
 
-          // ── Rezerviraj ────────────────────────────
-          ElevatedButton.icon(
-            onPressed: () {
-              HapticFeedback.mediumImpact();
-              _openTimePicker();
-            },
-            icon: const Icon(Icons.calendar_month),
-            label: Text(AppStrings.bookNow),
-          ),
-          const SizedBox(height: 24),
+            // ── Rezerviraj ────────────────────────────
+            ElevatedButton.icon(
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                _openTimePicker();
+              },
+              icon: const Icon(Icons.calendar_month),
+              label: Text(AppStrings.bookNow),
+            ),
+            const SizedBox(height: 24),
 
-          // ── Recenzije (mock) ──────────────────────
-          Text(
-            '${AppStrings.reviews} (${widget.student.reviewCount})',
-            style: theme.textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 12),
-          _MockReview(
-            name: 'Josip K.',
-            rating: 5,
-            text:
-                'Izvrsna pomoć! Strpljivo mi objasnila kako koristiti '
-                'WhatsApp. Toplo preporučujem.',
-          ),
-          const SizedBox(height: 8),
-          _MockReview(
-            name: 'Marica S.',
-            rating: 4,
-            text:
-                'Vrlo ljubazna i točna. Došla na vrijeme i sve obavila '
-                'kako smo se dogovorili.',
-          ),
-          const SizedBox(height: 32),
-        ],
+            // ── Recenzije (mock) ──────────────────────
+            Text(
+              '${AppStrings.reviews} (${widget.student.reviewCount})',
+              style: theme.textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 12),
+            _MockReview(
+              name: 'Josip K.',
+              rating: 5,
+              text:
+                  'Izvrsna pomoć! Strpljivo mi objasnila kako koristiti '
+                  'WhatsApp. Toplo preporučujem.',
+            ),
+            const SizedBox(height: 8),
+            _MockReview(
+              name: 'Marica S.',
+              rating: 4,
+              text:
+                  'Vrlo ljubazna i točna. Došla na vrijeme i sve obavila '
+                  'kako smo se dogovorili.',
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }

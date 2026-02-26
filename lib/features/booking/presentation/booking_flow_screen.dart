@@ -107,14 +107,17 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 },
               ),
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: switch (_currentStep) {
-          0 => _buildOrderSummary(context),
-          1 => _buildPayment(context),
-          2 => _buildConfirmation(context),
-          _ => const SizedBox.shrink(),
-        },
+      body: SafeArea(
+        top: false,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: switch (_currentStep) {
+            0 => _buildOrderSummary(context),
+            1 => _buildPayment(context),
+            2 => _buildConfirmation(context),
+            _ => const SizedBox.shrink(),
+          },
+        ),
       ),
     );
   }
