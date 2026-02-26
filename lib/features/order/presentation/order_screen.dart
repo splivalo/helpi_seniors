@@ -28,7 +28,7 @@ class OrderScreen extends StatelessWidget {
                 Icon(
                   Icons.add_circle_outline,
                   size: 80,
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.secondary,
                 ),
                 const SizedBox(height: 24),
                 Text(

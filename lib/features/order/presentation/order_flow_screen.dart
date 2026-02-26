@@ -322,11 +322,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     return Row(
       children: [
         for (int i = 0; i < modes.length; i++) ...[
-          if (i > 0) const SizedBox(width: 8),
+          if (i > 0) const SizedBox(width: 24),
           Expanded(
-            child: _buildChip(
-              label: modes[i].$1,
-              isSelected: _bookingMode == modes[i].$2,
+            child: GestureDetector(
               onTap: () {
                 HapticFeedback.selectionClick();
                 setState(() {
@@ -334,6 +332,30 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   _showingDayPicker = false;
                 });
               },
+              child: Column(
+                children: [
+                  Text(
+                    modes[i].$1,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: _bookingMode == modes[i].$2
+                          ? const Color(0xFFEF5B5B)
+                          : const Color(0xFF9E9E9E),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: _bookingMode == modes[i].$2
+                          ? const Color(0xFFEF5B5B)
+                          : const Color(0xFFE0E0E0),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

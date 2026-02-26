@@ -98,7 +98,7 @@ class HelpiTheme {
     // ─── Elevated Button (veliki, zaobljeni) ───────
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: _accent,
+        backgroundColor: _primary,
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, buttonHeight),
         shape: RoundedRectangleBorder(
