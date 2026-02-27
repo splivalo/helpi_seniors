@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/core/l10n/locale_notifier.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/features/booking/presentation/orders_screen.dart';
 import 'package:helpi_senior/features/chat/presentation/chat_list_screen.dart';
@@ -10,7 +11,9 @@ import 'package:helpi_senior/features/profile/presentation/profile_screen.dart';
 
 /// Glavni ekran s BottomNavigationBar — 4 taba.
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  const MainShell({super.key, required this.localeNotifier});
+
+  final LocaleNotifier localeNotifier;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -29,7 +32,7 @@ class _MainShellState extends State<MainShell> {
       OrderScreen(ordersNotifier: _ordersNotifier),
       OrdersScreen(ordersNotifier: _ordersNotifier),
       const ChatScreen(),
-      const ProfileScreen(),
+      ProfileScreen(localeNotifier: widget.localeNotifier),
     ];
   }
 

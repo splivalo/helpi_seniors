@@ -100,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.all(16),
               color: theme.colorScheme.surface,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
                     child: TextField(
@@ -121,14 +121,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 8),
                   SizedBox(
-                    height: 52,
-                    width: 52,
+                    height: 48,
+                    width: 48,
                     child: Material(
                       color: theme.colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(16),
+                      shape: const CircleBorder(),
                       child: InkWell(
                         onTap: _sendMessage,
-                        borderRadius: BorderRadius.circular(16),
+                        customBorder: const CircleBorder(),
                         child: const Icon(
                           Icons.send,
                           color: Colors.white,

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/core/l10n/locale_notifier.dart';
 
 /// Profil ekran — pristupni podaci, naručitelj, senior, kartice, uvjeti.
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, required this.localeNotifier});
+
+  final LocaleNotifier localeNotifier;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -30,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   DateTime _senDob = DateTime(1948, 7, 22);
 
   // ── Ostalo ────────────────────────────────────
-  String _selectedLang = 'HR';
+  late String _selectedLang = AppStrings.currentLocale.toUpperCase();
   bool _isEditing = false;
   bool _agreedToTerms = true;
 
@@ -289,7 +292,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isDense: true,
                 isExpanded: true,
                 onChanged: (v) {
-                  if (v != null) setState(() => _selectedLang = v);
+                  if (v != null) {
+                    setState(() => _selectedLang = v);
+                    widget.localeNotifier.setLocale(v);
+                  }
                 },
                 style: TextStyle(
                   color: theme.colorScheme.onSurface,
