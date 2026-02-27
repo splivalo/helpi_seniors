@@ -18,6 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _addressCtrl = TextEditingController(text: 'Ilica 42, Zagreb');
 
   String _selectedLang = 'HR';
+  bool _isEditing = false;
 
   @override
   void dispose() {
@@ -45,23 +46,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 12),
           _buildField(AppStrings.lastName, _lastNameCtrl),
           const SizedBox(height: 12),
-          _buildField(AppStrings.phone, _phoneCtrl,
-              keyboardType: TextInputType.phone),
+          _buildField(
+            AppStrings.phone,
+            _phoneCtrl,
+            keyboardType: TextInputType.phone,
+          ),
           const SizedBox(height: 12),
-          _buildField(AppStrings.email, _emailCtrl,
-              keyboardType: TextInputType.emailAddress),
+          _buildField(
+            AppStrings.email,
+            _emailCtrl,
+            keyboardType: TextInputType.emailAddress,
+          ),
           const SizedBox(height: 12),
           _buildField(AppStrings.address, _addressCtrl),
           const SizedBox(height: 24),
 
-          // ── Spremi ──────────────────────────────────
+          // ── Uredi / Spremi ──────────────────────────
           SizedBox(
             width: double.infinity,
             height: 52,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text(AppStrings.save),
-            ),
+            child: _isEditing
+                ? ElevatedButton(
+                    onPressed: () => setState(() => _isEditing = false),
+                    child: Text(AppStrings.save),
+                  )
+                : OutlinedButton.icon(
+                    onPressed: () => setState(() => _isEditing = true),
+                    icon: const Icon(Icons.edit, size: 20),
+                    label: Text(AppStrings.editProfile),
+                  ),
           ),
           const SizedBox(height: 32),
 
@@ -75,8 +88,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.language, color: theme.colorScheme.secondary,
-                    size: 28),
+                Icon(
+                  Icons.language,
+                  color: theme.colorScheme.secondary,
+                  size: 28,
+                ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
@@ -97,6 +113,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   style: ButtonStyle(
                     visualDensity: VisualDensity.compact,
+                    backgroundColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return const Color(0xFFE0F5F5);
+                      }
+                      return Colors.white;
+                    }),
+                    foregroundColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return const Color(0xFF009D9D);
+                      }
+                      return theme.colorScheme.onSurface.withAlpha(153);
+                    }),
+                    side: WidgetStateProperty.all(
+                      const BorderSide(color: Color(0xFFE0E0E0)),
+                    ),
+                    iconColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return const Color(0xFF009D9D);
+                      }
+                      return Colors.transparent;
+                    }),
                   ),
                 ),
               ],
@@ -121,9 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 32),
 
           // ── Verzija ─────────────────────────────────
-          Center(
-            child: Text('Helpi v1.0.0', style: theme.textTheme.bodySmall),
-          ),
+          Center(child: Text('Helpi v1.0.0', style: theme.textTheme.bodySmall)),
         ],
       ),
     );
@@ -137,11 +172,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
+      enabled: _isEditing,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
         ),
+        filled: !_isEditing,
+        fillColor: const Color(0xFFF9F7F4),
       ),
     );
   }
