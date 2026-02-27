@@ -169,19 +169,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     TextEditingController controller, {
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final theme = Theme.of(context);
+
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       enabled: _isEditing,
+      style: TextStyle(
+        color: _isEditing
+            ? theme.colorScheme.onSurface
+            : theme.colorScheme.onSurface.withAlpha(153),
+        fontSize: 16,
+      ),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(
+          color: theme.colorScheme.onSurface.withAlpha(_isEditing ? 180 : 153),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
         ),
-        filled: !_isEditing,
-        fillColor: const Color(0xFFF9F7F4),
+        filled: true,
+        fillColor: Colors.white,
       ),
     );
   }
