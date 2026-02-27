@@ -230,8 +230,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         TextSpan(
                           text: AppStrings.termsOfUse,
                           style: TextStyle(
+                            fontWeight: FontWeight.w600,
                             color: theme.colorScheme.secondary,
-                            decoration: TextDecoration.underline,
                             decorationColor: theme.colorScheme.secondary,
                           ),
                         ),

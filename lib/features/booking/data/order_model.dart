@@ -11,9 +11,32 @@ class OrderDayEntry {
     required this.duration,
   });
 
-  final String dayName; // e.g. "Ponedjeljak"
-  final String time; // e.g. "08:00"
-  final String duration; // e.g. "1 sat"
+  final String dayName;
+  final String time;
+  final String duration;
+}
+
+/// Recenzija studenta od strane seniora.
+class ReviewModel {
+  ReviewModel({required this.rating, this.comment = '', required this.date});
+
+  final int rating; // 1-5
+  final String comment;
+  final String date;
+}
+
+/// Student dodijeljen narudžbi.
+class StudentAssignment {
+  StudentAssignment({
+    required this.name,
+    required this.fromDate,
+    this.toDate = '',
+  });
+
+  final String name;
+  final String fromDate;
+  final String toDate;
+  final List<ReviewModel> reviews = [];
 }
 
 /// Pojednostavljen model narudžbe (mock — bez bacenda).
@@ -30,26 +53,32 @@ class OrderModel {
     this.duration = '',
     this.dayEntries = const [],
     this.endDate = '',
-  });
+    List<StudentAssignment>? students,
+  }) : students = students ?? [];
 
   final int id;
   final List<String> services;
-  final String date; // first occurrence date for recurring
+  final String date;
   final String frequency;
   final String notes;
   OrderStatus status;
 
-  // ── One-time fields ──
   final bool isOneTime;
-  final String time; // "08:00" for one-time
-  final String duration; // "1 sat" for one-time
+  final String time;
+  final String duration;
 
-  // ── Recurring fields ──
   final List<OrderDayEntry> dayEntries;
-  final String endDate; // empty if no end date
+  final String endDate;
+
+  /// Studenti dodijeljeni ovoj narudžbi.
+  final List<StudentAssignment> students;
 }
 
-/// In-memory spremnik narudžbi — dijeli se preko InheritedWidget / callback.
+/// Mock imena studenata za prototype.
+const _mockStudentNames = ['Ana M.', 'Marko K.', 'Ivana P.', 'Luka S.'];
+int _mockNameIndex = 0;
+
+/// In-memory spremnik narudžbi.
 class OrdersNotifier extends ChangeNotifier {
   final List<OrderModel> _orders = [];
 
@@ -67,6 +96,12 @@ class OrdersNotifier extends ChangeNotifier {
   int _nextId = 1;
 
   void addOrder(OrderModel order) {
+    // Auto-assign a mock student for prototype demo
+    if (order.students.isEmpty) {
+      final name = _mockStudentNames[_mockNameIndex % _mockStudentNames.length];
+      _mockNameIndex++;
+      order.students.add(StudentAssignment(name: name, fromDate: order.date));
+    }
     _orders.insert(0, order);
     _nextId++;
     notifyListeners();
@@ -85,10 +120,10 @@ class OrdersNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Simulate an order going from processing → active.
-  void activateOrder(int id) {
-    final order = _orders.firstWhere((o) => o.id == id);
-    order.status = OrderStatus.active;
+  /// Add a review for a student on an order.
+  void addReview(int orderId, int studentIndex, ReviewModel review) {
+    final order = _orders.firstWhere((o) => o.id == orderId);
+    order.students[studentIndex].reviews.add(review);
     notifyListeners();
   }
 }

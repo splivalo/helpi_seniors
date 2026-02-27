@@ -228,6 +228,14 @@ class AppStrings {
       'orderNumber': 'Narudžba #{number}',
       'showMore': 'Prikaži više',
       'showLess': 'Prikaži manje',
+      'orderDetails': 'Detalji narudžbe',
+      'studentsSection': 'Studenti',
+      'assignedSince': 'Dolazi od',
+      'rateStudent': 'Ocijeni',
+      'sendReview': 'Pošalji ocjenu',
+      'reviewHint': 'Komentar (opcionalno)',
+      'yourReviews': 'Vaše ocjene',
+      'noStudentsYet': 'Još nema dodijeljenih studenata',
       'logout': 'Odjava',
       'settings': 'Postavke',
       'language': 'Jezik', 'accessData': 'Pristupni podaci',
@@ -499,6 +507,14 @@ class AppStrings {
       'orderNumber': 'Order #{number}',
       'showMore': 'Show more',
       'showLess': 'Show less',
+      'orderDetails': 'Order details',
+      'studentsSection': 'Students',
+      'assignedSince': 'Assigned since',
+      'rateStudent': 'Rate',
+      'sendReview': 'Send review',
+      'reviewHint': 'Comment (optional)',
+      'yourReviews': 'Your reviews',
+      'noStudentsYet': 'No students assigned yet',
       'logout': 'Log out',
       'settings': 'Settings',
       'language': 'Language', 'accessData': 'Account details',
@@ -786,6 +802,14 @@ class AppStrings {
       _t('orderNumber', params: {'number': number});
   static String get showMore => _t('showMore');
   static String get showLess => _t('showLess');
+  static String get orderDetails => _t('orderDetails');
+  static String get studentsSection => _t('studentsSection');
+  static String get assignedSince => _t('assignedSince');
+  static String get rateStudent => _t('rateStudent');
+  static String get sendReview => _t('sendReview');
+  static String get reviewHint => _t('reviewHint');
+  static String get yourReviews => _t('yourReviews');
+  static String get noStudentsYet => _t('noStudentsYet');
   static String get logout => _t('logout');
   static String get settings => _t('settings');
   static String get language => _t('language');

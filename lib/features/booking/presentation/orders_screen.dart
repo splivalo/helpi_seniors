@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
+import 'package:helpi_senior/features/booking/presentation/order_detail_screen.dart';
 
 /// Ekran s listom narudžbi — 3 taba: U obradi, Aktivne, Završene.
 class OrdersScreen extends StatefulWidget {
@@ -16,7 +17,6 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   int _selectedTab = 0;
-  final Set<int> _expandedOrders = {};
 
   @override
   void initState() {
@@ -148,262 +148,99 @@ class _OrdersScreenState extends State<OrdersScreen> {
       separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final order = orders[index];
-        return _buildOrderCard(theme, order, actionType);
+        return _buildOrderCard(theme, order);
       },
     );
   }
 
-  // ── Order card (expandable, Pregled-inspired) ────
-  Widget _buildOrderCard(
-    ThemeData theme,
-    OrderModel order,
-    _ActionType actionType,
-  ) {
-    const teal = Color(0xFF009D9D);
-    const grey = Color(0xFF757575);
-    final isExpanded = _expandedOrders.contains(order.id);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header: order number + status chip ──
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  AppStrings.orderNumber(order.id.toString()),
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              _statusChip(theme, order.status),
-            ],
+  // ── Compact order card — tap to open detail ──
+  Widget _buildOrderCard(ThemeData theme, OrderModel order) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderDetailScreen(
+              order: order,
+              ordersNotifier: widget.ordersNotifier,
+            ),
           ),
-          const Divider(height: 24),
-
-          // ── Always visible: frequency + date ──
-          _cardSummaryRow(
-            theme,
-            AppStrings.orderSummaryFrequency,
-            order.frequency,
-          ),
-          const Divider(height: 24),
-          _cardSummaryRow(
-            theme,
-            order.isOneTime
-                ? AppStrings.orderSummaryDate
-                : AppStrings.orderSummaryStartDate,
-            order.date,
-          ),
-
-          // ── Expanded details ──
-          AnimatedCrossFade(
-            firstChild: const SizedBox.shrink(),
-            secondChild: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
               children: [
-                if (order.endDate.isNotEmpty) ...[
-                  const Divider(height: 24),
-                  _cardSummaryRow(
-                    theme,
-                    AppStrings.orderSummaryEndDate,
-                    order.endDate,
-                  ),
-                ],
-
-                // One-time: time + duration
-                if (order.isOneTime) ...[
-                  const Divider(height: 24),
-                  _cardSummaryRow(
-                    theme,
-                    AppStrings.orderSummaryTime,
-                    order.time,
-                  ),
-                  const Divider(height: 24),
-                  _cardSummaryRow(
-                    theme,
-                    AppStrings.orderSummaryDuration,
-                    order.duration,
-                  ),
-                ],
-
-                // Recurring: day entries
-                if (!order.isOneTime && order.dayEntries.isNotEmpty) ...[
-                  const Divider(height: 24),
-                  Text(
-                    AppStrings.orderSummaryDays,
-                    style: theme.textTheme.bodySmall?.copyWith(color: grey),
-                  ),
-                  const SizedBox(height: 8),
-                  ...order.dayEntries.map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Row(
-                        children: [
-                          Text(
-                            entry.dayName,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '${entry.time}  ·  ${entry.duration}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
+                Expanded(
+                  child: Text(
+                    AppStrings.orderNumber(order.id.toString()),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ],
-
-                const Divider(height: 24),
-
-                // Services as chips
-                Text(
-                  AppStrings.orderSummaryServices,
-                  style: theme.textTheme.bodySmall?.copyWith(color: grey),
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: order.services.map((label) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0F5F5),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: teal),
-                      ),
-                      child: Text(
-                        label,
-                        style: const TextStyle(
-                          color: teal,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                // Notes
-                if (order.notes.isNotEmpty) ...[
-                  const Divider(height: 24),
-                  Text(
-                    AppStrings.orderSummaryNotes,
-                    style: theme.textTheme.bodySmall?.copyWith(color: grey),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(order.notes, style: theme.textTheme.bodyMedium),
-                ],
-
-                const SizedBox(height: 16),
-
-                // Action button
-                if (actionType == _ActionType.cancel)
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      _expandedOrders.remove(order.id);
-                      widget.ordersNotifier.cancelOrder(order.id);
-                    },
-                    icon: const Icon(Icons.close, size: 20),
-                    label: Text(AppStrings.cancelOrder),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFEF5B5B),
-                      side: const BorderSide(
-                        color: Color(0xFFEF5B5B),
-                        width: 2,
-                      ),
-                    ),
-                  )
-                else
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      widget.ordersNotifier.addOrder(
-                        OrderModel(
-                          id: widget.ordersNotifier.nextId,
-                          services: List<String>.from(order.services),
-                          date: order.date,
-                          frequency: order.frequency,
-                          notes: order.notes,
-                          isOneTime: order.isOneTime,
-                          time: order.time,
-                          duration: order.duration,
-                          dayEntries: order.dayEntries,
-                          endDate: order.endDate,
-                        ),
-                      );
-                      setState(() => _selectedTab = 0);
-                    },
-                    icon: const Icon(Icons.refresh, size: 20),
-                    label: Text(AppStrings.repeatOrder),
-                  ),
+                _statusChip(theme, order.status),
               ],
             ),
-            crossFadeState: isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 250),
-          ),
+            const Divider(height: 24),
 
-          // ── Show more / Show less toggle ──
-          const SizedBox(height: 8),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                setState(() {
-                  if (isExpanded) {
-                    _expandedOrders.remove(order.id);
-                  } else {
-                    _expandedOrders.add(order.id);
-                  }
-                });
-              },
+            // Frequency
+            _cardSummaryRow(
+              theme,
+              AppStrings.orderSummaryFrequency,
+              order.frequency,
+            ),
+            const Divider(height: 24),
+
+            // Date
+            _cardSummaryRow(
+              theme,
+              order.isOneTime
+                  ? AppStrings.orderSummaryDate
+                  : AppStrings.orderSummaryStartDate,
+              order.date,
+            ),
+
+            // Tap hint
+            const SizedBox(height: 12),
+            Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    isExpanded ? AppStrings.showLess : AppStrings.showMore,
-                    style: const TextStyle(
-                      color: teal,
+                    AppStrings.showMore,
+                    style: TextStyle(
+                      color: theme.colorScheme.secondary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(width: 4),
                   Icon(
-                    isExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: teal,
-                    size: 20,
+                    Icons.arrow_forward_ios,
+                    color: theme.colorScheme.secondary,
+                    size: 14,
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  // ── Card summary row (label left, value right) ──
+  // ── Card summary row ──
   Widget _cardSummaryRow(ThemeData theme, String label, String value) {
     return Row(
       children: [
@@ -424,7 +261,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  // ── Status chip ─────────────────────────────────
+  // ── Status chip ──
   Widget _statusChip(ThemeData theme, OrderStatus status) {
     final Color bg;
     final Color fg;
