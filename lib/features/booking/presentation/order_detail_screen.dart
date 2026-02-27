@@ -47,91 +47,93 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(AppStrings.orderDetails)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header ──
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    AppStrings.orderNumber(order.id.toString()),
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Header ──
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      AppStrings.orderNumber(order.id.toString()),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
-                _statusChip(theme, order.status),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // ── Summary card ──
-            _summaryCard(theme, order),
-            const SizedBox(height: 20),
-
-            // ── Students section ──
-            _studentsSection(theme, order),
-            const SizedBox(height: 24),
-
-            // ── Action buttons ──
-            if (order.status == OrderStatus.processing)
-              OutlinedButton.icon(
-                onPressed: () {
-                  HapticFeedback.selectionClick();
-                  widget.ordersNotifier.cancelOrder(order.id);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.close, size: 20),
-                label: Text(AppStrings.cancelOrder),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: _coral,
-                  side: const BorderSide(color: _coral, width: 2),
-                ),
+                  _statusChip(theme, order.status),
+                ],
               ),
-            if (order.status == OrderStatus.active)
-              OutlinedButton.icon(
-                onPressed: () {
-                  HapticFeedback.selectionClick();
-                  widget.ordersNotifier.cancelOrder(order.id);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.close, size: 20),
-                label: Text(AppStrings.cancelOrder),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: _coral,
-                  side: const BorderSide(color: _coral, width: 2),
+              const SizedBox(height: 20),
+
+              // ── Summary card ──
+              _summaryCard(theme, order),
+              const SizedBox(height: 20),
+
+              // ── Students section ──
+              _studentsSection(theme, order),
+              const SizedBox(height: 24),
+
+              // ── Action buttons ──
+              if (order.status == OrderStatus.processing)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    widget.ordersNotifier.cancelOrder(order.id);
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.close, size: 20),
+                  label: Text(AppStrings.cancelOrder),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _coral,
+                    side: const BorderSide(color: _coral, width: 2),
+                  ),
                 ),
-              ),
-            if (order.status == OrderStatus.completed)
-              OutlinedButton.icon(
-                onPressed: () {
-                  HapticFeedback.selectionClick();
-                  widget.ordersNotifier.addOrder(
-                    OrderModel(
-                      id: widget.ordersNotifier.nextId,
-                      services: List<String>.from(order.services),
-                      date: order.date,
-                      frequency: order.frequency,
-                      notes: order.notes,
-                      isOneTime: order.isOneTime,
-                      time: order.time,
-                      duration: order.duration,
-                      dayEntries: order.dayEntries,
-                      endDate: order.endDate,
-                    ),
-                  );
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.refresh, size: 20),
-                label: Text(AppStrings.repeatOrder),
-              ),
-          ],
+              if (order.status == OrderStatus.active)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    widget.ordersNotifier.cancelOrder(order.id);
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.close, size: 20),
+                  label: Text(AppStrings.cancelOrder),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _coral,
+                    side: const BorderSide(color: _coral, width: 2),
+                  ),
+                ),
+              if (order.status == OrderStatus.completed)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    widget.ordersNotifier.addOrder(
+                      OrderModel(
+                        id: widget.ordersNotifier.nextId,
+                        services: List<String>.from(order.services),
+                        date: order.date,
+                        frequency: order.frequency,
+                        notes: order.notes,
+                        isOneTime: order.isOneTime,
+                        time: order.time,
+                        duration: order.duration,
+                        dayEntries: order.dayEntries,
+                        endDate: order.endDate,
+                      ),
+                    );
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.refresh, size: 20),
+                  label: Text(AppStrings.repeatOrder),
+                ),
+            ],
+          ),
         ),
       ),
     );
