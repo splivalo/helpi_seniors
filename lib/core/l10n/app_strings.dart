@@ -110,6 +110,7 @@ class AppStrings {
       'firstName': 'Ime',
       'lastName': 'Prezime',
       'phone': 'Broj telefona',
+      'address': 'Adresa',
 
       // ── Marketplace ───────────────────────────
       'marketplace': 'Studenti',
@@ -358,6 +359,7 @@ class AppStrings {
       'firstName': 'First name',
       'lastName': 'Last name',
       'phone': 'Phone number',
+      'address': 'Address',
 
       // ── Marketplace ───────────────────────────
       'marketplace': 'Students',
@@ -624,6 +626,7 @@ class AppStrings {
   static String get firstName => _t('firstName');
   static String get lastName => _t('lastName');
   static String get phone => _t('phone');
+  static String get address => _t('address');
 
   // ── Marketplace ───────────────────────────────
   static String get marketplace => _t('marketplace');

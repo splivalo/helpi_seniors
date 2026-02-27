@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
 
-import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
-/// Profil ekran seniora — prikaz podataka, postavke, odjava.
-class ProfileScreen extends StatelessWidget {
+/// Profil ekran seniora — forma za podatke, jezik, odjava.
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final _firstNameCtrl = TextEditingController(text: 'Marija');
+  final _lastNameCtrl = TextEditingController(text: 'Novak');
+  final _phoneCtrl = TextEditingController(text: '+385 91 234 5678');
+  final _emailCtrl = TextEditingController(text: 'marija.novak@email.com');
+  final _addressCtrl = TextEditingController(text: 'Ilica 42, Zagreb');
+
+  String _selectedLang = 'HR';
+
+  @override
+  void dispose() {
+    _firstNameCtrl.dispose();
+    _lastNameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _emailCtrl.dispose();
+    _addressCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,129 +38,109 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
 
-          // ── Avatar + ime ────────────────────────────
-          Center(
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: const BoxDecoration(
-                color: HelpiTheme.cardLavender,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text('👵', style: const TextStyle(fontSize: 48)),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text('Marija Novak', style: theme.textTheme.headlineMedium),
-          ),
-          Center(
-            child: Text(
-              'marija.novak@email.com',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withAlpha(153),
-              ),
+          // ── Podaci ──────────────────────────────────
+          _buildField(AppStrings.firstName, _firstNameCtrl),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.lastName, _lastNameCtrl),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.phone, _phoneCtrl,
+              keyboardType: TextInputType.phone),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.email, _emailCtrl,
+              keyboardType: TextInputType.emailAddress),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.address, _addressCtrl),
+          const SizedBox(height: 24),
+
+          // ── Spremi ──────────────────────────────────
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () {},
+              child: Text(AppStrings.save),
             ),
           ),
           const SizedBox(height: 32),
 
-          // ── Akcije ──────────────────────────────────
-          _ProfileTile(
-            icon: Icons.person,
-            label: AppStrings.editProfile,
-            onTap: () {},
-          ),
-          _ProfileTile(
-            icon: Icons.language,
-            label: AppStrings.language,
-            trailing: 'HR',
-            onTap: () {},
-          ),
-          _ProfileTile(
-            icon: Icons.settings,
-            label: AppStrings.settings,
-            onTap: () {},
+          // ── Jezik ───────────────────────────────────
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: const Color(0xFFE0E0E0)),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.language, color: theme.colorScheme.secondary,
+                    size: 28),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    AppStrings.language,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment<String>(value: 'HR', label: Text('HR')),
+                    ButtonSegment<String>(value: 'EN', label: Text('EN')),
+                  ],
+                  selected: {_selectedLang},
+                  onSelectionChanged: (value) {
+                    setState(() => _selectedLang = value.first);
+                  },
+                  style: ButtonStyle(
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
-          _ProfileTile(
-            icon: Icons.logout,
-            label: AppStrings.logout,
-            isDestructive: true,
-            onTap: () {},
+
+          // ── Odjava ──────────────────────────────────
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.logout),
+              label: Text(AppStrings.logout),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.colorScheme.error,
+                side: BorderSide(color: theme.colorScheme.error),
+              ),
+            ),
           ),
           const SizedBox(height: 32),
 
           // ── Verzija ─────────────────────────────────
-          Center(child: Text('Helpi v1.0.0', style: theme.textTheme.bodySmall)),
+          Center(
+            child: Text('Helpi v1.0.0', style: theme.textTheme.bodySmall),
+          ),
         ],
       ),
     );
   }
 
-  // TODO(i18n): dodati u AppStrings
-}
-
-class _ProfileTile extends StatelessWidget {
-  const _ProfileTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.trailing,
-    this.isDestructive = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final String? trailing;
-  final bool isDestructive;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = isDestructive
-        ? theme.colorScheme.error
-        : theme.colorScheme.secondary;
-
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-          child: Row(
-            children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isDestructive ? color : null,
-                  ),
-                ),
-              ),
-              if (trailing != null)
-                Text(
-                  trailing!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-                color: theme.colorScheme.onSurface.withAlpha(100),
-              ),
-            ],
-          ),
+  Widget _buildField(
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
     );
