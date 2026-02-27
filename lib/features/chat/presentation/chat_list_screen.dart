@@ -3,146 +3,67 @@ import 'package:flutter/material.dart';
 import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
-/// Placeholder za chat ekran — lista razgovora.
-class ChatListScreen extends StatelessWidget {
-  const ChatListScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.chat)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _ChatPreview(
-            emoji: '🛡️',
-            name: 'Helpi podrška',
-            lastMessage: 'Dobrodošli! Kako vam možemo pomoći?',
-            time: '14:30',
-            unread: 1,
-          ),
-          _ChatPreview(
-            emoji: '👩‍🎓',
-            name: 'Ana M. — Narudžba #1',
-            lastMessage: 'Narudžba je potvrđena. Ana dolazi u ponedjeljak.',
-            time: 'Jučer',
-            unread: 0,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChatPreview extends StatelessWidget {
-  const _ChatPreview({
-    required this.emoji,
-    required this.name,
-    required this.lastMessage,
+/// Model za jednu chat poruku.
+class _ChatMessage {
+  const _ChatMessage({
+    required this.text,
+    required this.isMe,
     required this.time,
-    required this.unread,
   });
 
-  final String emoji;
-  final String name;
-  final String lastMessage;
+  final String text;
+  final bool isMe;
   final String time;
-  final int unread;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => _ChatRoomScreen(name: name, emoji: emoji),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: HelpiTheme.cardMint,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(emoji, style: const TextStyle(fontSize: 28)),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      lastMessage,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withAlpha(153),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(time, style: theme.textTheme.bodySmall),
-                  if (unread > 0) ...[
-                    const SizedBox(height: 6),
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.secondary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          unread.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-/// Mock chat soba — prikazuje poruke i input polje.
-class _ChatRoomScreen extends StatelessWidget {
-  const _ChatRoomScreen({required this.name, required this.emoji});
+/// Direktni chat s Helpi podrškom — nema liste razgovora.
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
 
-  final String name;
-  final String emoji;
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final _controller = TextEditingController();
+  final _scrollController = ScrollController();
+
+  final List<_ChatMessage> _messages = [
+    _ChatMessage(text: AppStrings.chatWelcome, isMe: false, time: '14:30'),
+    _ChatMessage(text: AppStrings.chatHelpOffer, isMe: false, time: '14:30'),
+  ];
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+
+    final now = TimeOfDay.now();
+    final timeStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+    setState(() {
+      _messages.add(_ChatMessage(text: text, isMe: true, time: timeStr));
+      _controller.clear();
+    });
+
+    // Scroll na dno
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,13 +71,9 @@ class _ChatRoomScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 8),
-            Flexible(child: Text(name, overflow: TextOverflow.ellipsis)),
-          ],
+        title: Text(
+          AppStrings.chatHelpiSupport,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       body: SafeArea(
@@ -165,47 +82,33 @@ class _ChatRoomScreen extends StatelessWidget {
           children: [
             // Poruke
             Expanded(
-              child: ListView(
+              child: ListView.builder(
+                controller: _scrollController,
                 padding: const EdgeInsets.all(16),
-                children: [
-                  _ChatBubble(
-                    text:
-                        'Dobrodošli! Ja sam vaš Helpi koordinator. '
-                        'Sve dogovore oko narudžbe vodimo ovdje.',
-                    isMe: false,
-                    time: '14:30',
-                  ),
-                  _ChatBubble(
-                    text: 'Hvala! Imam pitanje oko termina.',
-                    isMe: true,
-                    time: '14:32',
-                  ),
-                  _ChatBubble(
-                    text: 'Naravno, slobodno pitajte! Tu smo za vas. 😊',
-                    isMe: false,
-                    time: '14:33',
-                  ),
-                ],
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final msg = _messages[index];
+                  return _ChatBubble(
+                    text: msg.text,
+                    isMe: msg.isMe,
+                    time: msg.time,
+                  );
+                },
               ),
             ),
 
             // Input
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 8, 8, 16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(15),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.all(16),
+              color: theme.colorScheme.surface,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: _controller,
+                      onSubmitted: (_) => _sendMessage(),
+                      textInputAction: TextInputAction.send,
                       decoration: InputDecoration(
                         hintText: AppStrings.typeMessage,
                         border: OutlineInputBorder(
@@ -219,10 +122,22 @@ class _ChatRoomScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  FloatingActionButton(
-                    mini: true,
-                    onPressed: () {},
-                    child: const Icon(Icons.send),
+                  SizedBox(
+                    height: 52,
+                    width: 52,
+                    child: Material(
+                      color: theme.colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(16),
+                      child: InkWell(
+                        onTap: _sendMessage,
+                        borderRadius: BorderRadius.circular(16),
+                        child: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -259,7 +174,8 @@ class _ChatBubble extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: isMe ? theme.colorScheme.secondary : HelpiTheme.cardMint,
+            color: isMe ? theme.colorScheme.secondary : Colors.white,
+            border: isMe ? null : Border.all(color: const Color(0xFFE0E0E0)),
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
               topRight: const Radius.circular(16),

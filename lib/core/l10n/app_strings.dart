@@ -203,6 +203,10 @@ class AppStrings {
 
       // ── Chat ──────────────────────────────────
       'chat': 'Poruke',
+      'chatHelpiSupport': 'Helpi podrška',
+      'chatWelcome': 'Dobrodošli! Ovdje možete razgovarati s Helpi timom.',
+      'chatHelpOffer':
+          'Ako imate pitanja o narudžbama ili trebate pomoć, slobodno nam pišite.',
       'typeMessage': 'Upiši poruku...',
       'sendMessage': 'Pošalji',
       'noMessages': 'Nema poruka',
@@ -447,6 +451,10 @@ class AppStrings {
 
       // ── Chat ──────────────────────────────────
       'chat': 'Messages',
+      'chatHelpiSupport': 'Helpi Support',
+      'chatWelcome': 'Welcome! You can chat with the Helpi team here.',
+      'chatHelpOffer':
+          'If you have questions about orders or need help, feel free to write to us.',
       'typeMessage': 'Type a message...',
       'sendMessage': 'Send',
       'noMessages': 'No messages',
@@ -707,6 +715,9 @@ class AppStrings {
 
   // ── Chat ──────────────────────────────────────
   static String get chat => _t('chat');
+  static String get chatHelpiSupport => _t('chatHelpiSupport');
+  static String get chatWelcome => _t('chatWelcome');
+  static String get chatHelpOffer => _t('chatHelpOffer');
   static String get typeMessage => _t('typeMessage');
   static String get sendMessage => _t('sendMessage');
   static String get noMessages => _t('noMessages');
