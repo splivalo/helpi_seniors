@@ -218,6 +218,14 @@ class AppStrings {
       'myOrders': 'Moje narudžbe',
       'noOrders': 'Još nemate narudžbi',
       'noOrdersSubtitle': 'Kada naručite uslugu, pojavit će se ovdje.',
+      'ordersProcessing': 'U obradi',
+      'ordersActive': 'Aktivne',
+      'ordersCompleted': 'Završene',
+      'cancelOrder': 'Otkaži narudžbu',
+      'repeatOrder': 'Ponovi narudžbu',
+      'orderPlaced': 'Narudžba zaprimljena!',
+      'noOrdersInCategory': 'Nema narudžbi u ovoj kategoriji',
+      'orderNumber': 'Narudžba #{number}',
       'logout': 'Odjava',
       'settings': 'Postavke',
       'language': 'Jezik', 'accessData': 'Pristupni podaci',
@@ -479,6 +487,14 @@ class AppStrings {
       'myOrders': 'My orders',
       'noOrders': 'No orders yet',
       'noOrdersSubtitle': 'When you order a service, it will appear here.',
+      'ordersProcessing': 'Processing',
+      'ordersActive': 'Active',
+      'ordersCompleted': 'Completed',
+      'cancelOrder': 'Cancel order',
+      'repeatOrder': 'Repeat order',
+      'orderPlaced': 'Order placed!',
+      'noOrdersInCategory': 'No orders in this category',
+      'orderNumber': 'Order #{number}',
       'logout': 'Log out',
       'settings': 'Settings',
       'language': 'Language', 'accessData': 'Account details',
@@ -755,6 +771,15 @@ class AppStrings {
   static String get myOrders => _t('myOrders');
   static String get noOrders => _t('noOrders');
   static String get noOrdersSubtitle => _t('noOrdersSubtitle');
+  static String get ordersProcessing => _t('ordersProcessing');
+  static String get ordersActive => _t('ordersActive');
+  static String get ordersCompleted => _t('ordersCompleted');
+  static String get cancelOrder => _t('cancelOrder');
+  static String get repeatOrder => _t('repeatOrder');
+  static String get orderPlaced => _t('orderPlaced');
+  static String get noOrdersInCategory => _t('noOrdersInCategory');
+  static String orderNumber(String number) =>
+      _t('orderNumber', params: {'number': number});
   static String get logout => _t('logout');
   static String get settings => _t('settings');
   static String get language => _t('language');

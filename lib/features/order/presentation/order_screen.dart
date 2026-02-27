@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/features/order/presentation/order_flow_screen.dart';
 
 /// Naruči ekran — jednostavan prikaz s gumbom za novu narudžbu.
-///
-/// Korisnik tapne gumb, otvara se 3-step order flow.
-/// Admin naknadno dodjeljuje studenta.
 class OrderScreen extends StatelessWidget {
-  const OrderScreen({super.key});
+  const OrderScreen({super.key, required this.ordersNotifier});
+
+  final OrdersNotifier ordersNotifier;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,8 @@ class OrderScreen extends StatelessWidget {
                     HapticFeedback.selectionClick();
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (_) => const OrderFlowScreen(),
+                        builder: (_) =>
+                            OrderFlowScreen(ordersNotifier: ordersNotifier),
                       ),
                     );
                   },

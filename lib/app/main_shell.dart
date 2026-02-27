@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/features/booking/presentation/orders_screen.dart';
 import 'package:helpi_senior/features/chat/presentation/chat_list_screen.dart';
 import 'package:helpi_senior/features/order/presentation/order_screen.dart';
@@ -17,13 +18,26 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
+  final OrdersNotifier _ordersNotifier = OrdersNotifier();
 
-  final _screens = <Widget>[
-    const OrderScreen(),
-    const OrdersScreen(),
-    const ChatScreen(),
-    const ProfileScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = <Widget>[
+      OrderScreen(ordersNotifier: _ordersNotifier),
+      OrdersScreen(ordersNotifier: _ordersNotifier),
+      const ChatScreen(),
+      const ProfileScreen(),
+    ];
+  }
+
+  @override
+  void dispose() {
+    _ordersNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

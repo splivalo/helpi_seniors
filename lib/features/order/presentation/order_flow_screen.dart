@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/features/booking/data/order_model.dart';
 
 // ─── Model za jednu stavku dana s vremenom ──────────────────────
 class _DayEntry {
@@ -21,7 +22,9 @@ enum _BookingMode { oneTime, recurring }
 ///   2) Što vam treba?  — usluge (placeholder)
 ///   3) Pregled         — summary + poruka (placeholder)
 class OrderFlowScreen extends StatefulWidget {
-  const OrderFlowScreen({super.key});
+  const OrderFlowScreen({super.key, required this.ordersNotifier});
+
+  final OrdersNotifier ordersNotifier;
 
   @override
   State<OrderFlowScreen> createState() => _OrderFlowScreenState();
@@ -1041,7 +1044,23 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   _summaryRow(
                     theme,
                     AppStrings.orderSummaryStartDate,
-                    _startDate != null ? _formatDate(_startDate!) : '-',
+                    _startDate != null && _dayEntries.isNotEmpty
+                        ? () {
+                            DateTime? earliest;
+                            for (final entry in _dayEntries) {
+                              final occ = _firstOccurrence(
+                                entry.day,
+                                _startDate!,
+                              );
+                              if (earliest == null || occ.isBefore(earliest)) {
+                                earliest = occ;
+                              }
+                            }
+                            return _formatDate(earliest!);
+                          }()
+                        : _startDate != null
+                        ? _formatDate(_startDate!)
+                        : '-',
                   ),
                   if (_hasEndDate && _endDate != null) ...[
                     const Divider(height: 24),
@@ -1180,6 +1199,78 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     );
   }
 
+  // ── Submit order ─────────────────────────────────
+  void _submitOrder() {
+    final bool isOneTime = _bookingMode == _BookingMode.oneTime;
+
+    String date;
+    String time = '';
+    String duration = '';
+    String endDate = '';
+    List<OrderDayEntry> dayEntries = [];
+
+    if (isOneTime) {
+      date = _oneTimeDate != null ? _formatDate(_oneTimeDate!) : '-';
+      time = _oneTimeFromHour != null
+          ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:00'
+          : '-';
+      duration = _oneTimeDuration != null
+          ? _durationLabel(_oneTimeDuration!)
+          : '-';
+    } else {
+      // First occurrence date
+      if (_startDate != null && _dayEntries.isNotEmpty) {
+        // Find the earliest first occurrence across all days
+        DateTime? earliest;
+        for (final entry in _dayEntries) {
+          final occ = _firstOccurrence(entry.day, _startDate!);
+          if (earliest == null || occ.isBefore(earliest)) {
+            earliest = occ;
+          }
+        }
+        date = _formatDate(earliest!);
+      } else {
+        date = _startDate != null ? _formatDate(_startDate!) : '-';
+      }
+
+      if (_hasEndDate && _endDate != null) {
+        endDate = _formatDate(_endDate!);
+      }
+
+      // Build structured day entries
+      dayEntries = _dayEntries.map((entry) {
+        final timeStr = entry.fromHour != null
+            ? '${entry.fromHour.toString().padLeft(2, '0')}:00'
+            : '-';
+        final durStr = entry.duration != null
+            ? _durationLabel(entry.duration!)
+            : '-';
+        return OrderDayEntry(
+          dayName: _dayFullName(entry.day),
+          time: timeStr,
+          duration: durStr,
+        );
+      }).toList();
+    }
+
+    final order = OrderModel(
+      id: widget.ordersNotifier.nextId,
+      services: _selectedServices
+          .map((key) => _serviceChips[key]?.call() ?? key)
+          .toList(),
+      date: date,
+      frequency: _bookingModeLabel(),
+      notes: _notesController.text.trim(),
+      isOneTime: isOneTime,
+      time: time,
+      duration: duration,
+      dayEntries: dayEntries,
+      endDate: endDate,
+    );
+
+    widget.ordersNotifier.addOrder(order);
+  }
+
   String _bookingModeLabel() {
     switch (_bookingMode) {
       case _BookingMode.oneTime:
@@ -1235,7 +1326,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                 if (_currentStep < 2) {
                   setState(() => _currentStep++);
                 } else {
-                  // Final submit — will be implemented later
+                  // Final submit — create order and go back
+                  _submitOrder();
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                 }
               }
