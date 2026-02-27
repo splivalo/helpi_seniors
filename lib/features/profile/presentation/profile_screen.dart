@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
-/// Profil ekran seniora — forma za podatke, jezik, odjava.
+/// Profil ekran — pristupni podaci, naručitelj, senior, kartice, uvjeti.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -11,22 +11,42 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _firstNameCtrl = TextEditingController(text: 'Marija');
-  final _lastNameCtrl = TextEditingController(text: 'Novak');
-  final _phoneCtrl = TextEditingController(text: '+385 91 234 5678');
+  // ── Pristupni podaci ──────────────────────────
   final _emailCtrl = TextEditingController(text: 'marija.novak@email.com');
-  final _addressCtrl = TextEditingController(text: 'Ilica 42, Zagreb');
 
+  // ── Naručitelj ────────────────────────────────
+  final _ordFirstNameCtrl = TextEditingController(text: 'Ivan');
+  final _ordLastNameCtrl = TextEditingController(text: 'Novak');
+  final _ordPhoneCtrl = TextEditingController(text: '+385 91 234 5678');
+  String _ordGender = 'M';
+  DateTime _ordDob = DateTime(1985, 3, 15);
+
+  // ── Senior / korisnik ─────────────────────────
+  final _senFirstNameCtrl = TextEditingController(text: 'Marija');
+  final _senLastNameCtrl = TextEditingController(text: 'Novak');
+  final _senPhoneCtrl = TextEditingController(text: '+385 91 987 6543');
+  final _senAddressCtrl = TextEditingController(text: 'Ilica 42, Zagreb');
+  String _senGender = 'F';
+  DateTime _senDob = DateTime(1948, 7, 22);
+
+  // ── Ostalo ────────────────────────────────────
   String _selectedLang = 'HR';
   bool _isEditing = false;
+  bool _agreedToTerms = true;
+
+  // Mock kartice
+  final List<String> _cards = ['**** 4821', '**** 9037'];
 
   @override
   void dispose() {
-    _firstNameCtrl.dispose();
-    _lastNameCtrl.dispose();
-    _phoneCtrl.dispose();
     _emailCtrl.dispose();
-    _addressCtrl.dispose();
+    _ordFirstNameCtrl.dispose();
+    _ordLastNameCtrl.dispose();
+    _ordPhoneCtrl.dispose();
+    _senFirstNameCtrl.dispose();
+    _senLastNameCtrl.dispose();
+    _senPhoneCtrl.dispose();
+    _senAddressCtrl.dispose();
     super.dispose();
   }
 
@@ -39,18 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const SizedBox(height: 8),
-
-          // ── Podaci ──────────────────────────────────
-          _buildField(AppStrings.firstName, _firstNameCtrl),
-          const SizedBox(height: 12),
-          _buildField(AppStrings.lastName, _lastNameCtrl),
-          const SizedBox(height: 12),
-          _buildField(
-            AppStrings.phone,
-            _phoneCtrl,
-            keyboardType: TextInputType.phone,
-          ),
+          // ── PRISTUPNI PODACI ────────────────────────
+          _sectionHeader(AppStrings.accessData),
           const SizedBox(height: 12),
           _buildField(
             AppStrings.email,
@@ -58,17 +68,195 @@ class _ProfileScreenState extends State<ProfileScreen> {
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 12),
-          _buildField(AppStrings.address, _addressCtrl),
+          // Promijeni lozinku
+          OutlinedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.lock_outline, size: 20),
+            label: Text(AppStrings.changePassword),
+          ),
+          const SizedBox(height: 32),
+
+          // ── PODACI O NARUČITELJU ────────────────────
+          _sectionHeader(AppStrings.ordererData),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.firstName, _ordFirstNameCtrl),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.lastName, _ordLastNameCtrl),
+          const SizedBox(height: 12),
+          _buildGenderPicker(_ordGender, (v) => setState(() => _ordGender = v)),
+          const SizedBox(height: 12),
+          _buildDatePicker(
+            AppStrings.dateOfBirth,
+            _ordDob,
+            (d) => setState(() => _ordDob = d),
+          ),
+          const SizedBox(height: 12),
+          _buildField(
+            AppStrings.phone,
+            _ordPhoneCtrl,
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 32),
+
+          // ── PODACI O KORISNIKU (SENIOR) ─────────────
+          _sectionHeader(AppStrings.seniorData),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.firstName, _senFirstNameCtrl),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.lastName, _senLastNameCtrl),
+          const SizedBox(height: 12),
+          _buildGenderPicker(_senGender, (v) => setState(() => _senGender = v)),
+          const SizedBox(height: 12),
+          _buildDatePicker(
+            AppStrings.dateOfBirth,
+            _senDob,
+            (d) => setState(() => _senDob = d),
+          ),
+          const SizedBox(height: 12),
+          _buildField(AppStrings.address, _senAddressCtrl),
+          const SizedBox(height: 12),
+          _buildField(
+            AppStrings.phone,
+            _senPhoneCtrl,
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 32),
+
+          // ── KREDITNE KARTICE ────────────────────────
+          _sectionHeader(AppStrings.creditCards),
+          const SizedBox(height: 12),
+          if (_cards.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  AppStrings.noCards,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withAlpha(153),
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            )
+          else
+            ..._cards.map(
+              (card) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    ),
+                    enabled: _isEditing,
+                    filled: true,
+                    fillColor: Colors.white,
+                    prefixIcon: Icon(
+                      Icons.credit_card,
+                      color: theme.colorScheme.secondary,
+                    ),
+                    suffixIcon: _isEditing
+                        ? GestureDetector(
+                            onTap: () {
+                              setState(() => _cards.remove(card));
+                            },
+                            child: Icon(
+                              Icons.delete_outline,
+                              color: theme.colorScheme.error,
+                              size: 22,
+                            ),
+                          )
+                        : null,
+                  ),
+                  child: Text(
+                    card,
+                    style: TextStyle(
+                      color: _isEditing
+                          ? theme.colorScheme.onSurface
+                          : theme.colorScheme.onSurface.withAlpha(153),
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (_isEditing) ...[
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.add, size: 20),
+              label: Text(AppStrings.addCard),
+            ),
+          ],
+          const SizedBox(height: 8),
+
+          // ── UVJETI ──────────────────────────────────
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Checkbox(
+                value: _agreedToTerms,
+                onChanged: _isEditing
+                    ? (v) => setState(() => _agreedToTerms = v ?? false)
+                    : null,
+                activeColor: theme.colorScheme.secondary,
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    // TODO: otvori uvjete korištenja
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      style: theme.textTheme.bodyMedium,
+                      children: [
+                        TextSpan(text: AppStrings.agreeToTerms),
+                        TextSpan(
+                          text: AppStrings.termsOfUse,
+                          style: TextStyle(
+                            color: theme.colorScheme.secondary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: theme.colorScheme.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 24),
 
-          // ── Uredi / Spremi ──────────────────────────
+          // ── UREDI / SPREMI ──────────────────────────
           SizedBox(
             width: double.infinity,
-            height: 52,
             child: _isEditing
-                ? ElevatedButton(
-                    onPressed: () => setState(() => _isEditing = false),
-                    child: Text(AppStrings.save),
+                ? Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => setState(() => _isEditing = false),
+                        child: Text(AppStrings.save),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () => setState(() => _isEditing = false),
+                        child: Text(AppStrings.cancel),
+                      ),
+                    ],
                   )
                 : OutlinedButton.icon(
                     onPressed: () => setState(() => _isEditing = true),
@@ -78,88 +266,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 32),
 
-          // ── Jezik ───────────────────────────────────
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: const Color(0xFFE0E0E0)),
-              borderRadius: BorderRadius.circular(16),
+          // ── JEZIK ───────────────────────────────────
+          InputDecorator(
+            decoration: InputDecoration(
+              labelText: AppStrings.language,
+              labelStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withAlpha(180),
+              ),
+              prefixIcon: Icon(
+                Icons.language,
+                color: theme.colorScheme.secondary,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              filled: true,
+              fillColor: Colors.white,
             ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.language,
-                  color: theme.colorScheme.secondary,
-                  size: 28,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedLang,
+                isDense: true,
+                isExpanded: true,
+                onChanged: (v) {
+                  if (v != null) setState(() => _selectedLang = v);
+                },
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 16,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    AppStrings.language,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment<String>(value: 'HR', label: Text('HR')),
-                    ButtonSegment<String>(value: 'EN', label: Text('EN')),
-                  ],
-                  selected: {_selectedLang},
-                  onSelectionChanged: (value) {
-                    setState(() => _selectedLang = value.first);
-                  },
-                  style: ButtonStyle(
-                    visualDensity: VisualDensity.compact,
-                    backgroundColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return const Color(0xFFE0F5F5);
-                      }
-                      return Colors.white;
-                    }),
-                    foregroundColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return const Color(0xFF009D9D);
-                      }
-                      return theme.colorScheme.onSurface.withAlpha(153);
-                    }),
-                    side: WidgetStateProperty.all(
-                      const BorderSide(color: Color(0xFFE0E0E0)),
-                    ),
-                    iconColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return const Color(0xFF009D9D);
-                      }
-                      return Colors.transparent;
-                    }),
-                  ),
-                ),
-              ],
+                items: const [
+                  DropdownMenuItem(value: 'HR', child: Text('Hrvatski')),
+                  DropdownMenuItem(value: 'EN', child: Text('English')),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),
 
-          // ── Odjava ──────────────────────────────────
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: OutlinedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.logout),
-              label: Text(AppStrings.logout),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-                side: BorderSide(color: theme.colorScheme.error),
-              ),
+          // ── ODJAVA ──────────────────────────────────
+          OutlinedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.logout),
+            label: Text(AppStrings.logout),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFFEF5B5B),
+              side: const BorderSide(color: Color(0xFFEF5B5B), width: 2),
             ),
           ),
           const SizedBox(height: 32),
 
           // ── Verzija ─────────────────────────────────
           Center(child: Text('Helpi v1.0.0', style: theme.textTheme.bodySmall)),
+          const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+
+  // ── Helpers ───────────────────────────────────────
+
+  Widget _sectionHeader(String title) {
+    final theme = Theme.of(context);
+    return Text(
+      title,
+      style: theme.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+        color: theme.colorScheme.onSurface,
       ),
     );
   }
@@ -193,6 +366,112 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         filled: true,
         fillColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildGenderPicker(String value, ValueChanged<String> onChanged) {
+    final theme = Theme.of(context);
+
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: AppStrings.gender,
+        labelStyle: TextStyle(
+          color: theme.colorScheme.onSurface.withAlpha(_isEditing ? 180 : 153),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        ),
+        enabled: _isEditing,
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isDense: true,
+          isExpanded: true,
+          onChanged: _isEditing
+              ? (v) {
+                  if (v != null) onChanged(v);
+                }
+              : null,
+          style: TextStyle(
+            color: _isEditing
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurface.withAlpha(153),
+            fontSize: 16,
+          ),
+          items: [
+            DropdownMenuItem(value: 'M', child: Text(AppStrings.genderMale)),
+            DropdownMenuItem(value: 'F', child: Text(AppStrings.genderFemale)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker(
+    String label,
+    DateTime date,
+    ValueChanged<DateTime> onChanged,
+  ) {
+    final theme = Theme.of(context);
+    final formatted =
+        '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}.';
+
+    return GestureDetector(
+      onTap: _isEditing
+          ? () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: date,
+                firstDate: DateTime(1920),
+                lastDate: DateTime.now(),
+              );
+              if (picked != null && context.mounted) {
+                onChanged(picked);
+              }
+            }
+          : null,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: theme.colorScheme.onSurface.withAlpha(
+              _isEditing ? 180 : 153,
+            ),
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: _isEditing
+                  ? theme.colorScheme.onSurface.withAlpha(100)
+                  : const Color(0xFFE0E0E0),
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          suffixIcon: _isEditing
+              ? Icon(
+                  Icons.calendar_today,
+                  size: 20,
+                  color: theme.colorScheme.secondary,
+                )
+              : null,
+        ),
+        child: Text(
+          formatted,
+          style: TextStyle(
+            color: _isEditing
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurface.withAlpha(153),
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }

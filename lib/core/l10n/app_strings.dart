@@ -220,8 +220,20 @@ class AppStrings {
       'noOrdersSubtitle': 'Kada naručite uslugu, pojavit će se ovdje.',
       'logout': 'Odjava',
       'settings': 'Postavke',
-      'language': 'Jezik',
-
+      'language': 'Jezik', 'accessData': 'Pristupni podaci',
+      'changePassword': 'Promijeni lozinku',
+      'ordererData': 'Podaci o naručitelju',
+      'seniorData': 'Podaci o korisniku',
+      'gender': 'Spol',
+      'genderMale': 'Muško',
+      'genderFemale': 'Žensko',
+      'dateOfBirth': 'Datum rođenja',
+      'creditCards': 'Kreditne kartice',
+      'noCards': 'Nemate spremljenih kartica',
+      'addCard': 'Dodaj karticu',
+      'agreeToTerms': 'Slažem se s ',
+      'termsOfUse': 'uvjetima',
+      'cardEndingIn': 'Kartica završava na {digits}',
       // ── Parametrizirani ───────────────────────
       'deleteConfirm': 'Obriši {item}?',
       'distanceKm': '{km} km',
@@ -469,8 +481,20 @@ class AppStrings {
       'noOrdersSubtitle': 'When you order a service, it will appear here.',
       'logout': 'Log out',
       'settings': 'Settings',
-      'language': 'Language',
-
+      'language': 'Language', 'accessData': 'Account details',
+      'changePassword': 'Change password',
+      'ordererData': 'Orderer details',
+      'seniorData': 'Senior details',
+      'gender': 'Gender',
+      'genderMale': 'Male',
+      'genderFemale': 'Female',
+      'dateOfBirth': 'Date of birth',
+      'creditCards': 'Credit cards',
+      'noCards': 'No saved cards',
+      'addCard': 'Add card',
+      'agreeToTerms': 'I agree to the ',
+      'termsOfUse': 'terms',
+      'cardEndingIn': 'Card ending in {digits}',
       // ── Parametrizirani ───────────────────────
       'deleteConfirm': 'Delete {item}?',
       'distanceKm': '{km} km',
@@ -734,7 +758,21 @@ class AppStrings {
   static String get logout => _t('logout');
   static String get settings => _t('settings');
   static String get language => _t('language');
-
+  static String get accessData => _t('accessData');
+  static String get changePassword => _t('changePassword');
+  static String get ordererData => _t('ordererData');
+  static String get seniorData => _t('seniorData');
+  static String get gender => _t('gender');
+  static String get genderMale => _t('genderMale');
+  static String get genderFemale => _t('genderFemale');
+  static String get dateOfBirth => _t('dateOfBirth');
+  static String get creditCards => _t('creditCards');
+  static String get noCards => _t('noCards');
+  static String get addCard => _t('addCard');
+  static String get agreeToTerms => _t('agreeToTerms');
+  static String get termsOfUse => _t('termsOfUse');
+  static String cardEndingIn(String digits) =>
+      _t('cardEndingIn', params: {'digits': digits});
   // ── Parametrizirani stringovi ─────────────────
   static String deleteConfirm(String item) =>
       _t('deleteConfirm', params: {'item': item});
