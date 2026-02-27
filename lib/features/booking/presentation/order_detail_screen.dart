@@ -358,14 +358,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ),
               SizedBox(
                 height: 36,
-                child: OutlinedButton.icon(
+                child: ElevatedButton.icon(
                   onPressed: () => _showReviewSheet(order, studentIndex),
-                  icon: const Icon(Icons.star, size: 16),
+                  icon: const Icon(Icons.star, size: 16, color: Colors.white),
                   label: Text(AppStrings.rateStudent),
-                  style: OutlinedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _coral,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    textStyle: const TextStyle(fontSize: 13),
+                    textStyle: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                     minimumSize: Size.zero,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
