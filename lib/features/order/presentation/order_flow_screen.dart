@@ -521,29 +521,32 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           ],
         ),
 
-        // End date — only when switch is ON
-        if (_hasEndDate) ...[
+        // End date — only when switch is ON and start date is set
+        if (_hasEndDate && _startDate != null) ...[
           const SizedBox(height: 8),
           _buildDateButton(date: _endDate, onTap: _pickEndDate),
           const SizedBox(height: 24),
         ] else
           const SizedBox(height: 8),
 
-        // Existing day entries
-        ..._dayEntries.asMap().entries.map((mapEntry) {
-          return _buildDayCard(theme, mapEntry.value, mapEntry.key);
-        }),
+        // Rest of recurring fields — only after start date is picked
+        if (_startDate != null) ...[
+          // Existing day entries
+          ..._dayEntries.asMap().entries.map((mapEntry) {
+            return _buildDayCard(theme, mapEntry.value, mapEntry.key);
+          }),
 
-        // Day picker — auto-show when no days yet, or after "+" tap
-        if ((_dayEntries.isEmpty || _showingDayPicker) &&
-            _availableDays.isNotEmpty)
-          _buildDayPickerSection(theme),
+          // Day picker — auto-show when no days yet, or after "+" tap
+          if ((_dayEntries.isEmpty || _showingDayPicker) &&
+              _availableDays.isNotEmpty)
+            _buildDayPickerSection(theme),
 
-        // "+ Dodaj dan" button — only after at least one day exists
-        if (_dayEntries.isNotEmpty &&
-            !_showingDayPicker &&
-            _availableDays.isNotEmpty)
-          _buildAddDayButton(),
+          // "+ Dodaj dan" button — only after at least one day exists
+          if (_dayEntries.isNotEmpty &&
+              !_showingDayPicker &&
+              _availableDays.isNotEmpty)
+            _buildAddDayButton(),
+        ],
       ],
     );
   }

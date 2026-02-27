@@ -96,7 +96,8 @@ class OrdersNotifier extends ChangeNotifier {
   int _nextId = 1;
 
   void addOrder(OrderModel order) {
-    // Auto-assign a mock student for prototype demo
+    // Prototype: set to active and assign a mock student
+    order.status = OrderStatus.active;
     if (order.students.isEmpty) {
       final name = _mockStudentNames[_mockNameIndex % _mockStudentNames.length];
       _mockNameIndex++;
