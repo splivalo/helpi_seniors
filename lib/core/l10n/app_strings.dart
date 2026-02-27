@@ -221,6 +221,9 @@ class AppStrings {
       'ordersProcessing': 'U obradi',
       'ordersActive': 'Aktivne',
       'ordersCompleted': 'Završene',
+      'orderProcessing': 'U obradi',
+      'orderActive': 'Aktivna',
+      'orderCompleted': 'Završena',
       'cancelOrder': 'Otkaži narudžbu',
       'repeatOrder': 'Ponovi narudžbu',
       'orderPlaced': 'Narudžba zaprimljena!',
@@ -500,6 +503,9 @@ class AppStrings {
       'ordersProcessing': 'Processing',
       'ordersActive': 'Active',
       'ordersCompleted': 'Completed',
+      'orderProcessing': 'Processing',
+      'orderActive': 'Active',
+      'orderCompleted': 'Completed',
       'cancelOrder': 'Cancel order',
       'repeatOrder': 'Repeat order',
       'orderPlaced': 'Order placed!',
@@ -794,6 +800,9 @@ class AppStrings {
   static String get ordersProcessing => _t('ordersProcessing');
   static String get ordersActive => _t('ordersActive');
   static String get ordersCompleted => _t('ordersCompleted');
+  static String get orderProcessing => _t('orderProcessing');
+  static String get orderActive => _t('orderActive');
+  static String get orderCompleted => _t('orderCompleted');
   static String get cancelOrder => _t('cancelOrder');
   static String get repeatOrder => _t('repeatOrder');
   static String get orderPlaced => _t('orderPlaced');

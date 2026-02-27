@@ -491,46 +491,47 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         ),
         const SizedBox(height: 10),
         _buildDateButton(date: _startDate, onTap: _pickStartDate),
-        const SizedBox(height: 16),
 
-        // Switch: Do određenog datuma
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                AppStrings.hasEndDate,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+        // Everything below only after start date is picked
+        if (_startDate != null) ...[
+          const SizedBox(height: 16),
+
+          // Switch: Do određenog datuma
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  AppStrings.hasEndDate,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            Switch(
-              value: _hasEndDate,
-              onChanged: (val) {
-                HapticFeedback.selectionClick();
-                setState(() {
-                  _hasEndDate = val;
-                  if (!val) _endDate = null;
-                });
-              },
-              activeThumbColor: Colors.white,
-              activeTrackColor: _teal,
-              inactiveThumbColor: _teal,
-              trackOutlineColor: WidgetStateProperty.all(_teal),
-            ),
-          ],
-        ),
+              Switch(
+                value: _hasEndDate,
+                onChanged: (val) {
+                  HapticFeedback.selectionClick();
+                  setState(() {
+                    _hasEndDate = val;
+                    if (!val) _endDate = null;
+                  });
+                },
+                activeThumbColor: Colors.white,
+                activeTrackColor: _teal,
+                inactiveThumbColor: _teal,
+                trackOutlineColor: WidgetStateProperty.all(_teal),
+              ),
+            ],
+          ),
 
-        // End date — only when switch is ON and start date is set
-        if (_hasEndDate && _startDate != null) ...[
-          const SizedBox(height: 8),
-          _buildDateButton(date: _endDate, onTap: _pickEndDate),
-          const SizedBox(height: 24),
-        ] else
-          const SizedBox(height: 8),
+          // End date — only when switch is ON
+          if (_hasEndDate) ...[
+            const SizedBox(height: 8),
+            _buildDateButton(date: _endDate, onTap: _pickEndDate),
+            const SizedBox(height: 24),
+          ] else
+            const SizedBox(height: 8),
 
-        // Rest of recurring fields — only after start date is picked
-        if (_startDate != null) ...[
           // Existing day entries
           ..._dayEntries.asMap().entries.map((mapEntry) {
             return _buildDayCard(theme, mapEntry.value, mapEntry.key);
@@ -570,13 +571,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.calendar_today,
-              size: 20,
-              color: date != null
-                  ? const Color(0xFF212121)
-                  : const Color(0xFF9E9E9E),
-            ),
+            Icon(Icons.calendar_today, size: 20, color: _teal),
             const SizedBox(width: 12),
             Text(
               date != null ? _formatDate(date) : AppStrings.selectDate,
