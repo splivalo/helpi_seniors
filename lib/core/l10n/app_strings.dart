@@ -45,7 +45,7 @@ class AppStrings {
       'orderFlowStep3': 'Pregled',
       'stepIndicator': 'Korak {current} od {total}',
       'frequency': 'Učestalost',
-      'addDay': 'Dodaj dan',
+      'addDay': 'Dodaj još jedan dan',
       'selectDay': 'Odaberite dan',
       'fromTime': 'Od',
       'durationChoice': 'Trajanje',
@@ -65,7 +65,7 @@ class AppStrings {
       'daySatFull': 'Subota',
       'daySunFull': 'Nedjelja',
       'serviceNoteHint':
-          'Opišite što vam treba (npr. "Trebam pomoć s usisavanjem i pospremanjem")',
+          'Opišite što vam treba (npr. "Trebam pomoć s dostavom iz trgovine i ljekarne.")',
       'escortInfo':
           'Pratnja može potrajati dulje od odabranog trajanja (npr. čekanje kod liječnika). Ako usluga traje dulje, razlika se naplaćuje dodatno.',
       'overtimeDisclaimer':
@@ -185,9 +185,8 @@ class AppStrings {
       'orderNotes': 'Dodatne napomene',
       'totalPrice': 'Ukupna cijena',
       'bookingServiceHeader': 'Što vam treba?',
-      'bookingChipShopping': 'Dućan',
-      'bookingChipPharmacy': 'Ljekarna',
-      'bookingChipCleaning': 'Kućanski poslovi',
+      'bookingChipShopping': 'Kupovina',
+      'bookingChipCleaning': 'Pomoć u kući',
       'bookingChipCompanionship': 'Društvo',
       'bookingChipWalk': 'Šetnja',
       'bookingChipEscort': 'Pratnja',
@@ -290,7 +289,7 @@ class AppStrings {
       'orderFlowStep3': 'Summary',
       'stepIndicator': 'Step {current} of {total}',
       'frequency': 'Frequency',
-      'addDay': 'Add day',
+      'addDay': 'Add another day',
       'selectDay': 'Select a day',
       'fromTime': 'From',
       'durationChoice': 'Duration',
@@ -310,7 +309,7 @@ class AppStrings {
       'daySatFull': 'Saturday',
       'daySunFull': 'Sunday',
       'serviceNoteHint':
-          'Describe what you need (e.g. "I need help with vacuuming and tidying up")',
+          'Describe what you need (e.g. "I need help with shopping and prescription pickups.")',
       'escortInfo':
           'Escort services may take longer than the selected duration (e.g. waiting at the doctor). If the service takes longer, the difference is charged additionally.',
       'overtimeDisclaimer':
@@ -430,9 +429,8 @@ class AppStrings {
       'orderNotes': 'Additional notes',
       'totalPrice': 'Total price',
       'bookingServiceHeader': 'What do you need?',
-      'bookingChipShopping': 'Groceries',
-      'bookingChipPharmacy': 'Pharmacy',
-      'bookingChipCleaning': 'Household chores',
+      'bookingChipShopping': 'Errands',
+      'bookingChipCleaning': 'Home help',
       'bookingChipCompanionship': 'Company',
       'bookingChipWalk': 'Walk',
       'bookingChipEscort': 'Escort',
@@ -693,7 +691,6 @@ class AppStrings {
   static String get totalPrice => _t('totalPrice');
   static String get bookingServiceHeader => _t('bookingServiceHeader');
   static String get bookingChipShopping => _t('bookingChipShopping');
-  static String get bookingChipPharmacy => _t('bookingChipPharmacy');
   static String get bookingChipCleaning => _t('bookingChipCleaning');
   static String get bookingChipCompanionship => _t('bookingChipCompanionship');
   static String get bookingChipWalk => _t('bookingChipWalk');

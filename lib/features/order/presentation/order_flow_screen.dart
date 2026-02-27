@@ -531,12 +531,15 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           return _buildDayCard(theme, mapEntry.value, mapEntry.key);
         }),
 
-        // Day picker (visible after "+" tap)
-        if (_showingDayPicker && _availableDays.isNotEmpty)
+        // Day picker — auto-show when no days yet, or after "+" tap
+        if ((_dayEntries.isEmpty || _showingDayPicker) &&
+            _availableDays.isNotEmpty)
           _buildDayPickerSection(theme),
 
-        // "+ Dodaj dan" button
-        if (!_showingDayPicker && _availableDays.isNotEmpty)
+        // "+ Dodaj dan" button — only after at least one day exists
+        if (_dayEntries.isNotEmpty &&
+            !_showingDayPicker &&
+            _availableDays.isNotEmpty)
           _buildAddDayButton(),
       ],
     );
@@ -744,11 +747,29 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppStrings.selectDay,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  AppStrings.selectDay,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              if (_dayEntries.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _showingDayPicker = false);
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    size: 22,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 12),
           Row(
@@ -841,7 +862,6 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   // Service chip definitions: key → label getter
   static final _serviceChips = <String, String Function()>{
     'shopping': () => AppStrings.bookingChipShopping,
-    'pharmacy': () => AppStrings.bookingChipPharmacy,
     'cleaning': () => AppStrings.bookingChipCleaning,
     'companionship': () => AppStrings.bookingChipCompanionship,
     'walk': () => AppStrings.bookingChipWalk,
