@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 
 /// Model za jednu chat poruku.
