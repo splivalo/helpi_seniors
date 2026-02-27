@@ -1110,13 +1110,14 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2D2D2D),
+                        color: const Color(0xFFE0F5F5),
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: _teal),
                       ),
                       child: Text(
                         label,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFF009D9D),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
