@@ -226,6 +226,8 @@ class AppStrings {
       'orderPlaced': 'Narudžba zaprimljena!',
       'noOrdersInCategory': 'Nema narudžbi u ovoj kategoriji',
       'orderNumber': 'Narudžba #{number}',
+      'showMore': 'Prikaži više',
+      'showLess': 'Prikaži manje',
       'logout': 'Odjava',
       'settings': 'Postavke',
       'language': 'Jezik', 'accessData': 'Pristupni podaci',
@@ -495,6 +497,8 @@ class AppStrings {
       'orderPlaced': 'Order placed!',
       'noOrdersInCategory': 'No orders in this category',
       'orderNumber': 'Order #{number}',
+      'showMore': 'Show more',
+      'showLess': 'Show less',
       'logout': 'Log out',
       'settings': 'Settings',
       'language': 'Language', 'accessData': 'Account details',
@@ -780,6 +784,8 @@ class AppStrings {
   static String get noOrdersInCategory => _t('noOrdersInCategory');
   static String orderNumber(String number) =>
       _t('orderNumber', params: {'number': number});
+  static String get showMore => _t('showMore');
+  static String get showLess => _t('showLess');
   static String get logout => _t('logout');
   static String get settings => _t('settings');
   static String get language => _t('language');

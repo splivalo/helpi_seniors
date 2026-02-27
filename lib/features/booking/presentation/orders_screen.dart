@@ -16,6 +16,7 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   int _selectedTab = 0;
+  final Set<int> _expandedOrders = {};
 
   @override
   void initState() {
@@ -152,7 +153,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  // ── Order card (Pregled-inspired) ────────────────
+  // ── Order card (expandable, Pregled-inspired) ────
   Widget _buildOrderCard(
     ThemeData theme,
     OrderModel order,
@@ -160,6 +161,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   ) {
     const teal = Color(0xFF009D9D);
     const grey = Color(0xFF757575);
+    final isExpanded = _expandedOrders.contains(order.id);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -187,15 +189,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           const Divider(height: 24),
 
-          // ── Frequency ──
+          // ── Always visible: frequency + date ──
           _cardSummaryRow(
             theme,
             AppStrings.orderSummaryFrequency,
             order.frequency,
           ),
           const Divider(height: 24),
-
-          // ── Date (first occurrence) ──
           _cardSummaryRow(
             theme,
             order.isOneTime
@@ -204,141 +204,200 @@ class _OrdersScreenState extends State<OrdersScreen> {
             order.date,
           ),
 
-          if (order.endDate.isNotEmpty) ...[
-            const Divider(height: 24),
-            _cardSummaryRow(
-              theme,
-              AppStrings.orderSummaryEndDate,
-              order.endDate,
-            ),
-          ],
+          // ── Expanded details ──
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (order.endDate.isNotEmpty) ...[
+                  const Divider(height: 24),
+                  _cardSummaryRow(
+                    theme,
+                    AppStrings.orderSummaryEndDate,
+                    order.endDate,
+                  ),
+                ],
 
-          // ── One-time: time + duration ──
-          if (order.isOneTime) ...[
-            const Divider(height: 24),
-            _cardSummaryRow(theme, AppStrings.orderSummaryTime, order.time),
-            const Divider(height: 24),
-            _cardSummaryRow(
-              theme,
-              AppStrings.orderSummaryDuration,
-              order.duration,
-            ),
-          ],
+                // One-time: time + duration
+                if (order.isOneTime) ...[
+                  const Divider(height: 24),
+                  _cardSummaryRow(
+                    theme,
+                    AppStrings.orderSummaryTime,
+                    order.time,
+                  ),
+                  const Divider(height: 24),
+                  _cardSummaryRow(
+                    theme,
+                    AppStrings.orderSummaryDuration,
+                    order.duration,
+                  ),
+                ],
 
-          // ── Recurring: day entries (vertical list) ──
-          if (!order.isOneTime && order.dayEntries.isNotEmpty) ...[
-            const Divider(height: 24),
-            Text(
-              AppStrings.orderSummaryDays,
-              style: theme.textTheme.bodySmall?.copyWith(color: grey),
-            ),
-            const SizedBox(height: 8),
-            ...order.dayEntries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  children: [
-                    Text(
-                      entry.dayName,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                // Recurring: day entries
+                if (!order.isOneTime && order.dayEntries.isNotEmpty) ...[
+                  const Divider(height: 24),
+                  Text(
+                    AppStrings.orderSummaryDays,
+                    style: theme.textTheme.bodySmall?.copyWith(color: grey),
+                  ),
+                  const SizedBox(height: 8),
+                  ...order.dayEntries.map(
+                    (entry) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        children: [
+                          Text(
+                            entry.dayName,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '${entry.time}  ·  ${entry.duration}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
                       ),
                     ),
-                    const Spacer(),
-                    Text(
-                      '${entry.time}  ·  ${entry.duration}',
-                      style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+
+                const Divider(height: 24),
+
+                // Services as chips
+                Text(
+                  AppStrings.orderSummaryServices,
+                  style: theme.textTheme.bodySmall?.copyWith(color: grey),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: order.services.map((label) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0F5F5),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: teal),
+                      ),
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          color: teal,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                // Notes
+                if (order.notes.isNotEmpty) ...[
+                  const Divider(height: 24),
+                  Text(
+                    AppStrings.orderSummaryNotes,
+                    style: theme.textTheme.bodySmall?.copyWith(color: grey),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(order.notes, style: theme.textTheme.bodyMedium),
+                ],
+
+                const SizedBox(height: 16),
+
+                // Action button
+                if (actionType == _ActionType.cancel)
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      _expandedOrders.remove(order.id);
+                      widget.ordersNotifier.cancelOrder(order.id);
+                    },
+                    icon: const Icon(Icons.close, size: 20),
+                    label: Text(AppStrings.cancelOrder),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF5B5B),
+                      side: const BorderSide(
+                        color: Color(0xFFEF5B5B),
+                        width: 2,
+                      ),
                     ),
-                  ],
-                ),
-              ),
+                  )
+                else
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      widget.ordersNotifier.addOrder(
+                        OrderModel(
+                          id: widget.ordersNotifier.nextId,
+                          services: List<String>.from(order.services),
+                          date: order.date,
+                          frequency: order.frequency,
+                          notes: order.notes,
+                          isOneTime: order.isOneTime,
+                          time: order.time,
+                          duration: order.duration,
+                          dayEntries: order.dayEntries,
+                          endDate: order.endDate,
+                        ),
+                      );
+                      setState(() => _selectedTab = 0);
+                    },
+                    icon: const Icon(Icons.refresh, size: 20),
+                    label: Text(AppStrings.repeatOrder),
+                  ),
+              ],
             ),
-          ],
-
-          const Divider(height: 24),
-
-          // ── Services as chips ──
-          Text(
-            AppStrings.orderSummaryServices,
-            style: theme.textTheme.bodySmall?.copyWith(color: grey),
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 250),
           ),
+
+          // ── Show more / Show less toggle ──
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: order.services.map((label) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0F5F5),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: teal),
-                ),
-                child: Text(
-                  label,
-                  style: const TextStyle(
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                setState(() {
+                  if (isExpanded) {
+                    _expandedOrders.remove(order.id);
+                  } else {
+                    _expandedOrders.add(order.id);
+                  }
+                });
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    isExpanded ? AppStrings.showLess : AppStrings.showMore,
+                    style: const TextStyle(
+                      color: teal,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: teal,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    size: 20,
                   ),
-                ),
-              );
-            }).toList(),
-          ),
-
-          // ── Notes ──
-          if (order.notes.isNotEmpty) ...[
-            const Divider(height: 24),
-            Text(
-              AppStrings.orderSummaryNotes,
-              style: theme.textTheme.bodySmall?.copyWith(color: grey),
-            ),
-            const SizedBox(height: 4),
-            Text(order.notes, style: theme.textTheme.bodyMedium),
-          ],
-
-          const SizedBox(height: 16),
-
-          // ── Action button ──
-          if (actionType == _ActionType.cancel)
-            OutlinedButton.icon(
-              onPressed: () {
-                HapticFeedback.selectionClick();
-                widget.ordersNotifier.cancelOrder(order.id);
-              },
-              icon: const Icon(Icons.close, size: 20),
-              label: Text(AppStrings.cancelOrder),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFEF5B5B),
-                side: const BorderSide(color: Color(0xFFEF5B5B), width: 2),
+                ],
               ),
-            )
-          else
-            OutlinedButton.icon(
-              onPressed: () {
-                HapticFeedback.selectionClick();
-                widget.ordersNotifier.addOrder(
-                  OrderModel(
-                    id: widget.ordersNotifier.nextId,
-                    services: List<String>.from(order.services),
-                    date: order.date,
-                    frequency: order.frequency,
-                    notes: order.notes,
-                    isOneTime: order.isOneTime,
-                    time: order.time,
-                    duration: order.duration,
-                    dayEntries: order.dayEntries,
-                    endDate: order.endDate,
-                  ),
-                );
-                setState(() => _selectedTab = 0);
-              },
-              icon: const Icon(Icons.refresh, size: 20),
-              label: Text(AppStrings.repeatOrder),
             ),
+          ),
         ],
       ),
     );
