@@ -74,6 +74,19 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     super.dispose();
   }
 
+  // ── Auto-scroll helper ────────────────────────
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_step1Scroll.hasClients) {
+        _step1Scroll.animateTo(
+          _step1Scroll.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   // ── Helpers ───────────────────────────────────
   Set<int> get _usedDays => _dayEntries.map((e) => e.day).toSet();
 
@@ -203,6 +216,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     if (!context.mounted) return;
     if (picked != null) {
       setState(() => _oneTimeDate = picked);
+      _scrollToBottom();
     }
   }
 
@@ -509,10 +523,13 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                 const SizedBox(height: 8),
                 _buildTimeChips(
                   selectedHour: _oneTimeFromHour,
-                  onSelected: (h) => setState(() {
-                    _oneTimeFromHour = h;
-                    _oneTimeFromMinute = null;
-                  }),
+                  onSelected: (h) {
+                    setState(() {
+                      _oneTimeFromHour = h;
+                      _oneTimeFromMinute = null;
+                    });
+                    _scrollToBottom();
+                  },
                 ),
 
                 if (_oneTimeFromHour != null) ...[
@@ -526,7 +543,10 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   const SizedBox(height: 8),
                   _buildMinuteChips(
                     selectedMinute: _oneTimeFromMinute,
-                    onSelected: (m) => setState(() => _oneTimeFromMinute = m),
+                    onSelected: (m) {
+                      setState(() => _oneTimeFromMinute = m);
+                      _scrollToBottom();
+                    },
                   ),
                 ],
 
@@ -815,10 +835,13 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           const SizedBox(height: 8),
           _buildTimeChips(
             selectedHour: entry.fromHour,
-            onSelected: (h) => setState(() {
-              entry.fromHour = h;
-              entry.fromMinute = null;
-            }),
+            onSelected: (h) {
+              setState(() {
+                entry.fromHour = h;
+                entry.fromMinute = null;
+              });
+              _scrollToBottom();
+            },
           ),
 
           if (entry.fromHour != null) ...[
@@ -832,7 +855,10 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             const SizedBox(height: 8),
             _buildMinuteChips(
               selectedMinute: entry.fromMinute,
-              onSelected: (m) => setState(() => entry.fromMinute = m),
+              onSelected: (m) {
+                setState(() => entry.fromMinute = m);
+                _scrollToBottom();
+              },
             ),
           ],
 
@@ -910,15 +936,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         _showingDayPicker = false;
                       });
                       // Auto-scroll to show the new card
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (_step1Scroll.hasClients) {
-                          _step1Scroll.animateTo(
-                            _step1Scroll.position.maxScrollExtent,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeOut,
-                          );
-                        }
-                      });
+                      _scrollToBottom();
                     },
                   ),
                 ),
@@ -937,15 +955,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         HapticFeedback.selectionClick();
         setState(() => _showingDayPicker = true);
         // Auto-scroll to show the day picker
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_step1Scroll.hasClients) {
-            _step1Scroll.animateTo(
-              _step1Scroll.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
+        _scrollToBottom();
       },
       child: Container(
         width: double.infinity,
