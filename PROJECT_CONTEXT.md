@@ -9,7 +9,7 @@
 
 **Helpi** je platforma koja spaja **starije osobe (seniore)** sa **studentima** koji im pružaju svakodnevnu pomoć.
 
-- Seniori (ili njihovi ukućani) naručuju usluge: kupovina, pratnja, čišćenje, društvo, tehnološka pomoć itd.
+- Seniori (ili njihovi ukućani) naručuju usluge: kupovina, pomoć u kući, društvo, šetnja, pratnja, ostalo.
 - Studenti prihvaćaju narudžbe, dolaze kod seniora, obavljaju uslugu i zarađuju.
 
 **Analogija:** Uber, ali za svakodnevnu pomoć starijima. Uber ima 2 app-e (putnik + vozač), Helpi ima 2 app-e (senior + student).
@@ -153,16 +153,14 @@ ValueListenableBuilder na MaterialApp rebuilda UI
 
 ## 6. Usluge koje Helpi nudi
 
-| Ključ                  | HR          | EN            |
-| ---------------------- | ----------- | ------------- |
-| `serviceShopping`      | Kupovina    | Shopping      |
-| `serviceHousehold`     | Kućanstvo   | Household     |
-| `serviceCompanionship` | Pratnja     | Companionship |
-| `serviceActivities`    | Aktivnosti  | Activities    |
-| `serviceTechHelp`      | Tehnologija | Tech Help     |
-| `servicePets`          | Ljubimci    | Pets          |
-
-Plus u order flow-u: Pomoć u kući, Društvo, Šetnja, Ostalo
+| Ključ                      | HR           | EN        |
+| -------------------------- | ------------ | --------- |
+| `bookingChipShopping`      | Kupovina     | Errands   |
+| `bookingChipCleaning`      | Pomoć u kući | Home help |
+| `bookingChipCompanionship` | Društvo      | Company   |
+| `bookingChipWalk`          | Šetnja       | Walk      |
+| `bookingChipEscort`        | Pratnja      | Escort    |
+| `bookingChipOther`         | Ostalo       | Other     |
 
 ---
 

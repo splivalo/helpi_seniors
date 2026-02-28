@@ -76,7 +76,7 @@
 ├───────────────────────────────┤
 │ id              UUID PK       │
 │ student_id      UUID FK       │  → student_profiles.id
-│ service_type    ENUM          │  ← 'grocery_shopping' | 'tech_help' | 'cleaning' | 'companionship' | 'errands'
+│ service_type    ENUM          │  ← 'shopping' | 'home_help' | 'companionship' | 'walk' | 'escort' | 'other'
 │ hourly_rate     DECIMAL(10,2) │
 │ description     TEXT          │
 │ is_active       BOOL          │
@@ -200,7 +200,7 @@ The table exists for future use when specialization may be needed.
 | ENUM                | Values                                                                                                         |
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `user_role`         | `senior`, `student`, `admin`                                                                                   |
-| `service_type`      | `grocery_shopping`, `tech_help`, `cleaning`, `companionship`, `errands`                                        |
+| `service_type`      | `shopping`, `home_help`, `companionship`, `walk`, `escort`, `other`                                            |
 | `booking_status`    | `pending`, `confirmed`, `in_progress`, `completed`, `cancelled`, `cancelled_by_student`, `skipped`, `replaced` |
 | `payment_status`    | `pending`, `succeeded`, `failed`, `refunded`                                                                   |
 | `notification_type` | `booking_confirmed`, `payment_received`, `chat_message`, `reminder`                                            |
@@ -426,12 +426,12 @@ Senior places an order → Admin assigns the best available student.
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   NARUČI (TAB)   │    │  STEP 1: KADA?   │    │ STEP 2: ŠTO?    │
 │                  │    │                  │    │                  │
-│     [➕ icon]     │    │  [Jednokr|Ponavl]│    │ [Kuhanje]        │
-│                  │    │                  │    │ [Čišćenje]       │
-│  "Trebate li     │    │  📅 26.02.2026   │    │ [Kupovina]       │
-│   pomoć?"        │───►│                  │───►│ [Društvo]        │
+│     [➕ icon]     │    │  [Jednokr|Ponavl]│    │ [Kupovina]       │
+│                  │    │                  │    │ [Pomoć u kući]   │
+│  "Trebate li     │    │  📅 26.02.2026   │    │ [Društvo]        │
+│   pomoć?"        │───►│                  │───►│ [Šetnja]         │
 │                  │    │  [Pon] [Sri]     │    │ [Pratnja]        │
-│  [NOVA NARUDŽBA] │    │  08:00 / 2 sata  │    │                  │
+│  [NOVA NARUDŽBA] │    │  08:00 / 2 sata  │    │ [Ostalo]         │
 │                  │    │                  │    │  📝 Napomena...   │
 │                  │    │  [DALJE ►]       │    │  [DALJE ►]       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘

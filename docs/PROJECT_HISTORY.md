@@ -61,7 +61,7 @@
 
 - **OrderFlowScreen** — ~1226 lines, 3 steps:
   - **Step 1 "Kada?"**: Booking mode (one-time / recurring), date pickers, day/time/duration chips per day entry.
-  - **Step 2 "Što vam treba?"**: Service type chips (kuhanje, čišćenje, kupovina, društvo, pratnja, tehnika, vrtlarstvo), free-text note, escort/overtime info cards.
+  - **Step 2 "Što vam treba?"**: Service type chips (kupovina, pomoć u kući, društvo, šetnja, pratnja, ostalo), free-text note, escort/overtime info cards.
   - **Step 3 "Pregled"**: Full order summary with all details.
 - **Booking modes**: `oneTime` (single date + time) and `recurring` (weekly, with optional end date via Switch toggle).
 - **Per-day config**: Each day entry has its own from-hour and duration.

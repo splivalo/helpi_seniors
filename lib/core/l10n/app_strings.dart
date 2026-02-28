@@ -128,14 +128,6 @@ class AppStrings {
       'available': 'Dostupan',
       'unavailable': 'Nedostupan',
 
-      // ── Vrste usluga ─────────────────────────
-      'serviceActivities': 'Aktivnosti',
-      'serviceShopping': 'Kupovina',
-      'serviceHousehold': 'Kućanstvo',
-      'serviceCompanionship': 'Pratnja',
-      'serviceTechHelp': 'Tehnologija',
-      'servicePets': 'Ljubimci',
-
       // ── Time picker ──────────────────────────
       'availableWindow': 'Dostupan: {start} – {end}',
       'startTimeLabel': 'Početak',
@@ -416,14 +408,6 @@ class AppStrings {
       'reviews': 'Reviews',
       'available': 'Available',
       'unavailable': 'Unavailable',
-
-      // ── Vrste usluga ─────────────────────────
-      'serviceActivities': 'Activities',
-      'serviceShopping': 'Shopping',
-      'serviceHousehold': 'Household',
-      'serviceCompanionship': 'Companionship',
-      'serviceTechHelp': 'Technology',
-      'servicePets': 'Pets',
 
       // ── Time picker ──────────────────────────
       'availableWindow': 'Available: {start} – {end}',
@@ -724,13 +708,6 @@ class AppStrings {
   static String get available => _t('available');
   static String get unavailable => _t('unavailable');
 
-  // ── Vrste usluga ─────────────────────────────
-  static String get serviceActivities => _t('serviceActivities');
-  static String get serviceShopping => _t('serviceShopping');
-  static String get serviceHousehold => _t('serviceHousehold');
-  static String get serviceCompanionship => _t('serviceCompanionship');
-  static String get serviceTechHelp => _t('serviceTechHelp');
-  static String get servicePets => _t('servicePets');
   // ── Time picker ──────────────────────────────
   static String availableWindow(String start, String end) =>
       _t('availableWindow', params: {'start': start, 'end': end});

@@ -327,7 +327,7 @@ Svi SVG-ovi u `assets/images/`:
 - `google_logo.svg` — Google 4-color G
 - `apple_logo.svg` — Apple jabuka (crna)
 - `facebook_logo.svg` — Facebook F (plavi #1877F2)
-- Servisne ikone: `shopping.svg`, `household.svg`, `activities.svg`, `socializing.svg`, `technology.svg`, `pets.svg`, `transport.svg`, `administration.svg`, `support.svg`
+- Servisne ikone: `shopping.svg`, `home_help.svg`, `companionship.svg`, `walk.svg`, `escort.svg`, `other.svg`
 
 ---
 
