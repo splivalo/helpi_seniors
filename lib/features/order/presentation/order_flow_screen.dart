@@ -11,6 +11,7 @@ class _DayEntry {
 
   final int day; // 1=Mon … 7=Sun
   int? fromHour; // 8–20
+  int? fromMinute; // 0, 15, 30, 45
   int? duration; // 1–4
 }
 
@@ -42,6 +43,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   // One-time
   DateTime? _oneTimeDate;
   int? _oneTimeFromHour;
+  int? _oneTimeFromMinute;
   int? _oneTimeDuration;
 
   // Recurring
@@ -61,6 +63,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   // ── Constants ─────────────────────────────────
   static const _teal = Color(0xFF009D9D);
   static const _timeHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+  static const _timeMinutes = [0, 15, 30, 45];
   static const _durations = [1, 2, 3, 4];
 
   @override
@@ -173,6 +176,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     if (_bookingMode == _BookingMode.oneTime) {
       return _oneTimeDate != null &&
           _oneTimeFromHour != null &&
+          _oneTimeFromMinute != null &&
           _oneTimeDuration != null;
     }
     if (_startDate == null) return false;
@@ -182,7 +186,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     if (_hasEndDate && _endDate != null) {
       if (!_dayEntries.every((e) => _isDayInRange(e.day))) return false;
     }
-    return _dayEntries.every((e) => e.fromHour != null && e.duration != null);
+    return _dayEntries.every(
+      (e) => e.fromHour != null && e.fromMinute != null && e.duration != null,
+    );
   }
 
   Future<void> _pickOneTimeDate() async {
@@ -444,36 +450,104 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         _buildDateButton(date: _oneTimeDate, onTap: _pickOneTimeDate),
 
         if (_oneTimeDate != null) ...[
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-          // Od
-          Text(
-            AppStrings.fromTime,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+          // ── Card container (matches recurring day card) ──
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE0E0E0)),
             ),
-          ),
-          const SizedBox(height: 10),
-          _buildTimeChips(
-            selectedHour: _oneTimeFromHour,
-            onSelected: (h) => setState(() => _oneTimeFromHour = h),
-          ),
-        ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header: day name + X to cancel
+                Row(
+                  children: [
+                    Text(
+                      _dayFullName(_oneTimeDate!.weekday),
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        setState(() {
+                          _oneTimeDate = null;
+                          _oneTimeFromHour = null;
+                          _oneTimeFromMinute = null;
+                          _oneTimeDuration = null;
+                        });
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        size: 22,
+                        color: Color(0xFF757575),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  _formatDate(_oneTimeDate!),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFF757575),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Od
+                Text(
+                  AppStrings.hourLabel,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildTimeChips(
+                  selectedHour: _oneTimeFromHour,
+                  onSelected: (h) => setState(() {
+                    _oneTimeFromHour = h;
+                    _oneTimeFromMinute = null;
+                  }),
+                ),
 
-        if (_oneTimeDate != null && _oneTimeFromHour != null) ...[
-          const SizedBox(height: 20),
+                if (_oneTimeFromHour != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    AppStrings.minuteLabel,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMinuteChips(
+                    selectedMinute: _oneTimeFromMinute,
+                    onSelected: (m) => setState(() => _oneTimeFromMinute = m),
+                  ),
+                ],
 
-          // Trajanje
-          Text(
-            AppStrings.durationChoice,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+                if (_oneTimeFromHour != null && _oneTimeFromMinute != null) ...[
+                  const SizedBox(height: 14),
+
+                  // Trajanje
+                  Text(
+                    AppStrings.durationChoice,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildDurationChips(
+                    selectedDuration: _oneTimeDuration,
+                    onSelected: (d) => setState(() => _oneTimeDuration = d),
+                  ),
+                ],
+              ],
             ),
-          ),
-          const SizedBox(height: 10),
-          _buildDurationChips(
-            selectedDuration: _oneTimeDuration,
-            onSelected: (d) => setState(() => _oneTimeDuration = d),
           ),
         ],
       ],
@@ -632,6 +706,30 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   }
 
   // ── Duration chips (1–4 h) ───────────────────
+  Widget _buildMinuteChips({
+    required int? selectedMinute,
+    required ValueChanged<int> onSelected,
+  }) {
+    return Row(
+      children: [
+        for (int i = 0; i < _timeMinutes.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(
+            child: _buildChip(
+              label: ':${_timeMinutes[i].toString().padLeft(2, '0')}',
+              isSelected: selectedMinute == _timeMinutes[i],
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onSelected(_timeMinutes[i]);
+              },
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  // ── Duration chips (1–4 h) ───────────────────
   Widget _buildDurationChips({
     required int? selectedDuration,
     required ValueChanged<int> onSelected,
@@ -709,7 +807,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
 
           // Od
           Text(
-            AppStrings.fromTime,
+            AppStrings.hourLabel,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -717,10 +815,28 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           const SizedBox(height: 8),
           _buildTimeChips(
             selectedHour: entry.fromHour,
-            onSelected: (h) => setState(() => entry.fromHour = h),
+            onSelected: (h) => setState(() {
+              entry.fromHour = h;
+              entry.fromMinute = null;
+            }),
           ),
 
           if (entry.fromHour != null) ...[
+            const SizedBox(height: 14),
+            Text(
+              AppStrings.minuteLabel,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildMinuteChips(
+              selectedMinute: entry.fromMinute,
+              onSelected: (m) => setState(() => entry.fromMinute = m),
+            ),
+          ],
+
+          if (entry.fromHour != null && entry.fromMinute != null) ...[
             const SizedBox(height: 14),
 
             // Trajanje
@@ -1033,7 +1149,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                     theme,
                     AppStrings.orderSummaryTime,
                     _oneTimeFromHour != null
-                        ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:00'
+                        ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:${(_oneTimeFromMinute ?? 0).toString().padLeft(2, '0')}'
                         : '-',
                   ),
                   const Divider(height: 24),
@@ -1086,7 +1202,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   const SizedBox(height: 8),
                   ..._dayEntries.map((entry) {
                     final timeStr = entry.fromHour != null
-                        ? '${entry.fromHour.toString().padLeft(2, '0')}:00'
+                        ? '${entry.fromHour.toString().padLeft(2, '0')}:${(entry.fromMinute ?? 0).toString().padLeft(2, '0')}'
                         : '-';
                     final durStr = entry.duration != null
                         ? _durationLabel(entry.duration!)
@@ -1216,7 +1332,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     if (isOneTime) {
       date = _oneTimeDate != null ? _formatDate(_oneTimeDate!) : '-';
       time = _oneTimeFromHour != null
-          ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:00'
+          ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:${(_oneTimeFromMinute ?? 0).toString().padLeft(2, '0')}'
           : '-';
       duration = _oneTimeDuration != null
           ? _durationLabel(_oneTimeDuration!)
@@ -1244,7 +1360,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       // Build structured day entries
       dayEntries = _dayEntries.map((entry) {
         final timeStr = entry.fromHour != null
-            ? '${entry.fromHour.toString().padLeft(2, '0')}:00'
+            ? '${entry.fromHour.toString().padLeft(2, '0')}:${(entry.fromMinute ?? 0).toString().padLeft(2, '0')}'
             : '-';
         final durStr = entry.duration != null
             ? _durationLabel(entry.duration!)

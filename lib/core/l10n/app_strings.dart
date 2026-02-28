@@ -48,6 +48,8 @@ class AppStrings {
       'addDay': 'Dodaj još jedan dan',
       'selectDay': 'Odaberite dan',
       'fromTime': 'Od',
+      'hourLabel': 'Sati',
+      'minuteLabel': 'Minute',
       'durationChoice': 'Trajanje',
       'hour1': '1 sat',
       'hour2': '2 sata',
@@ -335,6 +337,8 @@ class AppStrings {
       'addDay': 'Add another day',
       'selectDay': 'Select a day',
       'fromTime': 'From',
+      'hourLabel': 'Hours',
+      'minuteLabel': 'Minutes',
       'durationChoice': 'Duration',
       'hour1': '1 hour',
       'hour2': '2 hours',
@@ -637,6 +641,8 @@ class AppStrings {
   static String get addDay => _t('addDay');
   static String get selectDay => _t('selectDay');
   static String get fromTime => _t('fromTime');
+  static String get hourLabel => _t('hourLabel');
+  static String get minuteLabel => _t('minuteLabel');
   static String get durationChoice => _t('durationChoice');
   static String get hour1 => _t('hour1');
   static String get hour2 => _t('hour2');
