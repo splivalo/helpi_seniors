@@ -458,6 +458,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             selectedHour: _oneTimeFromHour,
             onSelected: (h) => setState(() => _oneTimeFromHour = h),
           ),
+        ],
+
+        if (_oneTimeDate != null && _oneTimeFromHour != null) ...[
           const SizedBox(height: 20),
 
           // Trajanje
@@ -716,20 +719,23 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             selectedHour: entry.fromHour,
             onSelected: (h) => setState(() => entry.fromHour = h),
           ),
-          const SizedBox(height: 14),
 
-          // Trajanje
-          Text(
-            AppStrings.durationChoice,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+          if (entry.fromHour != null) ...[
+            const SizedBox(height: 14),
+
+            // Trajanje
+            Text(
+              AppStrings.durationChoice,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          _buildDurationChips(
-            selectedDuration: entry.duration,
-            onSelected: (d) => setState(() => entry.duration = d),
-          ),
+            const SizedBox(height: 8),
+            _buildDurationChips(
+              selectedDuration: entry.duration,
+              onSelected: (d) => setState(() => entry.duration = d),
+            ),
+          ],
         ],
       ),
     );
