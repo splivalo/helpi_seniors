@@ -116,3 +116,108 @@
   - `lib/shared/widgets/student_card.dart` — only used by deleted marketplace code
 - **Verification:** `flutter analyze` → 0 errors after deletion.
 - **Status:** Implemented.
+
+---
+
+## 2026-02-27 Login/Register Screen + Social Auth
+
+### Decision: Build login screen with social buttons
+
+- **Context:** Needed auth entry point for the app.
+- **Login screen:** Email + password fields, Login/Register toggle, social buttons (Google, Apple, Facebook).
+- **Social buttons:** Changed from rectangles to **circles** (56×56), all using SVG logos.
+  - Apple SVG: viewBox cropped to content area (was 44×44 with white background rect).
+  - Facebook SVG: replaced Material `Icons.facebook` with official F logo (#1877F2).
+  - Google SVG: official 4-color G logo.
+- **Language picker:** HR/EN toggle at bottom of login screen.
+- **Layout:** `LayoutBuilder` + `ConstrainedBox` for vertical centering on all screen sizes.
+- **Status:** Implemented.
+
+---
+
+## 2026-02-27 Architecture Decision: 2 Separate Apps
+
+### Decision: Build Helpi Senior and Helpi Student as separate Flutter projects
+
+- **Context:** Discussion on whether 1 app with role switching or 2 separate apps.
+- **Decision:** 2 separate apps (like Uber/Uber Driver).
+  - `helpi_seniors` — senior orders services
+  - `helpi_students` — student receives and performs orders
+- **Rationale:** Different UX flows, simpler codebase per app, independent deployment.
+- **Shared:** Design system (colors, radius, fonts), auth flow, SVG assets.
+- **Created:** DESIGN_SYSTEM.md and PROJECT_CONTEXT.md as handoff documents for student app.
+- **Status:** Implemented. Git repos separated.
+
+---
+
+## 2026-02-27 Git Repo Reorganization
+
+### Decision: Rename repos for clarity
+
+- **Context:** Repo was named `helpi_students_2.0` but contained the senior app.
+- **Change:**
+  - Senior app → `splivalo/helpi_seniors` (main branch)
+  - Student app → `splivalo/helpi_students` (separate project)
+  - Old `helpi_students_2.0` repo deleted.
+- **Status:** Implemented.
+
+---
+
+## 2026-02-27 Orders Screen: 3 Tabs + Order Detail + Reviews
+
+### Decision: Full orders management UI
+
+- **Context:** Orders screen was placeholder. Added full tab structure.
+- **3 tabs:** U obradi (Processing) → Aktivne (Active) → Završene (Completed)
+- **Order detail screen:** Tap-to-detail pattern with expand/collapse sections.
+- **Student review system:** Star rating + comment for completed orders ("Ocijeni" button).
+- **Mock student auto-assign:** Processing orders get student after "confirm" action.
+- **Status:** Implemented.
+
+---
+
+## 2026-02-28 Progressive Disclosure: Order Flow Time Selection
+
+### Decision: Step-by-step reveal of time fields
+
+- **Context:** All time fields (date, start time, duration) were shown simultaneously, overwhelming for seniors.
+- **Change:** Progressive disclosure pattern — each field only appears after the previous one is selected:
+  1. Date picker → shown immediately
+  2. Hour chips (08–19) → appear after date is selected
+  3. Minute chips (:00, :15, :30, :45) → appear after hour is selected
+  4. Duration chips (1–4h) → appear after minute is selected
+- **Applied to:** Both one-time AND recurring flows.
+- **Status:** Implemented.
+
+---
+
+## 2026-02-28 15-Minute Time Precision
+
+### Decision: Add minute-level granularity to time selection
+
+- **Context:** Hour-only selection (08:00, 09:00...) was too coarse.
+- **Change:**
+  - Added `_timeMinutes = [0, 15, 30, 45]` constant.
+  - `_DayEntry` got `int? fromMinute` field.
+  - Added `_oneTimeFromMinute` state variable.
+  - New `_buildMinuteChips()` widget showing 4 chips: `:00`, `:15`, `:30`, `:45`.
+  - Hour change resets minute selection (UX: prevents stale state).
+  - Summary and submit display full time (e.g., "09:15" instead of "09:00").
+  - Labels: "Sati" (hours) + "Minute" (minutes) + "Trajanje" (duration).
+- **Validation:** `_step1Valid` now requires minute selection too.
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-02-28 One-Time Card Container Redesign
+
+### Decision: Match one-time and recurring visual design
+
+- **Context:** Recurring flow had day cards (white container with border, header, X button) but one-time flow had bare fields — inconsistent.
+- **Change:**
+  - One-time flow now wrapped in a card container (white bg, border, borderRadius 16).
+  - Card header: weekday name (e.g., "Subota") — same style as recurring day cards.
+  - Subtitle: formatted date (e.g., "28.02.2026") — matches recurring "Prva usluga" pattern.
+  - X button to cancel/reset (clears date, hour, minute, duration).
+  - Font sizes changed from `bodyLarge` to `bodyMedium` to match recurring cards.
+- **Status:** Implemented. 0 errors.

@@ -3,7 +3,7 @@
 > WARNING: It is STRICTLY FORBIDDEN to start any task from the Roadmap without explicit user confirmation.
 > Every step requires explicit approval from the product owner.
 
-> Last updated: 2026-02-26
+> Last updated: 2026-02-28
 
 ---
 
@@ -20,8 +20,8 @@
 
 ## Phase 2 - Auth
 
-- [ ] 2.1 Login screen (email + password, senior-friendly)
-- [ ] 2.2 Registration screen
+- [x] 2.1 Login screen (email + password, senior-friendly, social SVG circles)
+- [x] 2.2 Registration screen (toggle on same screen)
 - [ ] 2.3 Auth Cubit + repository
 - [ ] 2.4 Token storage (flutter_secure_storage)
 - [ ] 2.5 Auto-login on splash
@@ -33,16 +33,20 @@
 - [x] 3.3 Booking modes (one-time + recurring with optional end date)
 - [x] 3.4 Per-day configuration (time + duration per day entry)
 - [x] 3.5 Day range validation (filter picker + auto-cleanup + safety net)
+- [x] 3.5b Progressive disclosure (Date → Hour → Minute → Duration)
+- [x] 3.5c 15-minute time precision (hour + minute chips)
+- [x] 3.5d One-time card redesign (matching recurring day card style)
 - [ ] 3.6 Order confirmation screen (success after submit)
 - [ ] 3.7 Order Cubit + repository
 - [ ] 3.8 Backend integration (POST /orders)
 
 ## Phase 4 - Orders Management
 
-- [ ] 4.1 "Moje narudžbe" screen (order list with statuses)
-- [ ] 4.2 Order detail screen
-- [ ] 4.3 Order status updates (push notifications)
-- [ ] 4.4 Orders Cubit + repository
+- [x] 4.1 "Moje narudžbe" screen (order list with 3 tabs: processing/active/completed)
+- [x] 4.2 Order detail screen (tap-to-detail, expand/collapse)
+- [x] 4.3 Student review system (star rating + comment)
+- [ ] 4.4 Order status updates (push notifications)
+- [ ] 4.5 Orders Cubit + repository
 
 ## Phase 5 - Payment
 

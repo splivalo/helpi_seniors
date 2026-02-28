@@ -1,10 +1,10 @@
 ﻿# Helpi Senior Progress
 
-> Last updated: 2026-02-26
+> Last updated: 2026-02-28
 
 ---
 
-## Overall progress: ~45%
+## Overall progress: ~55%
 
 ### Completed
 
@@ -16,6 +16,8 @@
 - [x] PROGRESS.md — progress tracking
 - [x] ROADMAP.md — future priorities
 - [x] Documentation moved to `docs/` folder
+- [x] DESIGN_SYSTEM.md — comprehensive visual reference (root)
+- [x] PROJECT_CONTEXT.md — full project context for new chats (root)
 
 #### Phase 1 — Foundation
 
@@ -24,10 +26,17 @@
 - [x] 1.4 Senior-friendly theme (high contrast, 56dp buttons, 16sp+ font)
 - [x] `flutter_localizations` SDK package integrated (HR locale for DatePicker)
 
+#### Phase 2 — Auth (UI Prototype)
+
+- [x] 2.1 Login/Register screen (email + password, senior-friendly)
+- [x] Social login buttons (Google, Apple, Facebook — all SVG, circle style)
+- [x] Language picker (HR/EN toggle)
+- [x] Vertical centering with LayoutBuilder + ConstrainedBox
+
 #### Phase 3 — Order Flow (UI Prototype)
 
 - [x] 3.1 OrderScreen — landing page with "Nova narudžba" CTA
-- [x] 3.2 OrderFlowScreen — full 3-step flow (~1226 lines)
+- [x] 3.2 OrderFlowScreen — full 3-step flow (~1454 lines)
   - [x] Step 1 "Kada?" — booking mode (one-time / recurring), date pickers, day/time/duration chips
   - [x] Step 2 "Što vam treba?" — service chips + free-text note + escort info card
   - [x] Step 3 "Pregled" — full order summary
@@ -35,6 +44,10 @@
 - [x] 3.4 Per-day configuration: each day entry has its own start time + duration
 - [x] 3.5 Day range validation — day picker filters days that don't fall within start–end range
 - [x] 3.6 Auto-cleanup of invalid day entries when dates change
+- [x] 3.7 Progressive disclosure: Date → Hour → Minute → Duration (each step appears only after previous is selected)
+- [x] 3.8 15-minute time precision: hour chips (08–19) + minute chips (:00, :15, :30, :45)
+- [x] 3.9 One-time card container: matches recurring day card style (white bg, border, X to cancel, day name header + date subtitle)
+- [x] 3.10 Hour/minute reset: changing hour resets minute selection
 
 #### UI Design System (Pastel Overhaul)
 
@@ -58,7 +71,8 @@
 
 - [x] Chat list + chat room with messages (teal/mint bubbles)
 - [x] Profile screen (lavender avatar, teal icons, settings, logout)
-- [x] Orders screen ("Moje narudžbe" tab — placeholder, teal icon)
+- [x] Orders screen ("Moje narudžbe" — 3 tabs: U obradi, Aktivne, Završene)
+- [x] Order detail screen (tap-to-detail pattern + student review system)
 
 #### Dead Code Cleanup
 
@@ -67,27 +81,33 @@
 - [x] student_card widget deleted
 - [x] All dead code safely removed (0 errors after deletion)
 
+#### Git & Repo
+
+- [x] Git repo renamed: `splivalo/helpi_seniors` (from helpi_students_2.0)
+- [x] Separate repos: `helpi_seniors` (senior app) + `helpi_students` (student app)
+
 ### Next Steps
 
-1. Order confirmation screen (after "Naruči" submit)
-2. Git commit + push all current work
+1. Git commit + push all current work (15-min intervals, card redesign)
+2. Order confirmation screen (after "Naruči" submit)
 3. APK rebuild with latest changes
 4. GoRouter setup (1.5)
-5. Auth flow (login/register screens)
-6. Backend integration (Supabase)
+5. Backend integration (Supabase)
 
 ---
 
 ## Module Status
 
-| Module              | Status            | Progress |
-| ------------------- | ----------------- | -------- |
-| Architecture & Docs | Done              | 100%     |
-| Foundation          | Theme + i18n done | 80%      |
-| Order Flow (UI)     | 3-step flow done  | 85%      |
-| Chat (UI prototype) | Screens done      | 30%      |
-| Profile (UI proto)  | Screen done       | 25%      |
-| Auth                | Waiting           | 0%       |
-| Booking (backend)   | Waiting           | 0%       |
-| Payment (Stripe)    | Waiting           | 0%       |
-| Chat (WebSocket)    | Waiting           | 0%       |
+| Module              | Status                         | Progress |
+| ------------------- | ------------------------------ | -------- |
+| Architecture & Docs | Done                           | 100%     |
+| Foundation          | Theme + i18n done              | 80%      |
+| Auth (UI)           | Login/Register done            | 40%      |
+| Order Flow (UI)     | 3-step flow + 15-min precision | 90%      |
+| Orders (UI)         | 3 tabs + detail + reviews      | 50%      |
+| Chat (UI prototype) | Screens done                   | 30%      |
+| Profile (UI proto)  | Screen done                    | 25%      |
+| Auth (backend)      | Waiting                        | 0%       |
+| Booking (backend)   | Waiting                        | 0%       |
+| Payment (Stripe)    | Waiting                        | 0%       |
+| Chat (WebSocket)    | Waiting                        | 0%       |

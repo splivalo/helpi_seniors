@@ -1,6 +1,6 @@
 # Helpi Senior — System Architecture
 
-> Version: 0.3.0 | Date: 2026-02-26
+> Version: 0.4.0 | Date: 2026-02-28
 
 ---
 
@@ -229,16 +229,20 @@ lib/
 │   ├── auth/
 │   │   ├── data/                # AuthRemoteDataSource, AuthRepository impl
 │   │   ├── domain/              # User entity, AuthRepository interface
-│   │   └── presentation/        # LoginScreen, RegisterScreen, AuthCubit
+│   │   └── presentation/
+│   │       └── login_screen.dart    # Login/Register with social auth (SVG circles)
 │   │
 │   ├── order/                   # ★ Core feature — simplified order flow
 │   │   └── presentation/
 │   │       ├── order_screen.dart       # Landing ("Nova narudžba" CTA)
-│   │       └── order_flow_screen.dart  # 3-step flow (Kada → Što → Pregled)
+│   │       └── order_flow_screen.dart  # 3-step flow (Kada → Što → Pregled) ~1454 lines
 │   │
 │   ├── booking/
+│   │   ├── data/
+│   │   │   └── order_model.dart        # Order model + OrdersNotifier + mock data
 │   │   └── presentation/
-│   │       └── orders_screen.dart      # "Moje narudžbe" tab (placeholder)
+│   │       ├── orders_screen.dart      # "Moje narudžbe" (3 tabs: processing/active/completed)
+│   │       └── order_detail_screen.dart # Order detail + student review system
 │   │
 │   ├── payment/
 │   │   ├── data/                # StripeService, PaymentRepository impl
@@ -343,13 +347,19 @@ entry no longer fits, it is automatically removed.
 ```
 [Jednokratno] [Ponavljajuće]                   ← Mode (tab bar style, coral active)
 [Pon] [Uto] [Sri] [Čet] [Pet] [Sub] [Ned]     ← Days (filtered by date range)
-[08:00] [09:00] ... [19:00]                    ← Start time (per-day)
-[1 sat] [2 sata] [3 sata] [4 sata]            ← Duration (per-day)
+[08:00] [09:00] ... [19:00]                    ← Start hour (per-day)
+[:00] [:15] [:30] [:45]                        ← Start minute (per-day, appears after hour)
+[1 sat] [2 sata] [3 sata] [4 sata]            ← Duration (per-day, appears after minute)
 ```
 
 - Chips: pastel teal (#E0F5F5) when selected, white when not
 - Duration has no default — requires explicit click
 - CTA only enabled when all required fields are filled
+- **Progressive disclosure:** Each row only appears after the previous is selected
+  - Date → Hour → Minute → Duration
+- **One-time card:** Wrapped in white card container matching recurring day cards
+  - Header: weekday name + X to cancel
+  - Subtitle: formatted date
 
 ### Recurring Cancellation Flow (planned)
 

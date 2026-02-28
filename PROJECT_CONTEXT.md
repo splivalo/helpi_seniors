@@ -23,7 +23,7 @@
 - **Što radi:** Senior naručuje pomoć
 - **Ekrani:** Login → Naruči pomoć → Moje narudžbe (3 taba) → Chat s podrškom → Profil
 - **Projekt:** `helpi_senior/`
-- **Repo:** `splivalo/helpi_students_2.0`, branch `main`
+- **Repo:** `splivalo/helpi_seniors`, branch `main`
 
 ### Helpi Student (za napraviti)
 
@@ -59,17 +59,17 @@ lib/
 ├── features/
 │   ├── auth/
 │   │   └── presentation/
-│   │       └── login_screen.dart    # Login/Register s social auth
+│   │       └── login_screen.dart    # Login/Register s social auth (SVG circles)
 │   ├── order/
 │   │   └── presentation/
 │   │       ├── order_screen.dart    # "Naruči pomoć" entry point
-│   │       └── order_flow_screen.dart # 3-step wizard (Kada → Što → Pregled)
+│   │       └── order_flow_screen.dart # 3-step wizard (Kada → Što → Pregled) ~1454 lines
 │   ├── booking/
 │   │   ├── data/
 │   │   │   └── order_model.dart     # Order model + OrdersNotifier + mock data
 │   │   └── presentation/
-│   │       ├── orders_screen.dart   # Lista narudžbi (3 taba)
-│   │       └── order_detail_screen.dart # Detalji narudžbe + ocjenjivanje
+│   │       ├── orders_screen.dart   # Lista narudžbi (3 taba: U obradi/Aktivne/Završene)
+│   │       └── order_detail_screen.dart # Detalji narudžbe + ocjenjivanje studenta
 │   ├── chat/
 │   │   └── presentation/
 │   │       └── chat_list_screen.dart # Chat s Helpi podrškom
@@ -181,7 +181,8 @@ Za student app: isti pristup — mock data, bez backenda, čisti UI prototip.
 
 ## 8. Git & Repo
 
-- **Repo:** `splivalo/helpi_students_2.0`
+- **Senior Repo:** `splivalo/helpi_seniors`
+- **Student Repo:** `splivalo/helpi_students`
 - **Branch:** `main`
 - **Commit format:** `feat/fix/refactor: opis (rezultat: X errors → Y errors)`
 

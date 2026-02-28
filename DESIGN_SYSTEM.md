@@ -167,6 +167,46 @@ TextButton.styleFrom(
 - Border radius: 16
 - Padding: horizontal 16, vertical 10
 
+### 5.7b Time Selection Chips (Order Flow)
+
+Order flow koristi progresivno otkrivanje za odabir vremena:
+
+1. **Sati** — 12 chipova u 3 reda po 4: `08:00`, `09:00` ... `19:00`
+2. **Minute** — 4 chipa u 1 redu: `:00`, `:15`, `:30`, `:45` (pojavi se tek nakon odabira sata)
+3. **Trajanje** — 4 chipa: `1 sat`, `2 sata`, `3 sata`, `4 sata` (pojavi se tek nakon odabira minuta)
+
+- Svaki nivo se pojavljuje tek kad prethodni bude odabran (progressive disclosure)
+- Promjena sata resetira odabir minuta
+- Chipovi koriste isti stil kao ostali (`_buildChip`)
+- Labeli sekcija: "Sati", "Minute", "Trajanje" — bodyMedium, w600
+
+### 5.7c One-Time Card (Order Flow)
+
+Jednokratni termin je umotan u istu karticu kao ponavljajući:
+
+```dart
+Container(
+  padding: EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: Color(0xFFE0E0E0)),
+  ),
+  child: Column(
+    children: [
+      Row(children: [
+        Text(dayName, style: bodyLarge.copyWith(fontWeight: FontWeight.w700)),
+        Spacer(),
+        GestureDetector(onTap: cancel, child: Icon(Icons.close, size: 22, color: Color(0xFF757575))),
+      ]),
+      SizedBox(height: 6),
+      Text(formattedDate, style: bodySmall.copyWith(color: Color(0xFF757575))),
+      // ... Sati → Minute → Trajanje chipovi
+    ],
+  ),
+)
+```
+
 ### 5.8 Status Chip (na order karticama)
 
 - Border radius: 12
