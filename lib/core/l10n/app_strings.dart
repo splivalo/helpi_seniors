@@ -240,6 +240,11 @@ class AppStrings {
       'yourReviews': 'Vaše ocjene',
       'noStudentsYet': 'Još nema dodijeljenih studenata',
       'logout': 'Odjava',
+      'loginTitle': 'Dobrodošli u Helpi',
+      'loginSubtitle': 'Prijavite se ili kreirajte račun',
+      'loginEmail': 'Email adresa',
+      'loginPassword': 'Lozinka',
+      'orContinueWith': 'ili nastavite s',
       'settings': 'Postavke',
       'language': 'Jezik', 'accessData': 'Pristupni podaci',
       'changePassword': 'Promijeni lozinku',
@@ -522,6 +527,11 @@ class AppStrings {
       'yourReviews': 'Your reviews',
       'noStudentsYet': 'No students assigned yet',
       'logout': 'Log out',
+      'loginTitle': 'Welcome to Helpi',
+      'loginSubtitle': 'Sign in or create an account',
+      'loginEmail': 'Email address',
+      'loginPassword': 'Password',
+      'orContinueWith': 'or continue with',
       'settings': 'Settings',
       'language': 'Language', 'accessData': 'Account details',
       'changePassword': 'Change password',
@@ -820,6 +830,11 @@ class AppStrings {
   static String get yourReviews => _t('yourReviews');
   static String get noStudentsYet => _t('noStudentsYet');
   static String get logout => _t('logout');
+  static String get loginTitle => _t('loginTitle');
+  static String get loginSubtitle => _t('loginSubtitle');
+  static String get loginEmail => _t('loginEmail');
+  static String get loginPassword => _t('loginPassword');
+  static String get orContinueWith => _t('orContinueWith');
   static String get settings => _t('settings');
   static String get language => _t('language');
   static String get accessData => _t('accessData');

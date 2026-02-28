@@ -5,9 +5,14 @@ import 'package:helpi_senior/core/l10n/locale_notifier.dart';
 
 /// Profil ekran — pristupni podaci, naručitelj, senior, kartice, uvjeti.
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key, required this.localeNotifier});
+  const ProfileScreen({
+    super.key,
+    required this.localeNotifier,
+    required this.onLogout,
+  });
 
   final LocaleNotifier localeNotifier;
+  final VoidCallback onLogout;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -312,7 +317,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           // ── ODJAVA ──────────────────────────────────
           OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: widget.onLogout,
             icon: const Icon(Icons.logout),
             label: Text(AppStrings.logout),
             style: OutlinedButton.styleFrom(

@@ -11,9 +11,14 @@ import 'package:helpi_senior/features/profile/presentation/profile_screen.dart';
 
 /// Glavni ekran s BottomNavigationBar — 4 taba.
 class MainShell extends StatefulWidget {
-  const MainShell({super.key, required this.localeNotifier});
+  const MainShell({
+    super.key,
+    required this.localeNotifier,
+    required this.onLogout,
+  });
 
   final LocaleNotifier localeNotifier;
+  final VoidCallback onLogout;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -32,7 +37,10 @@ class _MainShellState extends State<MainShell> {
       OrderScreen(ordersNotifier: _ordersNotifier),
       OrdersScreen(ordersNotifier: _ordersNotifier),
       const ChatScreen(),
-      ProfileScreen(localeNotifier: widget.localeNotifier),
+      ProfileScreen(
+        localeNotifier: widget.localeNotifier,
+        onLogout: widget.onLogout,
+      ),
     ];
   }
 
