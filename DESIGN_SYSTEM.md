@@ -53,10 +53,15 @@
 
 ### Specijalne
 
-| Naziv             | Hex       | Uporaba             |
-| ----------------- | --------- | ------------------- |
-| **Star yellow**   | `#FFC107` | Zvjezdice za ocjene |
-| **Facebook blue** | `#1877F2` | Facebook logo       |
+| Naziv                  | Hex       | Uporaba                                |
+| ---------------------- | --------- | -------------------------------------- |
+| **Star yellow**        | `#FFC107` | Zvjezdice za ocjene                    |
+| **Facebook blue**      | `#1877F2` | Facebook logo                          |
+| **Upcoming orange**    | `#F57C00` | Job status badge + icon (predstojeći)  |
+| **Upcoming orange bg** | `#FFF3E0` | Badge pozadina za predstojeće termine  |
+| **Cancelled bg**       | `#FFEBEE` | Badge pozadina za otkazane termine     |
+| **Review card bg**     | `#F5F5F5` | Inline review container na job kartici |
+| **Cancelled card bg**  | `#FAFAFA` | Job kartica kad je otkazan             |
 
 ---
 
@@ -214,7 +219,55 @@ Container(
 - `Aktivna` / `Active`: `#4CAF50` text + green/12% background
 - `Završena` / `Completed`: `#757575` text + grey/12% background
 
-### 5.9 Social Login Button (krug)
+### 5.9 Job Status Badge (na job karticama)
+
+- Border radius: 8
+- **Završen:** teal text (`#009D9D`) + pastel teal bg (`#E0F5F5`)
+- **Predstojeći:** orange text (`#F57C00`) + orange bg (`#FFF3E0`)
+- **Otkazan:** coral text (`#EF5B5B`) + red bg (`#FFEBEE`)
+- Font: 11, w600
+
+### 5.10 Job Card (Termini sekcija)
+
+```dart
+Container(
+  padding: EdgeInsets.all(12),
+  decoration: BoxDecoration(
+    color: isCancelled ? Color(0xFFFAFAFA) : Colors.white,
+    borderRadius: BorderRadius.circular(12),
+    border: Border.all(color: Color(0xFFE0E0E0)),  // unified grey for ALL statuses
+  ),
+)
+```
+
+- **Row 1:** Status icon (18px) + date (3-letter day + date) + status badge
+  - Icons: `check_circle` (completed/teal), `schedule` (upcoming/orange), `cancel` (cancelled/coral)
+  - Cancelled date: `TextDecoration.lineThrough` + grey text
+- **Row 2:** Time · Duration · Price (bodySmall, grey, left padding 26)
+- **Row 3:** Student name with `person_outline` icon (teal, w600)
+- **Row 4 (conditional):**
+  - Completed without review: coral "Ocijeni" ElevatedButton (height 30)
+  - Upcoming: coral "Otkaži" OutlinedButton (height 30, aligned right with Spacer)
+- **Review inline (if rated):** Stars + comment in #F5F5F5 container (borderRadius 10)
+
+### 5.11 Termini Section Container
+
+```dart
+Container(
+  padding: EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: Color(0xFFE0E0E0)),
+  ),
+)
+```
+
+- Header: "Termini" title + chevron icon (expand/collapse)
+- Default state: **collapsed**
+- GestureDetector on header row toggles `_jobsExpanded`
+
+### 5.12 Social Login Button (krug)
 
 ```dart
 Container(
@@ -233,7 +286,7 @@ Container(
 - Google, Apple, Facebook — SVG logotipi u `assets/images/`
 - Razmak između: 16
 
-### 5.10 Bottom Navigation Bar
+### 5.13 Bottom Navigation Bar
 
 - Pozadina: white
 - Selected item: teal `#009D9D`
@@ -245,7 +298,7 @@ Container(
 - Shadow: `BoxShadow(color: black/alpha10, blurRadius: 12, offset: Offset(0, -4))`
 - Ikone: size 28
 
-### 5.11 AppBar
+### 5.14 AppBar
 
 - Pozadina: `#F9F7F4` (ista kao scaffold)
 - Foreground: `#2D2D2D`
@@ -253,7 +306,7 @@ Container(
 - Center title: true
 - Title style: fontSize 22, w700
 
-### 5.12 Logo (Login ekran)
+### 5.15 Logo (Login ekran)
 
 ```dart
 Container(

@@ -3,7 +3,7 @@
 > WARNING: It is STRICTLY FORBIDDEN to start any task from the Roadmap without explicit user confirmation.
 > Every step requires explicit approval from the product owner.
 
-> Last updated: 2026-02-28
+> Last updated: 2026-03-01
 
 ---
 
@@ -36,6 +36,8 @@
 - [x] 3.5b Progressive disclosure (Date → Hour → Minute → Duration)
 - [x] 3.5c 15-minute time precision (hour + minute chips)
 - [x] 3.5d One-time card redesign (matching recurring day card style)
+- [x] 3.5e "+Dodaj dan" progressive disclosure (visible only after all fields filled)
+- [x] 3.5f Auto-scroll on duration selection (reveals "+Dodaj dan" button)
 - [ ] 3.6 Order confirmation screen (success after submit)
 - [ ] 3.7 Order Cubit + repository
 - [ ] 3.8 Backend integration (POST /orders)
@@ -44,9 +46,14 @@
 
 - [x] 4.1 "Moje narudžbe" screen (order list with 3 tabs: processing/active/completed)
 - [x] 4.2 Order detail screen (tap-to-detail, expand/collapse)
-- [x] 4.3 Student review system (star rating + comment)
-- [ ] 4.4 Order status updates (push notifications)
-- [ ] 4.5 Orders Cubit + repository
+- [x] 4.3 Pricing display (14€/h weekday, 16€/h Sunday, weekly total)
+- [x] 4.4 JobModel + JobStatus (completed, upcoming, cancelled)
+- [x] 4.5 "Termini" section: collapsible job list with per-job cards
+- [x] 4.6 Per-job actions: cancel upcoming, rate completed (stars + comment)
+- [x] 4.7 Inline review display on job cards
+- [x] 4.8 Removed order-level Students section (reviews now at job level)
+- [ ] 4.9 Order status updates (push notifications)
+- [ ] 4.10 Orders Cubit + repository
 
 ## Phase 5 - Payment
 

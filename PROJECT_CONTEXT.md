@@ -66,10 +66,10 @@ lib/
 │   │       └── order_flow_screen.dart # 3-step wizard (Kada → Što → Pregled) ~1454 lines
 │   ├── booking/
 │   │   ├── data/
-│   │   │   └── order_model.dart     # Order model + OrdersNotifier + mock data
+│   │   │   └── order_model.dart     # Order/Job/Review models + OrdersNotifier + mock data
 │   │   └── presentation/
 │   │       ├── orders_screen.dart   # Lista narudžbi (3 taba: U obradi/Aktivne/Završene)
-│   │       └── order_detail_screen.dart # Detalji narudžbe + ocjenjivanje studenta
+│   │       └── order_detail_screen.dart # Detalji narudžbe + pricing + Termini (job-level) + per-job ocjene
 │   ├── chat/
 │   │   └── presentation/
 │   │       └── chat_list_screen.dart # Chat s Helpi podrškom
@@ -169,9 +169,11 @@ ValueListenableBuilder na MaterialApp rebuilda UI
 Trenutno SVE je mock data — nema backenda.
 
 - `OrdersNotifier` (ValueNotifier) drži listu narudžbi u memoriji
-- Studenti su hardkodirani s imenima, slikama (`student_1.jpg` itd.), ocjenama
-- Slike studenata u `assets/images/`
-- Order statusi: `processing` → `active` → `completed`
+- `JobModel` drži individualne termine (sesije) s datumom, statusom, ocjenom
+- `JobStatus`: `completed`, `upcoming`, `cancelled`
+- Ocjenjivanje je na razini **termina** (job), ne narudžbe (order)
+- Pricing: 14€/h radnim danima, 16€/h nedjeljom
+- Studenti su hardkodirani s imenima i ocjenama
 
 Za student app: isti pristup — mock data, bez backenda, čisti UI prototip.
 

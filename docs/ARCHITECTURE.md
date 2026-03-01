@@ -1,6 +1,6 @@
 # Helpi Senior — System Architecture
 
-> Version: 0.4.0 | Date: 2026-02-28
+> Version: 0.5.0 | Date: 2026-03-01
 
 ---
 
@@ -197,13 +197,14 @@ The table exists for future use when specialization may be needed.
 
 ### ENUM Values (reference)
 
-| ENUM                | Values                                                                                                         |
-| ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `user_role`         | `senior`, `student`, `admin`                                                                                   |
-| `service_type`      | `shopping`, `home_help`, `companionship`, `walk`, `escort`, `other`                                            |
-| `booking_status`    | `pending`, `confirmed`, `in_progress`, `completed`, `cancelled`, `cancelled_by_student`, `skipped`, `replaced` |
-| `payment_status`    | `pending`, `succeeded`, `failed`, `refunded`                                                                   |
-| `notification_type` | `booking_confirmed`, `payment_received`, `chat_message`, `reminder`                                            |
+| ENUM                   | Values                                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `user_role`            | `senior`, `student`, `admin`                                                                                   |
+| `service_type`         | `shopping`, `home_help`, `companionship`, `walk`, `escort`, `other`                                            |
+| `booking_status`       | `pending`, `confirmed`, `in_progress`, `completed`, `cancelled`, `cancelled_by_student`, `skipped`, `replaced` |
+| `job_status` (Flutter) | `completed`, `upcoming`, `cancelled` — per-session status in Flutter UI                                        |
+| `payment_status`       | `pending`, `succeeded`, `failed`, `refunded`                                                                   |
+| `notification_type`    | `booking_confirmed`, `payment_received`, `chat_message`, `reminder`                                            |
 
 ---
 
@@ -239,10 +240,10 @@ lib/
 │   │
 │   ├── booking/
 │   │   ├── data/
-│   │   │   └── order_model.dart        # Order model + OrdersNotifier + mock data
+│   │   │   └── order_model.dart        # Order/Job/Review models + OrdersNotifier + mock data
 │   │   └── presentation/
 │   │       ├── orders_screen.dart      # "Moje narudžbe" (3 tabs: processing/active/completed)
-│   │       └── order_detail_screen.dart # Order detail + student review system
+│   │       └── order_detail_screen.dart # Order detail + pricing + jobs section + per-job reviews
 │   │
 │   ├── payment/
 │   │   ├── data/                # StripeService, PaymentRepository impl

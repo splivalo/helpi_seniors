@@ -221,3 +221,74 @@
   - X button to cancel/reset (clears date, hour, minute, duration).
   - Font sizes changed from `bodyLarge` to `bodyMedium` to match recurring cards.
 - **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-01 "+Dodaj dan" Progressive Disclosure
+
+### Decision: Hide button until all fields are filled
+
+- **Context:** "+ Dodaj dan" button was always visible, even when existing day entries were incomplete. This could confuse seniors into adding more days before finishing current ones.
+- **Change:** Button only appears when `_dayEntries.every((e) => e.fromHour != null && e.fromMinute != null && e.duration != null)`.
+- **Bonus:** Added `_scrollToBottom()` on duration chip selection — so when the last field is filled and the button appears, it auto-scrolls into view.
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-01 Pricing on Order Detail Screen
+
+### Decision: Show prices per session and weekly total
+
+- **Context:** Order detail screen showed times and durations but no prices. Seniors need to see costs clearly.
+- **Pricing model:**
+  - Weekdays (Mon–Sat): 14€/h
+  - Sunday: 16€/h
+  - Payment charged 30 min before service start (planned)
+- **Implementation:**
+  - `_hourlyRate = 14`, `_sundayRate = 16` constants
+  - `_priceForDay(weekday, hours)` helper
+  - One-time orders: single price row
+  - Recurring orders: per-day price + weekly total with divider
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-01 Job-Level Tracking System ("Termini")
+
+### Decision: Track individual sessions, not just orders
+
+- **Context:** An order can generate many sessions (weekly recurring = many weeks). Need to track each session individually for cancellation and reviews.
+- **Architecture change (MAJOR):**
+  - Added `JobStatus` enum: `completed`, `upcoming`, `cancelled`
+  - Added `JobModel` class: `date`, `weekday`, `time`, `durationHours`, `studentName`, `status`, `review`
+  - `OrderModel` now has `List<JobModel> jobs` field
+  - `addOrder()` generates concrete job dates via `_generateJobs()` (first 3 marked completed for mock)
+  - `cancelJob(orderId, jobIndex)` — cancel individual upcoming session
+  - `addJobReview(orderId, jobIndex, review)` — rate individual completed session
+- **UI:**
+  - "Termini" section with collapse/expand (default collapsed, chevron icon)
+  - Job cards: status icon (check_circle/schedule/cancel) + date + status badge + time·duration·price + student name
+  - Cancel button for upcoming jobs (with confirmation dialog)
+  - Rate button for completed jobs without review (bottom sheet with stars + comment)
+  - Inline review display (stars + comment with #F5F5F5 background)
+- **Removed:** Order-level `_studentsSection()`, `_studentCard()`, `_showReviewSheet()` — all redundant since reviews moved to job level
+- **Status colors:**
+  - Completed: teal on pastel teal
+  - Upcoming: `#F57C00` (darker orange) on `#FFF3E0`
+  - Cancelled: coral on `#FFEBEE`
+- **All job cards:** white background, unified grey border (#E0E0E0)
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-01 Visual Refinements (Job Cards)
+
+### Multiple small visual iterations
+
+- **Orange contrast:** Started with `#FFA726` (too light) → tried `#E65100` (too error-like) → settled on `#F57C00` (darker orange, "waiting" feel without confusion)
+- **Job card background:** Changed from `#F9F7F4` to white for better contrast
+- **Borders:** Removed green teal outline from completed cards → unified grey `#E0E0E0` for all statuses
+- **"Otkaži termin":** Briefly changed label then reverted back to "Otkaži"
+- **Compact format:** Summary card now uses 3-letter day names (`_dayMediumName()`: Pet, Pon) and `Xh` format (3h not "3 sata") — consistent with Step 3 summary
+- **Review card background:** Changed from white to `#F5F5F5` so inline review is visible on white job card
+- **Status:** Implemented. 0 errors.

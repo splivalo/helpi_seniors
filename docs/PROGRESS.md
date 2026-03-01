@@ -1,10 +1,10 @@
 ﻿# Helpi Senior Progress
 
-> Last updated: 2026-02-28
+> Last updated: 2026-03-01
 
 ---
 
-## Overall progress: ~55%
+## Overall progress: ~65%
 
 ### Completed
 
@@ -36,7 +36,7 @@
 #### Phase 3 — Order Flow (UI Prototype)
 
 - [x] 3.1 OrderScreen — landing page with "Nova narudžba" CTA
-- [x] 3.2 OrderFlowScreen — full 3-step flow (~1454 lines)
+- [x] 3.2 OrderFlowScreen — full 3-step flow (~1672 lines)
   - [x] Step 1 "Kada?" — booking mode (one-time / recurring), date pickers, day/time/duration chips
   - [x] Step 2 "Što vam treba?" — service chips + free-text note + escort info card
   - [x] Step 3 "Pregled" — full order summary
@@ -48,6 +48,23 @@
 - [x] 3.8 15-minute time precision: hour chips (08–19) + minute chips (:00, :15, :30, :45)
 - [x] 3.9 One-time card container: matches recurring day card style (white bg, border, X to cancel, day name header + date subtitle)
 - [x] 3.10 Hour/minute reset: changing hour resets minute selection
+- [x] 3.11 "+ Dodaj dan" progressive disclosure: button only appears when ALL existing day entries have hour, minute, and duration filled
+- [x] 3.12 Auto-scroll on duration selection: screen scrolls to bottom when duration chip is selected, revealing "+ Dodaj dan" button
+
+#### Phase 4 — Orders Management (UI Prototype)
+
+- [x] 4.1 Orders screen ("Moje narudžbe" — 3 tabs: U obradi, Aktivne, Završene)
+- [x] 4.2 Order detail screen (tap-to-detail pattern)
+- [x] 4.3 Pricing on order detail: 14€/h weekdays, 16€/h Sunday, per-day and weekly total
+- [x] 4.4 JobModel + JobStatus enum (completed, upcoming, cancelled)
+- [x] 4.5 Job generation: `addOrder()` generates concrete job dates from day entries
+- [x] 4.6 "Termini" section: collapse/expand with chevron, default collapsed
+- [x] 4.7 Job cards: date, time, duration, price, student name, status icon + badge
+- [x] 4.8 Cancel individual job: confirmation dialog for upcoming jobs
+- [x] 4.9 Rate per job: bottom sheet review (stars + comment) per completed job
+- [x] 4.10 Inline review display: stars + comment shown on job card after rating
+- [x] 4.11 Removed order-level Students section (reviews moved to job level)
+- [x] 4.12 Compact format: 3-letter day abbreviations (Pet, Pon) + Xh format throughout
 
 #### UI Design System (Pastel Overhaul)
 
@@ -66,13 +83,10 @@
 - [x] Date buttons: white bg + grey border, no shadow
 - [x] White bottom nav with subtle shadow
 - [x] No shadows on chips or cards
-
-#### Remaining Screens
-
-- [x] Chat list + chat room with messages (teal/mint bubbles)
-- [x] Profile screen (lavender avatar, teal icons, settings, logout)
-- [x] Orders screen ("Moje narudžbe" — 3 tabs: U obradi, Aktivne, Završene)
-- [x] Order detail screen (tap-to-detail pattern + student review system)
+- [x] Job status colors: completed=teal, upcoming=#F57C00, cancelled=coral
+- [x] Unified grey borders (#E0E0E0) on all job cards
+- [x] White job card background, cancelled=#FAFAFA
+- [x] Inline review card background: #F5F5F5
 
 #### Dead Code Cleanup
 
@@ -88,7 +102,7 @@
 
 ### Next Steps
 
-1. Git commit + push all current work (15-min intervals, card redesign)
+1. Git commit + push all current work
 2. Order confirmation screen (after "Naruči" submit)
 3. APK rebuild with latest changes
 4. GoRouter setup (1.5)
@@ -98,16 +112,16 @@
 
 ## Module Status
 
-| Module              | Status                         | Progress |
-| ------------------- | ------------------------------ | -------- |
-| Architecture & Docs | Done                           | 100%     |
-| Foundation          | Theme + i18n done              | 80%      |
-| Auth (UI)           | Login/Register done            | 40%      |
-| Order Flow (UI)     | 3-step flow + 15-min precision | 90%      |
-| Orders (UI)         | 3 tabs + detail + reviews      | 50%      |
-| Chat (UI prototype) | Screens done                   | 30%      |
-| Profile (UI proto)  | Screen done                    | 25%      |
-| Auth (backend)      | Waiting                        | 0%       |
-| Booking (backend)   | Waiting                        | 0%       |
-| Payment (Stripe)    | Waiting                        | 0%       |
-| Chat (WebSocket)    | Waiting                        | 0%       |
+| Module              | Status                                             | Progress |
+| ------------------- | -------------------------------------------------- | -------- |
+| Architecture & Docs | Done                                               | 100%     |
+| Foundation          | Theme + i18n done                                  | 80%      |
+| Auth (UI)           | Login/Register done                                | 40%      |
+| Order Flow (UI)     | 3-step flow + progressive disclosure + auto-scroll | 95%      |
+| Orders (UI)         | 3 tabs + detail + pricing + jobs + per-job reviews | 80%      |
+| Chat (UI prototype) | Screens done                                       | 30%      |
+| Profile (UI proto)  | Screen done                                        | 25%      |
+| Auth (backend)      | Waiting                                            | 0%       |
+| Booking (backend)   | Waiting                                            | 0%       |
+| Payment (Stripe)    | Waiting                                            | 0%       |
+| Chat (WebSocket)    | Waiting                                            | 0%       |
