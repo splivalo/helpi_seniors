@@ -21,7 +21,7 @@ class OrderScreen extends StatelessWidget {
         top: false,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
