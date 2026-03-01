@@ -25,12 +25,6 @@ class OrderScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.add_circle_outline,
-                  size: 80,
-                  color: theme.colorScheme.secondary.withAlpha(100),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   AppStrings.orderTitle,
                   style: theme.textTheme.headlineMedium,
@@ -45,17 +39,21 @@ class OrderScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            OrderFlowScreen(ordersNotifier: ordersNotifier),
-                      ),
-                    );
-                  },
-                  child: Text(AppStrings.newOrder),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              OrderFlowScreen(ordersNotifier: ordersNotifier),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add_circle_outline, size: 22),
+                    label: Text(AppStrings.newOrder),
+                  ),
                 ),
               ],
             ),
