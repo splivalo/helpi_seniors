@@ -35,6 +35,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   String _formatPrice(int euros) => '$euros,00 €';
 
+  bool _jobsExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -84,9 +86,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               _summaryCard(theme, order),
               const SizedBox(height: 20),
 
-              // ── Students section ──
-              _studentsSection(theme, order),
-              const SizedBox(height: 24),
+              // ── Jobs / sessions ──
+              if (order.status != OrderStatus.processing)
+                _jobsSection(theme, order),
+              if (order.status != OrderStatus.processing)
+                const SizedBox(height: 20),
 
               // ── Action buttons ──
               if (order.status == OrderStatus.processing)
@@ -212,7 +216,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 child: Row(
                   children: [
                     Text(
-                      entry.dayName,
+                      _dayMediumName(entry.weekday),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -220,7 +224,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     const Spacer(),
                     Text(
                       entry.durationHours > 0
-                          ? '${entry.time}  ·  ${entry.duration}  ·  ${_formatPrice(_priceForDay(entry.weekday, entry.durationHours))}'
+                          ? '${entry.time}  ·  ${entry.durationHours}h  ·  ${_formatPrice(_priceForDay(entry.weekday, entry.durationHours))}'
                           : '${entry.time}  ·  ${entry.duration}',
                       style: theme.textTheme.bodyMedium,
                     ),
@@ -326,8 +330,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  // ── Students section ──
-  Widget _studentsSection(ThemeData theme, OrderModel order) {
+  // ── Jobs / sessions section ──
+  Widget _jobsSection(ThemeData theme, OrderModel order) {
+    if (order.jobs.isEmpty) return const SizedBox.shrink();
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -339,161 +345,247 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppStrings.studentsSection,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+          GestureDetector(
+            onTap: () {
+              HapticFeedback.selectionClick();
+              setState(() => _jobsExpanded = !_jobsExpanded);
+            },
+            child: Row(
+              children: [
+                Text(
+                  AppStrings.jobsSection,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  _jobsExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: _grey,
+                ),
+              ],
             ),
           ),
-          const Divider(height: 24),
-          if (order.students.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: Text(
-                  AppStrings.noStudentsYet,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: _grey),
-                ),
-              ),
-            )
-          else
-            ...order.students.asMap().entries.map((entry) {
-              final idx = entry.key;
-              final student = entry.value;
-              return _studentCard(theme, order, idx, student);
+          if (_jobsExpanded) ...[
+            const SizedBox(height: 16),
+            ...order.jobs.asMap().entries.map((mapEntry) {
+              final jobIndex = mapEntry.key;
+              final job = mapEntry.value;
+              final isLast = jobIndex == order.jobs.length - 1;
+              final price = _priceForDay(job.weekday, job.durationHours);
+
+              return Padding(
+                padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
+                child: _jobCard(theme, order, jobIndex, job, price),
+              );
             }),
+          ],
         ],
       ),
     );
   }
 
-  Widget _studentCard(
+  Widget _jobCard(
     ThemeData theme,
     OrderModel order,
-    int studentIndex,
-    StudentAssignment student,
+    int jobIndex,
+    JobModel job,
+    int price,
   ) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: studentIndex < order.students.length - 1 ? 16 : 0,
+    final isCompleted = job.status == JobStatus.completed;
+    final isCancelled = job.status == JobStatus.cancelled;
+    final isUpcoming = job.status == JobStatus.upcoming;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isCancelled ? const Color(0xFFFAFAFA) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Name + rate button
+          // Row 1: date + status badge
           Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0F5F5),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.person, color: _teal, size: 22),
+              Icon(
+                isCompleted
+                    ? Icons.check_circle
+                    : isCancelled
+                    ? Icons.cancel
+                    : Icons.schedule,
+                size: 18,
+                color: isCompleted
+                    ? _teal
+                    : isCancelled
+                    ? _coral
+                    : const Color(0xFFF57C00),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
+                child: Text(
+                  '${_dayMediumName(job.weekday)}, ${job.date}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: isCancelled ? _grey : const Color(0xFF212121),
+                    decoration: isCancelled ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+              _jobStatusBadge(theme, job.status),
+            ],
+          ),
+          const SizedBox(height: 6),
+
+          // Row 2: time · duration · price
+          Padding(
+            padding: const EdgeInsets.only(left: 26),
+            child: Text(
+              '${job.time}  ·  ${job.durationHours}h  ·  ${_formatPrice(price)}',
+              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+            ),
+          ),
+
+          // Row 3: student name
+          Padding(
+            padding: const EdgeInsets.only(left: 26, top: 4),
+            child: Row(
+              children: [
+                const Icon(Icons.person_outline, size: 14, color: _teal),
+                const SizedBox(width: 4),
+                Text(
+                  job.studentName,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: _teal,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Row 4: action buttons
+          if (isUpcoming || (isCompleted && job.review == null)) ...[
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 26),
+              child: Row(
+                children: [
+                  // Rate button (completed only, no review yet)
+                  if (isCompleted && job.review == null)
+                    SizedBox(
+                      height: 30,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showJobReviewSheet(order, jobIndex),
+                        icon: const Icon(
+                          Icons.star,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                        label: Text(AppStrings.rateStudent),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _coral,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          textStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          minimumSize: Size.zero,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  // Cancel button (upcoming only)
+                  if (isUpcoming) ...[
+                    const Spacer(),
+                    SizedBox(
+                      height: 30,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _confirmCancelJob(order, jobIndex),
+                        icon: const Icon(Icons.close, size: 14),
+                        label: Text(AppStrings.cancelJobLabel),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _coral,
+                          side: const BorderSide(color: _coral),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          textStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          minimumSize: Size.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+
+          // Show existing review inline
+          if (job.review != null) ...[
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 26),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      student.name,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      '${AppStrings.assignedSince}: ${student.fromDate}',
-                      style: theme.textTheme.bodySmall?.copyWith(color: _grey),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 36,
-                child: ElevatedButton.icon(
-                  onPressed: () => _showReviewSheet(order, studentIndex),
-                  icon: const Icon(Icons.star, size: 16, color: Colors.white),
-                  label: Text(AppStrings.rateStudent),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _coral,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    textStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    minimumSize: Size.zero,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Reviews list
-          if (student.reviews.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              AppStrings.yourReviews,
-              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
-            ),
-            const SizedBox(height: 8),
-            ...student.reviews.map(
-              (review) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF9F7F4),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Row 1: stars + date
-                      Row(
-                        children: [
-                          ...List.generate(
-                            5,
-                            (i) => Icon(
-                              i < review.rating
-                                  ? Icons.star
-                                  : Icons.star_border,
-                              color: const Color(0xFFFFC107),
-                              size: 16,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            review.date,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: _grey,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Row 2: comment (max 3 lines)
-                      if (review.comment.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            review.comment,
-                            style: theme.textTheme.bodySmall,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        ...List.generate(
+                          5,
+                          (i) => Icon(
+                            i < job.review!.rating
+                                ? Icons.star
+                                : Icons.star_border,
+                            color: const Color(0xFFFFC107),
+                            size: 14,
                           ),
                         ),
-                    ],
-                  ),
+                        const Spacer(),
+                        Text(
+                          job.review!.date,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: _grey,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (job.review!.comment.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          job.review!.comment,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: 12,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -503,10 +595,72 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  // ── Review bottom sheet ──
-  void _showReviewSheet(OrderModel order, int studentIndex) {
+  Widget _jobStatusBadge(ThemeData theme, JobStatus status) {
+    final Color bg;
+    final Color fg;
+    final String label;
+
+    switch (status) {
+      case JobStatus.completed:
+        bg = const Color(0xFFE0F5F5);
+        fg = _teal;
+        label = AppStrings.jobCompleted;
+      case JobStatus.upcoming:
+        bg = const Color(0xFFFFF3E0);
+        fg = const Color(0xFFF57C00);
+        label = AppStrings.jobUpcoming;
+      case JobStatus.cancelled:
+        bg = const Color(0xFFFFEBEE);
+        fg = _coral;
+        label = AppStrings.jobCancelled;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  /// Confirm cancel dialog for a job.
+  void _confirmCancelJob(OrderModel order, int jobIndex) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppStrings.cancelJobLabel),
+        content: Text(AppStrings.cancelJobConfirm),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppStrings.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.ordersNotifier.cancelJob(order.id, jobIndex);
+              Navigator.pop(ctx);
+            },
+            child: Text(
+              AppStrings.cancelJobLabel,
+              style: const TextStyle(color: _coral),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Review bottom sheet for a specific job.
+  void _showJobReviewSheet(OrderModel order, int jobIndex) {
     int selectedRating = 0;
     final commentCtrl = TextEditingController();
+    final job = order.jobs[jobIndex];
 
     showModalBottomSheet<void>(
       context: context,
@@ -529,11 +683,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '${AppStrings.rateStudent}: '
-                    '${order.students[studentIndex].name}',
+                    '${AppStrings.rateStudent}: ${job.studentName}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${_dayMediumName(job.weekday)}, ${job.date}',
+                    style: theme.textTheme.bodySmall?.copyWith(color: _grey),
                   ),
                   const SizedBox(height: 20),
 
@@ -583,15 +741,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   '${now.day.toString().padLeft(2, '0')}.'
                                   '${now.month.toString().padLeft(2, '0')}.'
                                   '${now.year}';
-                              widget.ordersNotifier.addReview(
+                              widget.ordersNotifier.addJobReview(
                                 order.id,
-                                studentIndex,
+                                jobIndex,
                                 ReviewModel(
                                   rating: selectedRating,
                                   comment: commentCtrl.text.trim(),
                                   date: dateStr,
                                 ),
                               );
+                              if (!ctx.mounted) return;
                               Navigator.pop(ctx);
                             }
                           : null,
@@ -605,6 +764,28 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         );
       },
     );
+  }
+
+  /// 3-letter day abbreviation from weekday int.
+  String _dayMediumName(int day) {
+    switch (day) {
+      case 1:
+        return AppStrings.dayMon;
+      case 2:
+        return AppStrings.dayTue;
+      case 3:
+        return AppStrings.dayWed;
+      case 4:
+        return AppStrings.dayThu;
+      case 5:
+        return AppStrings.dayFri;
+      case 6:
+        return AppStrings.daySat;
+      case 7:
+        return AppStrings.daySun;
+      default:
+        return '';
+    }
   }
 
   // ── Status chip ──

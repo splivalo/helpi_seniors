@@ -235,6 +235,13 @@ class AppStrings {
       'showLess': 'Prikaži manje',
       'orderDetails': 'Detalji narudžbe',
       'studentsSection': 'Studenti',
+      'jobsSection': 'Termini',
+      'jobCompleted': 'Završen',
+      'jobUpcoming': 'Predstojeći',
+      'jobCancelled': 'Otkazan',
+      'cancelJobLabel': 'Otkaži',
+      'cancelJobConfirm': 'Jeste li sigurni da želite otkazati ovaj termin?',
+      'jobStudent': 'Student',
       'assignedSince': 'Dolazi od',
       'rateStudent': 'Ocijeni',
       'sendReview': 'Pošalji ocjenu',
@@ -527,6 +534,13 @@ class AppStrings {
       'showLess': 'Show less',
       'orderDetails': 'Order details',
       'studentsSection': 'Students',
+      'jobsSection': 'Sessions',
+      'jobCompleted': 'Completed',
+      'jobUpcoming': 'Upcoming',
+      'jobCancelled': 'Cancelled',
+      'cancelJobLabel': 'Cancel',
+      'cancelJobConfirm': 'Are you sure you want to cancel this session?',
+      'jobStudent': 'Student',
       'assignedSince': 'Assigned since',
       'rateStudent': 'Rate',
       'sendReview': 'Send review',
@@ -837,6 +851,13 @@ class AppStrings {
   static String get showLess => _t('showLess');
   static String get orderDetails => _t('orderDetails');
   static String get studentsSection => _t('studentsSection');
+  static String get jobsSection => _t('jobsSection');
+  static String get jobCompleted => _t('jobCompleted');
+  static String get jobUpcoming => _t('jobUpcoming');
+  static String get jobCancelled => _t('jobCancelled');
+  static String get cancelJobLabel => _t('cancelJobLabel');
+  static String get cancelJobConfirm => _t('cancelJobConfirm');
+  static String get jobStudent => _t('jobStudent');
   static String get assignedSince => _t('assignedSince');
   static String get rateStudent => _t('rateStudent');
   static String get sendReview => _t('sendReview');
