@@ -500,7 +500,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                           minimumSize: Size.zero,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
@@ -525,7 +525,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                           minimumSize: Size.zero,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
