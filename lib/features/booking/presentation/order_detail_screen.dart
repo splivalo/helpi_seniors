@@ -368,6 +368,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ],
             ),
           ),
+          if (!order.isOneTime) ...[
+            const SizedBox(height: 6),
+            Text(
+              AppStrings.jobsMonthlySubtitle,
+              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+            ),
+          ],
           if (_jobsExpanded) ...[
             const SizedBox(height: 16),
             ...order.jobs.asMap().entries.map((mapEntry) {

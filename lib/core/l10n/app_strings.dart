@@ -236,6 +236,7 @@ class AppStrings {
       'orderDetails': 'Detalji narudžbe',
       'studentsSection': 'Studenti',
       'jobsSection': 'Termini',
+      'jobsMonthlySubtitle': 'Prikazani termini za tekući mjesec.',
       'jobCompleted': 'Završen',
       'jobUpcoming': 'Predstojeći',
       'jobCancelled': 'Otkazan',
@@ -535,6 +536,7 @@ class AppStrings {
       'orderDetails': 'Order details',
       'studentsSection': 'Students',
       'jobsSection': 'Sessions',
+      'jobsMonthlySubtitle': 'Showing sessions for the current month.',
       'jobCompleted': 'Completed',
       'jobUpcoming': 'Upcoming',
       'jobCancelled': 'Cancelled',
@@ -852,6 +854,7 @@ class AppStrings {
   static String get orderDetails => _t('orderDetails');
   static String get studentsSection => _t('studentsSection');
   static String get jobsSection => _t('jobsSection');
+  static String get jobsMonthlySubtitle => _t('jobsMonthlySubtitle');
   static String get jobCompleted => _t('jobCompleted');
   static String get jobUpcoming => _t('jobUpcoming');
   static String get jobCancelled => _t('jobCancelled');
