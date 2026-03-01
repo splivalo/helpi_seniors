@@ -24,6 +24,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   static const _coral = Color(0xFFEF5B5B);
   static const _grey = Color(0xFF757575);
 
+  // ── Pricing ──
+  static const _hourlyRate = 14; // €/h standard
+  static const _sundayRate = 16; // €/h Sunday
+
+  int _priceForDay(int weekday, int hours) {
+    final rate = weekday == DateTime.sunday ? _sundayRate : _hourlyRate;
+    return rate * hours;
+  }
+
+  String _formatPrice(int euros) => '$euros,00 €';
+
   @override
   void initState() {
     super.initState();
@@ -170,12 +181,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             _summaryRow(theme, AppStrings.orderSummaryEndDate, order.endDate),
           ],
 
-          // One-time: time + duration
+          // One-time: time + duration + price
           if (order.isOneTime) ...[
             const Divider(height: 24),
             _summaryRow(theme, AppStrings.orderSummaryTime, order.time),
             const Divider(height: 24),
             _summaryRow(theme, AppStrings.orderSummaryDuration, order.duration),
+            if (order.durationHours > 0) ...[
+              const Divider(height: 24),
+              _summaryRow(
+                theme,
+                AppStrings.orderSummaryPrice,
+                _formatPrice(_priceForDay(order.weekday, order.durationHours)),
+                bold: true,
+              ),
+            ],
           ],
 
           // Recurring: day entries
@@ -199,13 +219,42 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                     const Spacer(),
                     Text(
-                      '${entry.time}  ·  ${entry.duration}',
+                      entry.durationHours > 0
+                          ? '${entry.time}  ·  ${entry.duration}  ·  ${_formatPrice(_priceForDay(entry.weekday, entry.durationHours))}'
+                          : '${entry.time}  ·  ${entry.duration}',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
               ),
             ),
+            // Weekly total
+            if (order.dayEntries.any((e) => e.durationHours > 0)) ...[
+              const Divider(height: 24),
+              Row(
+                children: [
+                  Text(
+                    AppStrings.orderSummaryWeeklyTotal,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    _formatPrice(
+                      order.dayEntries.fold<int>(
+                        0,
+                        (sum, e) =>
+                            sum + _priceForDay(e.weekday, e.durationHours),
+                      ),
+                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
 
           const Divider(height: 24),
@@ -257,7 +306,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _summaryRow(ThemeData theme, String label, String value) {
+  Widget _summaryRow(
+    ThemeData theme,
+    String label,
+    String value, {
+    bool bold = false,
+  }) {
     return Row(
       children: [
         Text(label, style: theme.textTheme.bodySmall?.copyWith(color: _grey)),
@@ -265,7 +319,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
           ),
         ),
       ],

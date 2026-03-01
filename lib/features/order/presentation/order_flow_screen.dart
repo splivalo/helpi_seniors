@@ -169,6 +169,28 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     }
   }
 
+  /// 3-letter day name: Pon, Uto, Sri…
+  String _dayMediumName(int day) {
+    switch (day) {
+      case 1:
+        return AppStrings.dayMon;
+      case 2:
+        return AppStrings.dayTue;
+      case 3:
+        return AppStrings.dayWed;
+      case 4:
+        return AppStrings.dayThu;
+      case 5:
+        return AppStrings.dayFri;
+      case 6:
+        return AppStrings.daySat;
+      case 7:
+        return AppStrings.daySun;
+      default:
+        return '';
+    }
+  }
+
   String _formatDate(DateTime date) {
     final d = date.day.toString().padLeft(2, '0');
     final m = date.month.toString().padLeft(2, '0');
@@ -658,10 +680,16 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               _availableDays.isNotEmpty)
             _buildDayPickerSection(theme),
 
-          // "+ Dodaj dan" button — only after at least one day exists
+          // "+ Dodaj dan" button — only when all existing entries are complete
           if (_dayEntries.isNotEmpty &&
               !_showingDayPicker &&
-              _availableDays.isNotEmpty)
+              _availableDays.isNotEmpty &&
+              _dayEntries.every(
+                (e) =>
+                    e.fromHour != null &&
+                    e.fromMinute != null &&
+                    e.duration != null,
+              ))
             _buildAddDayButton(),
         ],
       ],
@@ -894,7 +922,10 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             const SizedBox(height: 8),
             _buildDurationChips(
               selectedDuration: entry.duration,
-              onSelected: (d) => setState(() => entry.duration = d),
+              onSelected: (d) {
+                setState(() => entry.duration = d);
+                _scrollToBottom();
+              },
             ),
           ],
         ],
@@ -1245,7 +1276,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         ? '${entry.fromHour.toString().padLeft(2, '0')}:${(entry.fromMinute ?? 0).toString().padLeft(2, '0')}'
                         : '-';
                     final durStr = entry.duration != null
-                        ? _durationLabel(entry.duration!)
+                        ? '${entry.duration}h'
                         : '-';
                     final priceStr = entry.duration != null
                         ? _formatPrice(_priceForDay(entry.day, entry.duration!))
@@ -1255,7 +1286,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                       child: Row(
                         children: [
                           Text(
-                            _dayFullName(entry.day),
+                            _dayMediumName(entry.day),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -1536,6 +1567,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           dayName: _dayFullName(entry.day),
           time: timeStr,
           duration: durStr,
+          weekday: entry.day,
+          durationHours: entry.duration ?? 0,
         );
       }).toList();
     }
@@ -1553,6 +1586,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       duration: duration,
       dayEntries: dayEntries,
       endDate: endDate,
+      weekday: isOneTime ? (_oneTimeDate?.weekday ?? 1) : 1,
+      durationHours: isOneTime ? (_oneTimeDuration ?? 0) : 0,
     );
 
     widget.ordersNotifier.addOrder(order);

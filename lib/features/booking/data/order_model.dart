@@ -9,11 +9,15 @@ class OrderDayEntry {
     required this.dayName,
     required this.time,
     required this.duration,
+    this.weekday = 1,
+    this.durationHours = 0,
   });
 
   final String dayName;
   final String time;
   final String duration;
+  final int weekday; // 1=Mon … 7=Sun
+  final int durationHours; // numeric hours for price calc
 }
 
 /// Recenzija studenta od strane seniora.
@@ -53,6 +57,8 @@ class OrderModel {
     this.duration = '',
     this.dayEntries = const [],
     this.endDate = '',
+    this.weekday = 1,
+    this.durationHours = 0,
     List<StudentAssignment>? students,
   }) : students = students ?? [];
 
@@ -69,6 +75,10 @@ class OrderModel {
 
   final List<OrderDayEntry> dayEntries;
   final String endDate;
+
+  /// For one-time orders: weekday (1=Mon…7=Sun) and numeric hours.
+  final int weekday;
+  final int durationHours;
 
   /// Studenti dodijeljeni ovoj narudžbi.
   final List<StudentAssignment> students;
