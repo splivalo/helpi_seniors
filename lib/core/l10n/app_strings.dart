@@ -257,6 +257,8 @@ class AppStrings {
       'addCard': 'Dodaj karticu',
       'agreeToTerms': 'Slažem se s ',
       'termsOfUse': 'uvjetima',
+      'byClickingRegister': 'Klikom na "Završi registraciju" prihvaćate ',
+      'termsOfUseLink': 'uvjete korištenja',
       'cardEndingIn': 'Kartica završava na {digits}',
       // ── Parametrizirani ───────────────────────
       'deleteConfirm': 'Obriši {item}?',
@@ -542,6 +544,9 @@ class AppStrings {
       'addCard': 'Add card',
       'agreeToTerms': 'I agree to the ',
       'termsOfUse': 'terms',
+      'byClickingRegister':
+          'By clicking "Complete registration" you accept the ',
+      'termsOfUseLink': 'terms of use',
       'cardEndingIn': 'Card ending in {digits}',
       // ── Parametrizirani ───────────────────────
       'deleteConfirm': 'Delete {item}?',
@@ -845,6 +850,8 @@ class AppStrings {
   static String get addCard => _t('addCard');
   static String get agreeToTerms => _t('agreeToTerms');
   static String get termsOfUse => _t('termsOfUse');
+  static String get byClickingRegister => _t('byClickingRegister');
+  static String get termsOfUseLink => _t('termsOfUseLink');
   static String cardEndingIn(String digits) =>
       _t('cardEndingIn', params: {'digits': digits});
   // ── Parametrizirani stringovi ─────────────────

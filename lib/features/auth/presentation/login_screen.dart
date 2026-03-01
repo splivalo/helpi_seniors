@@ -49,7 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
   DateTime? _senDob;
 
   bool _orderingForOther = false;
-  bool _agreedToTerms = false;
 
   @override
   void dispose() {
@@ -351,16 +350,19 @@ class _LoginScreenState extends State<LoginScreen> {
         // ── "Naručujem za drugog" toggle ──
         Row(
           children: [
-            Checkbox(
-              value: _orderingForOther,
-              onChanged: (v) => setState(() => _orderingForOther = v ?? false),
-              activeColor: _teal,
-            ),
             Expanded(
               child: Text(
                 AppStrings.orderingForOther,
                 style: theme.textTheme.bodyMedium,
               ),
+            ),
+            Switch(
+              value: _orderingForOther,
+              onChanged: (v) => setState(() => _orderingForOther = v),
+              activeThumbColor: Colors.white,
+              activeTrackColor: _teal,
+              inactiveThumbColor: _teal,
+              trackOutlineColor: WidgetStateProperty.all(_teal),
             ),
           ],
         ),
@@ -396,44 +398,14 @@ class _LoginScreenState extends State<LoginScreen> {
             keyboardType: TextInputType.phone,
           ),
         ],
-        const SizedBox(height: 16),
-
-        // ── Uvjeti ──
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Checkbox(
-              value: _agreedToTerms,
-              onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
-              activeColor: _teal,
-            ),
-            Expanded(
-              child: RichText(
-                text: TextSpan(
-                  style: theme.textTheme.bodyMedium,
-                  children: [
-                    TextSpan(text: AppStrings.agreeToTerms),
-                    TextSpan(
-                      text: AppStrings.termsOfUse,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: _teal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
 
         // ── CTA: Završi registraciju ──
         SizedBox(
           width: double.infinity,
           height: 52,
           child: ElevatedButton(
-            onPressed: _agreedToTerms ? widget.onLoginSuccess : null,
+            onPressed: widget.onLoginSuccess,
             style: ElevatedButton.styleFrom(
               backgroundColor: _coral,
               foregroundColor: Colors.white,
@@ -447,6 +419,26 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             child: Text(AppStrings.completeRegistration),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // ── Uvjeti (tekst ispod gumba) ──
+        Center(
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: const Color(0xFF757575),
+              ),
+              children: [
+                TextSpan(text: AppStrings.byClickingRegister),
+                TextSpan(
+                  text: AppStrings.termsOfUseLink,
+                  style: TextStyle(fontWeight: FontWeight.w600, color: _teal),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 32),
