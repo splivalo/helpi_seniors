@@ -113,6 +113,10 @@ class AppStrings {
       'lastName': 'Prezime',
       'phone': 'Broj telefona',
       'address': 'Adresa',
+      'regProfileTitle': 'Popunite profil',
+      'regProfileSubtitle': 'Trebamo vaše podatke za nastavak',
+      'completeRegistration': 'Završi registraciju',
+      'orderingForOther': 'Naručujem za drugog',
 
       // ── Marketplace ───────────────────────────
       'marketplace': 'Studenti',
@@ -247,6 +251,7 @@ class AppStrings {
       'genderMale': 'Muško',
       'genderFemale': 'Žensko',
       'dateOfBirth': 'Datum rođenja',
+      'dobPlaceholder': 'DD.MM.GGGG.',
       'creditCards': 'Kreditne kartice',
       'noCards': 'Nemate spremljenih kartica',
       'addCard': 'Dodaj karticu',
@@ -393,6 +398,10 @@ class AppStrings {
       'lastName': 'Last name',
       'phone': 'Phone number',
       'address': 'Address',
+      'regProfileTitle': 'Complete your profile',
+      'regProfileSubtitle': 'We need your details to continue',
+      'completeRegistration': 'Complete registration',
+      'orderingForOther': 'Ordering for someone else',
 
       // ── Marketplace ───────────────────────────
       'marketplace': 'Students',
@@ -527,6 +536,7 @@ class AppStrings {
       'genderMale': 'Male',
       'genderFemale': 'Female',
       'dateOfBirth': 'Date of birth',
+      'dobPlaceholder': 'DD.MM.YYYY.',
       'creditCards': 'Credit cards',
       'noCards': 'No saved cards',
       'addCard': 'Add card',
@@ -691,6 +701,10 @@ class AppStrings {
   static String get lastName => _t('lastName');
   static String get phone => _t('phone');
   static String get address => _t('address');
+  static String get regProfileTitle => _t('regProfileTitle');
+  static String get regProfileSubtitle => _t('regProfileSubtitle');
+  static String get completeRegistration => _t('completeRegistration');
+  static String get orderingForOther => _t('orderingForOther');
 
   // ── Marketplace ───────────────────────────────
   static String get marketplace => _t('marketplace');
@@ -825,6 +839,7 @@ class AppStrings {
   static String get genderMale => _t('genderMale');
   static String get genderFemale => _t('genderFemale');
   static String get dateOfBirth => _t('dateOfBirth');
+  static String get dobPlaceholder => _t('dobPlaceholder');
   static String get creditCards => _t('creditCards');
   static String get noCards => _t('noCards');
   static String get addCard => _t('addCard');
