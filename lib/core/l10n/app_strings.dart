@@ -238,7 +238,6 @@ class AppStrings {
       'loginSubtitle': 'Prijavite se ili kreirajte račun',
       'loginEmail': 'Email adresa',
       'loginPassword': 'Lozinka',
-      'orContinueWith': 'ili nastavite s',
       'settings': 'Postavke',
       'language': 'Jezik', 'accessData': 'Pristupni podaci',
       'changePassword': 'Promijeni lozinku',
@@ -519,7 +518,6 @@ class AppStrings {
       'loginSubtitle': 'Sign in or create an account',
       'loginEmail': 'Email address',
       'loginPassword': 'Password',
-      'orContinueWith': 'or continue with',
       'settings': 'Settings',
       'language': 'Language', 'accessData': 'Account details',
       'changePassword': 'Change password',
@@ -817,7 +815,6 @@ class AppStrings {
   static String get loginSubtitle => _t('loginSubtitle');
   static String get loginEmail => _t('loginEmail');
   static String get loginPassword => _t('loginPassword');
-  static String get orContinueWith => _t('orContinueWith');
   static String get settings => _t('settings');
   static String get language => _t('language');
   static String get accessData => _t('accessData');
