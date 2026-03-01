@@ -60,6 +60,13 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   // ── Step 3 state ──────────────────────────────
   final TextEditingController _notesController = TextEditingController();
 
+  // Mock saved cards
+  static const _mockCards = [
+    {'brand': 'Visa', 'last4': '4242'},
+    {'brand': 'Mastercard', 'last4': '8901'},
+  ];
+  int _selectedCardIndex = 0; // default: first card
+
   // ── Constants ─────────────────────────────────
   static const _teal = Color(0xFF009D9D);
   static const _timeHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -1343,6 +1350,103 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ── Payment method section ──
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE0E0E0)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.paymentMethod,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ..._mockCards.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final card = entry.value;
+                  final isSelected = _selectedCardIndex == i;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedCardIndex = i),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFFE0F5F5)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected ? _teal : const Color(0xFFE0E0E0),
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.credit_card,
+                            color: isSelected ? _teal : const Color(0xFF757575),
+                            size: 22,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            '${card['brand']}  ••••  ${card['last4']}',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          if (isSelected)
+                            const Icon(
+                              Icons.check_circle,
+                              color: _teal,
+                              size: 22,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 4),
+                GestureDetector(
+                  onTap: () {
+                    // Prototype — would open dedicated PaymentMethodScreen
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.add_circle_outline,
+                        color: _teal,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppStrings.addCard,
+                        style: TextStyle(
+                          color: _teal,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

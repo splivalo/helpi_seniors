@@ -199,6 +199,7 @@ class AppStrings {
 
       // ── Payment ───────────────────────────────
       'payment': 'Plaćanje',
+      'paymentMethod': 'Način plaćanja',
       'payNow': 'Plati sada',
       'paymentSuccess': 'Plaćanje uspješno!',
       'paymentFailed': 'Plaćanje neuspješno',
@@ -490,6 +491,7 @@ class AppStrings {
 
       // ── Payment ───────────────────────────────
       'payment': 'Payment',
+      'paymentMethod': 'Payment method',
       'payNow': 'Pay now',
       'paymentSuccess': 'Payment successful!',
       'paymentFailed': 'Payment failed',
@@ -799,6 +801,7 @@ class AppStrings {
   static String get bookNow => _t('bookNow');
   // ── Payment ───────────────────────────────────
   static String get payment => _t('payment');
+  static String get paymentMethod => _t('paymentMethod');
   static String get payNow => _t('payNow');
   static String get paymentSuccess => _t('paymentSuccess');
   static String get paymentFailed => _t('paymentFailed');
