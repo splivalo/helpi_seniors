@@ -71,7 +71,7 @@ class AppStrings {
       'escortInfo':
           'Pratnja može potrajati dulje od odabranog trajanja (npr. čekanje kod liječnika). Ako usluga traje dulje, razlika se naplaćuje dodatno.',
       'overtimeDisclaimer':
-          'Ako usluga traje dulje od odabranog trajanja, dodatno vrijeme se naplaćuje prema dogovoru.',
+          'Naplata se vrši 30 minuta prije početka usluge. Ako usluga traje dulje od odabranog trajanja, dodatno vrijeme se naplaćuje prema dogovoru.',
       'orderSummaryFrequency': 'Učestalost',
       'orderSummaryDays': 'Odabrani dani',
       'orderSummaryServices': 'Odabrane usluge',
@@ -81,6 +81,9 @@ class AppStrings {
       'orderSummaryDuration': 'Trajanje',
       'orderSummaryStartDate': 'Početak',
       'orderSummaryEndDate': 'Kraj',
+      'orderSummaryPrice': 'Cijena',
+      'orderSummaryTotal': 'Ukupno',
+      'orderSummaryWeeklyTotal': 'Tjedno ukupno',
       'noNotes': 'Nema napomene',
       'orderMessage': 'Poruka (neobavezno)',
       'orderMessageHint': 'Napišite poruku ili dodatne informacije...',
@@ -264,6 +267,7 @@ class AppStrings {
       'deleteConfirm': 'Obriši {item}?',
       'distanceKm': '{km} km',
       'pricePerHour': '{price} €/sat',
+      'sundayRate': 'Nedjelja (viša cijena)',
       'ratingCount': '{count} recenzija',
       'welcomeUser': 'Dobrodošli, {name}!',
       'orderForStudent': 'Narudžba za {student}',
@@ -358,7 +362,7 @@ class AppStrings {
       'escortInfo':
           'Escort services may take longer than the selected duration (e.g. waiting at the doctor). If the service takes longer, the difference is charged additionally.',
       'overtimeDisclaimer':
-          'If the service takes longer than the selected duration, additional time is charged by agreement.',
+          'Payment is charged 30 minutes before the service starts. If the service takes longer than the selected duration, additional time is charged by agreement.',
       'orderSummaryFrequency': 'Frequency',
       'orderSummaryDays': 'Selected days',
       'orderSummaryServices': 'Selected services',
@@ -368,6 +372,9 @@ class AppStrings {
       'orderSummaryDuration': 'Duration',
       'orderSummaryStartDate': 'Start',
       'orderSummaryEndDate': 'End',
+      'orderSummaryPrice': 'Price',
+      'orderSummaryTotal': 'Total',
+      'orderSummaryWeeklyTotal': 'Weekly total',
       'noNotes': 'No notes',
       'orderMessage': 'Message (optional)',
       'orderMessageHint': 'Write a message or additional information...',
@@ -552,6 +559,7 @@ class AppStrings {
       'deleteConfirm': 'Delete {item}?',
       'distanceKm': '{km} km',
       'pricePerHour': '€{price}/hour',
+      'sundayRate': 'Sunday (higher rate)',
       'ratingCount': '{count} Reviews',
       'welcomeUser': 'Welcome, {name}!',
       'orderForStudent': 'Order for {student}',
@@ -673,6 +681,9 @@ class AppStrings {
   static String get orderSummaryTime => _t('orderSummaryTime');
   static String get orderSummaryDuration => _t('orderSummaryDuration');
   static String get orderSummaryStartDate => _t('orderSummaryStartDate');
+  static String get orderSummaryPrice => _t('orderSummaryPrice');
+  static String get orderSummaryTotal => _t('orderSummaryTotal');
+  static String get orderSummaryWeeklyTotal => _t('orderSummaryWeeklyTotal');
   static String get orderSummaryEndDate => _t('orderSummaryEndDate');
   static String get noNotes => _t('noNotes');
   static String get orderMessage => _t('orderMessage');
@@ -862,6 +873,8 @@ class AppStrings {
 
   static String pricePerHour(String price) =>
       _t('pricePerHour', params: {'price': price});
+
+  static String get sundayRate => _t('sundayRate');
 
   static String ratingCount(String count) =>
       _t('ratingCount', params: {'count': count});

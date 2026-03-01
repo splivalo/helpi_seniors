@@ -66,6 +66,18 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   static const _timeMinutes = [0, 15, 30, 45];
   static const _durations = [1, 2, 3, 4];
 
+  // ── Pricing ────────────────────────────────────
+  static const _hourlyRate = 14; // €/h standard
+  static const _sundayRate = 16; // €/h Sunday
+
+  /// Returns price for [hours] duration on [weekday] (1=Mon…7=Sun).
+  int _priceForDay(int weekday, int hours) {
+    final rate = weekday == DateTime.sunday ? _sundayRate : _hourlyRate;
+    return rate * hours;
+  }
+
+  String _formatPrice(int euros) => '$euros,00 €';
+
   @override
   void dispose() {
     _notesController.dispose();
@@ -1170,6 +1182,17 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         ? _durationLabel(_oneTimeDuration!)
                         : '-',
                   ),
+                  if (_oneTimeDate != null && _oneTimeDuration != null) ...[
+                    const Divider(height: 24),
+                    _summaryRow(
+                      theme,
+                      AppStrings.orderSummaryPrice,
+                      _formatPrice(
+                        _priceForDay(_oneTimeDate!.weekday, _oneTimeDuration!),
+                      ),
+                      bold: true,
+                    ),
+                  ],
                 ] else ...[
                   _summaryRow(
                     theme,
@@ -1217,6 +1240,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                     final durStr = entry.duration != null
                         ? _durationLabel(entry.duration!)
                         : '-';
+                    final priceStr = entry.duration != null
+                        ? _formatPrice(_priceForDay(entry.day, entry.duration!))
+                        : '';
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(
@@ -1229,13 +1255,40 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                           ),
                           const Spacer(),
                           Text(
-                            '$timeStr  ·  $durStr',
+                            '$timeStr  ·  $durStr  ·  $priceStr',
                             style: theme.textTheme.bodyMedium,
                           ),
                         ],
                       ),
                     );
                   }),
+                  // Weekly total
+                  if (_dayEntries.every((e) => e.duration != null)) ...[
+                    const Divider(height: 24),
+                    Row(
+                      children: [
+                        Text(
+                          AppStrings.orderSummaryWeeklyTotal,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          _formatPrice(
+                            _dayEntries.fold<int>(
+                              0,
+                              (sum, e) =>
+                                  sum + _priceForDay(e.day, e.duration!),
+                            ),
+                          ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
 
                 const Divider(height: 24),
@@ -1413,20 +1466,29 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     }
   }
 
-  Widget _summaryRow(ThemeData theme, String label, String value) {
+  Widget _summaryRow(
+    ThemeData theme,
+    String label,
+    String value, {
+    bool bold = false,
+  }) {
     return Row(
       children: [
         Text(
           label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: const Color(0xFF757575),
-          ),
+          style: bold
+              ? theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                )
+              : theme.textTheme.bodySmall?.copyWith(
+                  color: const Color(0xFF757575),
+                ),
         ),
         const Spacer(),
         Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
           ),
         ),
       ],
