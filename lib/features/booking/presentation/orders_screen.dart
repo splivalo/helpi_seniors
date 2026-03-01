@@ -269,16 +269,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     switch (status) {
       case OrderStatus.processing:
-        bg = const Color(0xFFFFF3E0);
-        fg = const Color(0xFFE65100);
+        bg = const Color(0xFFE8F1FB);
+        fg = const Color(0xFF1976D2);
         label = AppStrings.orderProcessing;
       case OrderStatus.active:
-        bg = const Color(0xFFE0F5F5);
-        fg = const Color(0xFF009D9D);
+        bg = const Color(0xFFE8F5E9);
+        fg = const Color(0xFF4CAF50);
         label = AppStrings.orderActive;
       case OrderStatus.completed:
         bg = const Color(0xFFE8F5E9);
-        fg = const Color(0xFF2E7D32);
+        fg = const Color(0xFF4CAF50);
         label = AppStrings.orderCompleted;
     }
 

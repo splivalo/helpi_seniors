@@ -21,6 +21,7 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   static const _teal = Color(0xFF009D9D);
+  static const _green = Color(0xFF4CAF50);
   static const _coral = Color(0xFFEF5B5B);
   static const _grey = Color(0xFF757575);
 
@@ -426,10 +427,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     : Icons.schedule,
                 size: 18,
                 color: isCompleted
-                    ? _teal
+                    ? _green
                     : isCancelled
                     ? _coral
-                    : const Color(0xFFF57C00),
+                    : const Color(0xFF1976D2),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -485,24 +486,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   if (isCompleted && job.review == null)
                     SizedBox(
                       height: 30,
-                      child: ElevatedButton.icon(
+                      child: OutlinedButton.icon(
                         onPressed: () => _showJobReviewSheet(order, jobIndex),
-                        icon: const Icon(
-                          Icons.star,
-                          size: 14,
-                          color: Colors.white,
-                        ),
+                        icon: const Icon(Icons.star, size: 14),
                         label: Text(AppStrings.rateStudent),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _coral,
-                          foregroundColor: Colors.white,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _teal,
+                          side: const BorderSide(color: _teal),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           textStyle: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                           minimumSize: Size.zero,
-                          elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -609,12 +605,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     switch (status) {
       case JobStatus.completed:
-        bg = const Color(0xFFE0F5F5);
-        fg = _teal;
+        bg = const Color(0xFFE8F5E9);
+        fg = _green;
         label = AppStrings.jobCompleted;
       case JobStatus.upcoming:
-        bg = const Color(0xFFFFF3E0);
-        fg = const Color(0xFFF57C00);
+        bg = const Color(0xFFE8F1FB);
+        fg = const Color(0xFF1976D2);
         label = AppStrings.jobUpcoming;
       case JobStatus.cancelled:
         bg = const Color(0xFFFFEBEE);
@@ -803,16 +799,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     switch (status) {
       case OrderStatus.processing:
-        bg = const Color(0xFFFFF3E0);
-        fg = const Color(0xFFE65100);
+        bg = const Color(0xFFE8F1FB);
+        fg = const Color(0xFF1976D2);
         label = AppStrings.orderProcessing;
       case OrderStatus.active:
-        bg = const Color(0xFFE0F5F5);
-        fg = _teal;
+        bg = const Color(0xFFE8F5E9);
+        fg = _green;
         label = AppStrings.orderActive;
       case OrderStatus.completed:
         bg = const Color(0xFFE8F5E9);
-        fg = const Color(0xFF2E7D32);
+        fg = _green;
         label = AppStrings.orderCompleted;
     }
 
