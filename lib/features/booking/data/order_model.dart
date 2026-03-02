@@ -120,7 +120,40 @@ int _mockNameIndex = 0;
 
 /// In-memory spremnik narudžbi.
 class OrdersNotifier extends ChangeNotifier {
+  OrdersNotifier() {
+    _seedMockData();
+  }
+
   final List<OrderModel> _orders = [];
+
+  /// Seed one completed one-time order for prototype testing.
+  void _seedMockData() {
+    final seedOrder = OrderModel(
+      id: _nextId,
+      services: ['Čišćenje', 'Kuhanje'],
+      date: '25.02.2026',
+      frequency: 'Jednom',
+      status: OrderStatus.completed,
+      isOneTime: true,
+      time: '10:00',
+      duration: '2 sata',
+      weekday: 3, // Wednesday
+      durationHours: 2,
+      students: [StudentAssignment(name: 'Ana M.', fromDate: '25.02.2026')],
+      jobs: [
+        JobModel(
+          date: '25.02.2026',
+          weekday: 3,
+          time: '10:00',
+          durationHours: 2,
+          studentName: 'Ana M.',
+          status: JobStatus.completed,
+        ),
+      ],
+    );
+    _orders.add(seedOrder);
+    _nextId++;
+  }
 
   List<OrderModel> get orders => List.unmodifiable(_orders);
 
@@ -239,6 +272,10 @@ class OrdersNotifier extends ChangeNotifier {
   void completeOrder(int id) {
     final order = _orders.firstWhere((o) => o.id == id);
     order.status = OrderStatus.completed;
+    // For one-time orders, also mark the single job as completed
+    if (order.isOneTime && order.jobs.isNotEmpty) {
+      order.jobs.first.status = JobStatus.completed;
+    }
     notifyListeners();
   }
 

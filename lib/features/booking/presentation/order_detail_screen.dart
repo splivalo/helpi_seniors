@@ -87,10 +87,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               _summaryCard(theme, order),
               const SizedBox(height: 20),
 
-              // ── Jobs / sessions ──
-              if (order.status != OrderStatus.processing)
+              // ── Jobs / sessions (recurring only) ──
+              if (order.status != OrderStatus.processing && !order.isOneTime)
                 _jobsSection(theme, order),
-              if (order.status != OrderStatus.processing)
+              if (order.status != OrderStatus.processing && !order.isOneTime)
                 const SizedBox(height: 20),
 
               // ── Action buttons ──
@@ -305,6 +305,118 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
             const SizedBox(height: 4),
             Text(order.notes, style: theme.textTheme.bodyMedium),
+          ],
+
+          // One-time completed: student + review inside summary card
+          if (order.isOneTime &&
+              order.status == OrderStatus.completed &&
+              order.jobs.isNotEmpty) ...[
+            const Divider(height: 24),
+            // Grey label
+            Text(
+              AppStrings.studentName,
+              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+            ),
+            const SizedBox(height: 6),
+            // Student name + small Ocijeni button
+            if (order.jobs.first.review == null)
+              Row(
+                children: [
+                  const Icon(Icons.person_outline, size: 16, color: _teal),
+                  const SizedBox(width: 6),
+                  Text(
+                    order.jobs.first.studentName,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _teal,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    height: 30,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showJobReviewSheet(order, 0),
+                      icon: const Icon(Icons.star, size: 14),
+                      label: Text(AppStrings.rateStudent),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _teal,
+                        side: const BorderSide(color: _teal),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        textStyle: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        minimumSize: Size.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else ...[
+              Row(
+                children: [
+                  const Icon(Icons.person_outline, size: 16, color: _teal),
+                  const SizedBox(width: 6),
+                  Text(
+                    order.jobs.first.studentName,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _teal,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        ...List.generate(
+                          5,
+                          (i) => Icon(
+                            i < order.jobs.first.review!.rating
+                                ? Icons.star
+                                : Icons.star_border,
+                            color: const Color(0xFFFFC107),
+                            size: 18,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          order.jobs.first.review!.date,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: _grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (order.jobs.first.review!.comment.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          order.jobs.first.review!.comment,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ],
       ),

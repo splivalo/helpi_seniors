@@ -76,6 +76,7 @@ class AppStrings {
       'orderSummaryDays': 'Odabrani dani',
       'orderSummaryServices': 'Odabrane usluge',
       'orderSummaryNotes': 'Napomena',
+      'studentName': 'Ime studenta',
       'orderSummaryDate': 'Datum',
       'orderSummaryTime': 'Vrijeme',
       'orderSummaryDuration': 'Trajanje',
@@ -376,6 +377,7 @@ class AppStrings {
       'orderSummaryDays': 'Selected days',
       'orderSummaryServices': 'Selected services',
       'orderSummaryNotes': 'Note',
+      'studentName': 'Student name',
       'orderSummaryDate': 'Date',
       'orderSummaryTime': 'Time',
       'orderSummaryDuration': 'Duration',
@@ -695,6 +697,7 @@ class AppStrings {
   static String get orderSummaryDays => _t('orderSummaryDays');
   static String get orderSummaryServices => _t('orderSummaryServices');
   static String get orderSummaryNotes => _t('orderSummaryNotes');
+  static String get studentName => _t('studentName');
   static String get orderSummaryDate => _t('orderSummaryDate');
   static String get orderSummaryTime => _t('orderSummaryTime');
   static String get orderSummaryDuration => _t('orderSummaryDuration');
