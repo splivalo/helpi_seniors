@@ -281,7 +281,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE0F5F5),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: _teal),
                 ),
                 child: Text(
