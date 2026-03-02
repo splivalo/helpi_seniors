@@ -156,9 +156,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
   // ── Compact order card — tap to open detail ──
   Widget _buildOrderCard(ThemeData theme, OrderModel order) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.selectionClick();
-        Navigator.push<void>(
+        final result = await Navigator.push<String>(
           context,
           MaterialPageRoute(
             builder: (_) => OrderDetailScreen(
@@ -167,6 +167,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ),
         );
+        if (!mounted) return;
+        if (result == 'repeated') {
+          setState(() => _selectedTab = 0);
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(16),

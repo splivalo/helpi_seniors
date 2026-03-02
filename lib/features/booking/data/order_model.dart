@@ -126,9 +126,10 @@ class OrdersNotifier extends ChangeNotifier {
 
   final List<OrderModel> _orders = [];
 
-  /// Seed one completed one-time order for prototype testing.
+  /// Seed completed orders for prototype testing.
   void _seedMockData() {
-    final seedOrder = OrderModel(
+    // 1) Completed one-time order
+    final seedOneTime = OrderModel(
       id: _nextId,
       services: ['Čišćenje', 'Kuhanje'],
       date: '25.02.2026',
@@ -151,7 +152,143 @@ class OrdersNotifier extends ChangeNotifier {
         ),
       ],
     );
-    _orders.add(seedOrder);
+    _orders.add(seedOneTime);
+    _nextId++;
+
+    // 2) Completed recurring (no end date)
+    final seedRecurring = OrderModel(
+      id: _nextId,
+      services: ['Čišćenje'],
+      date: '03.01.2026',
+      frequency: 'Ponavljajuće',
+      status: OrderStatus.completed,
+      isOneTime: false,
+      time: '09:00',
+      duration: '3 sata',
+      weekday: 1,
+      durationHours: 3,
+      dayEntries: const [
+        OrderDayEntry(
+          dayName: 'Ponedjeljak',
+          time: '09:00',
+          duration: '3 sata',
+          weekday: 1,
+          durationHours: 3,
+        ),
+        OrderDayEntry(
+          dayName: 'Četvrtak',
+          time: '14:00',
+          duration: '2 sata',
+          weekday: 4,
+          durationHours: 2,
+        ),
+      ],
+      students: [StudentAssignment(name: 'Marko K.', fromDate: '03.01.2026')],
+      jobs: [
+        JobModel(
+          date: '05.01.2026',
+          weekday: 1,
+          time: '09:00',
+          durationHours: 3,
+          studentName: 'Marko K.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '08.01.2026',
+          weekday: 4,
+          time: '14:00',
+          durationHours: 2,
+          studentName: 'Marko K.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '12.01.2026',
+          weekday: 1,
+          time: '09:00',
+          durationHours: 3,
+          studentName: 'Marko K.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '15.01.2026',
+          weekday: 4,
+          time: '14:00',
+          durationHours: 2,
+          studentName: 'Marko K.',
+          status: JobStatus.completed,
+        ),
+      ],
+    );
+    _orders.add(seedRecurring);
+    _nextId++;
+
+    // 3) Completed recurring with end date
+    final seedUntilDate = OrderModel(
+      id: _nextId,
+      services: ['Kuhanje', 'Šetnja'],
+      date: '10.01.2026',
+      frequency: 'Do 07.02.2026',
+      status: OrderStatus.completed,
+      isOneTime: false,
+      time: '11:00',
+      duration: '2 sata',
+      weekday: 6,
+      durationHours: 2,
+      endDate: '07.02.2026',
+      dayEntries: const [
+        OrderDayEntry(
+          dayName: 'Subota',
+          time: '11:00',
+          duration: '2 sata',
+          weekday: 6,
+          durationHours: 2,
+        ),
+      ],
+      students: [StudentAssignment(name: 'Ivana P.', fromDate: '10.01.2026')],
+      jobs: [
+        JobModel(
+          date: '10.01.2026',
+          weekday: 6,
+          time: '11:00',
+          durationHours: 2,
+          studentName: 'Ivana P.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '17.01.2026',
+          weekday: 6,
+          time: '11:00',
+          durationHours: 2,
+          studentName: 'Ivana P.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '24.01.2026',
+          weekday: 6,
+          time: '11:00',
+          durationHours: 2,
+          studentName: 'Ivana P.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '31.01.2026',
+          weekday: 6,
+          time: '11:00',
+          durationHours: 2,
+          studentName: 'Ivana P.',
+          status: JobStatus.completed,
+        ),
+        JobModel(
+          date: '07.02.2026',
+          weekday: 6,
+          time: '11:00',
+          durationHours: 2,
+          studentName: 'Ivana P.',
+          status: JobStatus.cancelled,
+        ),
+      ],
+    );
+    _orders.add(seedUntilDate);
     _nextId++;
   }
 
@@ -167,6 +304,14 @@ class OrdersNotifier extends ChangeNotifier {
       _orders.where((o) => o.status == OrderStatus.completed).toList();
 
   int _nextId = 1;
+
+  /// Add an order in processing state (e.g. repeated order awaiting confirmation).
+  void addProcessingOrder(OrderModel order) {
+    order.status = OrderStatus.processing;
+    _orders.insert(0, order);
+    _nextId++;
+    notifyListeners();
+  }
 
   void addOrder(OrderModel order) {
     // Prototype: set to active and assign a mock student

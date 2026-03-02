@@ -152,7 +152,7 @@ class AppStrings {
       'hasEndDate': 'Do određenog datuma',
       'selectEndDate': 'Odaberite zadnji termin',
       'recurringNoEnd': 'Ponavljajuće',
-      'recurringWithEnd': 'Ponavljajuće do {date}',
+      'recurringWithEnd': 'Do {date}',
       'lastSessionLabel': 'Zadnji termin',
       'recurringUntilDateInfo':
           'Rezervacija traje do {date}. '
@@ -453,7 +453,7 @@ class AppStrings {
       'hasEndDate': 'Until a specific date',
       'selectEndDate': 'Select last session',
       'recurringNoEnd': 'Recurring',
-      'recurringWithEnd': 'Recurring until {date}',
+      'recurringWithEnd': 'Until {date}',
       'lastSessionLabel': 'Last session',
       'recurringUntilDateInfo':
           'Booking runs until {date}. '

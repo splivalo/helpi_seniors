@@ -87,7 +87,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               _summaryCard(theme, order),
               const SizedBox(height: 20),
 
-              // ── Jobs / sessions (recurring only) ──
+              // ── Jobs / sessions (recurring only, not processing) ──
               if (order.status != OrderStatus.processing && !order.isOneTime)
                 _jobsSection(theme, order),
               if (order.status != OrderStatus.processing && !order.isOneTime)
@@ -126,25 +126,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               if (order.status == OrderStatus.completed)
                 OutlinedButton.icon(
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    widget.ordersNotifier.addOrder(
-                      OrderModel(
-                        id: widget.ordersNotifier.nextId,
-                        services: List<String>.from(order.services),
-                        date: order.date,
-                        frequency: order.frequency,
-                        notes: order.notes,
-                        isOneTime: order.isOneTime,
-                        time: order.time,
-                        duration: order.duration,
-                        dayEntries: order.dayEntries,
-                        endDate: order.endDate,
-                      ),
-                    );
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => _repeatOrder(order),
                   icon: const Icon(Icons.refresh, size: 20),
                   label: Text(AppStrings.repeatOrder),
                 ),
@@ -741,6 +723,83 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    final d = date.day.toString().padLeft(2, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    return '$d.$m.${date.year}';
+  }
+
+  /// Repeat order: pick new date(s), then create order.
+  Future<void> _repeatOrder(OrderModel order) async {
+    HapticFeedback.selectionClick();
+    final now = DateTime.now();
+    final lastDate = DateTime(now.year + 2);
+
+    // Recurring with end date → date range picker
+    if (!order.isOneTime && order.endDate.isNotEmpty) {
+      final range = await showDateRangePicker(
+        context: context,
+        firstDate: now,
+        lastDate: lastDate,
+        locale: const Locale('hr'),
+      );
+      if (!mounted) return;
+      if (range == null) return;
+
+      final newFrequency = AppStrings.recurringWithEnd(_formatDate(range.end));
+
+      widget.ordersNotifier.addProcessingOrder(
+        OrderModel(
+          id: widget.ordersNotifier.nextId,
+          services: List<String>.from(order.services),
+          date: _formatDate(range.start),
+          frequency: newFrequency,
+          notes: order.notes,
+          isOneTime: false,
+          time: order.time,
+          duration: order.duration,
+          weekday: range.start.weekday,
+          durationHours: order.durationHours,
+          dayEntries: order.dayEntries,
+          endDate: _formatDate(range.end),
+        ),
+      );
+      if (!mounted) return;
+      Navigator.pop(context, 'repeated');
+      return;
+    }
+
+    // One-time or recurring without end date → single date picker
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: lastDate,
+      locale: const Locale('hr'),
+    );
+    if (!mounted) return;
+    if (picked == null) return;
+
+    widget.ordersNotifier.addProcessingOrder(
+      OrderModel(
+        id: widget.ordersNotifier.nextId,
+        services: List<String>.from(order.services),
+        date: _formatDate(picked),
+        frequency: order.frequency,
+        notes: order.notes,
+        isOneTime: order.isOneTime,
+        time: order.time,
+        duration: order.duration,
+        weekday: picked.weekday,
+        durationHours: order.durationHours,
+        dayEntries: order.dayEntries,
+        endDate: '',
+      ),
+    );
+    if (!mounted) return;
+    Navigator.pop(context, 'repeated');
   }
 
   /// Confirm cancel dialog for a job.
