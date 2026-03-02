@@ -680,7 +680,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 24,
                 24,
                 24,
-                24 + MediaQuery.of(ctx).viewInsets.bottom,
+                24 +
+                    MediaQuery.of(ctx).viewInsets.bottom +
+                    MediaQuery.of(ctx).viewPadding.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
