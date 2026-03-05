@@ -3,7 +3,7 @@
 > WARNING: It is STRICTLY FORBIDDEN to start any task from the Roadmap without explicit user confirmation.
 > Every step requires explicit approval from the product owner.
 
-> Last updated: 2026-03-01
+> Last updated: 2026-03-02
 
 ---
 
@@ -52,8 +52,18 @@
 - [x] 4.6 Per-job actions: cancel upcoming, rate completed (stars + comment)
 - [x] 4.7 Inline review display on job cards
 - [x] 4.8 Removed order-level Students section (reviews now at job level)
-- [ ] 4.9 Order status updates (push notifications)
-- [ ] 4.10 Orders Cubit + repository
+- [x] 4.9 Color system overhaul: green (#4CAF50) for active/completed, blue (#1976D2) for processing/upcoming
+- [x] 4.10 Ocijeni button: teal outlined (borderRadius 8) + Otkaži: coral outlined (borderRadius 8)
+- [x] 4.11 One-time review inside summary card (grey title + student name + small Ocijeni button)
+- [x] 4.12 Termini section hidden for processing and one-time orders
+- [x] 4.13 "Ponovi narudžbu" with DatePicker/DateRangePicker → processing status
+- [x] 4.14 addProcessingOrder() (no student/job assignment)
+- [x] 4.15 Tab auto-switch to "U obradi" after repeat
+- [x] 4.16 3 mock completed orders seeded (one-time, recurring, recurring-with-end)
+- [x] 4.17 Frequency labels: "Ponavljajuće", "Do DD.MM.YYYY", "Jednom"
+- [x] 4.18 Service chips pill shape (borderRadius 24) in Pregled step
+- [ ] 4.19 Order status updates (push notifications)
+- [ ] 4.20 Orders Cubit + repository
 
 ## Phase 5 - Payment
 
@@ -106,3 +116,16 @@
 - [ ] 9.4 Accessibility audit
 - [ ] 9.5 Beta testing
 - [ ] 9.6 Play Store / App Store deployment
+
+## Phase 10 - Admin App
+
+- [ ] 10.1 Flutter project setup (helpi_admin)
+- [ ] 10.2 Responsive layout (desktop sidebar + mobile bottom nav)
+- [ ] 10.3 Admin login screen
+- [ ] 10.4 Dashboard — sve narudžbe s filterima (processing/active/completed)
+- [ ] 10.5 Order detail — dodjela studenta narudžbi
+- [ ] 10.6 Student management — lista studenata, dostupnost, ocjene
+- [ ] 10.7 Senior management — lista seniora, narudžbe
+- [ ] 10.8 Chat moderacija — pregled svih chat soba
+- [ ] 10.9 Financije — Stripe plaćanja, pregled zarade
+- [ ] 10.10 Push notifikacije za nove narudžbe

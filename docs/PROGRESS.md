@@ -1,10 +1,10 @@
 ﻿# Helpi Senior Progress
 
-> Last updated: 2026-03-01
+> Last updated: 2026-03-02
 
 ---
 
-## Overall progress: ~65%
+## Overall progress: ~70%
 
 ### Completed
 
@@ -88,6 +88,25 @@
 - [x] White job card background, cancelled=#FAFAFA
 - [x] Inline review card background: #F5F5F5
 
+#### Session 2 — Color System Overhaul + Repeat Order + Mock Data (2026-03-02)
+
+- [x] Color system overhaul: teal→green (#4CAF50) for active/completed, orange→blue (#1976D2) for processing/upcoming
+- [x] Order status chips: Processing=blue, Active=green, Completed=green
+- [x] Job status badges: Completed=green, Upcoming=blue, Cancelled=coral
+- [x] Ocijeni button changed: coral ElevatedButton → teal OutlinedButton (borderRadius 8)
+- [x] Otkaži button changed: coral OutlinedButton (borderRadius 8)
+- [x] Service chips in Pregled step: pill shape (borderRadius 24)
+- [x] One-time completed review inside summary card (grey title + student name + small Ocijeni button)
+- [x] Termini section hidden for processing and one-time orders
+- [x] completeOrder syncs job status for one-time orders
+- [x] 3 mock completed orders seeded (one-time, recurring, recurring-with-end)
+- [x] "Ponovi narudžbu" with DatePicker (one-time/recurring) and DateRangePicker (recurring-with-end)
+- [x] Repeated orders go to processing status (no student, no jobs generated)
+- [x] Auto-switch to "U obradi" tab after repeating order
+- [x] Frequency labels: "Ponavljajuće", "Do DD.MM.YYYY" (shortened from "Ponavljajuće do...")
+- [x] addProcessingOrder() method (no student/job assignment)
+- [x] All MD documentation files updated for admin app handoff
+
 #### Dead Code Cleanup
 
 - [x] Marketplace code deleted (home_screen, marketplace_screen, student_detail_screen)
@@ -102,26 +121,28 @@
 
 ### Next Steps
 
-1. Git commit + push all current work
+1. Git commit + push all current work (session 2)
 2. Order confirmation screen (after "Naruči" submit)
 3. APK rebuild with latest changes
 4. GoRouter setup (1.5)
 5. Backend integration (Supabase)
+6. Admin app development (desktop + mobile responsive)
 
 ---
 
 ## Module Status
 
-| Module              | Status                                             | Progress |
-| ------------------- | -------------------------------------------------- | -------- |
-| Architecture & Docs | Done                                               | 100%     |
-| Foundation          | Theme + i18n done                                  | 80%      |
-| Auth (UI)           | Login/Register done                                | 40%      |
-| Order Flow (UI)     | 3-step flow + progressive disclosure + auto-scroll | 95%      |
-| Orders (UI)         | 3 tabs + detail + pricing + jobs + per-job reviews | 80%      |
-| Chat (UI prototype) | Screens done                                       | 30%      |
-| Profile (UI proto)  | Screen done                                        | 25%      |
-| Auth (backend)      | Waiting                                            | 0%       |
-| Booking (backend)   | Waiting                                            | 0%       |
-| Payment (Stripe)    | Waiting                                            | 0%       |
-| Chat (WebSocket)    | Waiting                                            | 0%       |
+| Module              | Status                                                             | Progress |
+| ------------------- | ------------------------------------------------------------------ | -------- |
+| Architecture & Docs | Done, updated for session 2                                        | 100%     |
+| Foundation          | Theme + i18n done                                                  | 80%      |
+| Auth (UI)           | Login/Register done                                                | 40%      |
+| Order Flow (UI)     | 3-step flow + progressive disclosure + auto-scroll                 | 95%      |
+| Orders (UI)         | 3 tabs + detail + pricing + jobs + reviews + repeat order + colors | 90%      |
+| Chat (UI prototype) | Screens done                                                       | 30%      |
+| Profile (UI proto)  | Screen done                                                        | 25%      |
+| Auth (backend)      | Waiting                                                            | 0%       |
+| Booking (backend)   | Waiting                                                            | 0%       |
+| Payment (Stripe)    | Waiting                                                            | 0%       |
+| Chat (WebSocket)    | Waiting                                                            | 0%       |
+| Admin App           | Planned                                                            | 0%       |

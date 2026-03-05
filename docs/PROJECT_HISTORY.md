@@ -292,3 +292,116 @@
 - **Compact format:** Summary card now uses 3-letter day names (`_dayMediumName()`: Pet, Pon) and `Xh` format (3h not "3 sata") — consistent with Step 3 summary
 - **Review card background:** Changed from white to `#F5F5F5` so inline review is visible on white job card
 - **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 Color System Overhaul — Green/Blue/Coral
+
+### Decision: Replace teal/orange status colors with green/blue
+
+- **Context:** Original status colors (teal for completed, orange for upcoming) created visual confusion:
+  - Teal was used for BOTH interactive elements (buttons, chips) AND status badges → indistinct
+  - Orange for "upcoming" felt like a warning, not a neutral "waiting" state
+- **New status color scheme:**
+  - **Processing/Upcoming:** blue `#1976D2` on `#E8F1FB` (calm, informational)
+  - **Active/Completed:** green `#4CAF50` on `#E8F5E9` (positive, success)
+  - **Cancelled:** coral `#EF5B5B` on `#FFEBEE` (unchanged)
+- **Applied to:** Order status chips (both orders_screen and order_detail_screen) + Job status badges
+- **Rationale:** Clear semantic distinction — green=good/done, blue=in-progress/waiting, coral=cancelled. Teal remains exclusively for interactive elements.
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 Button Refinements — Ocijeni/Otkaži
+
+### Decision: Change Ocijeni from coral ElevatedButton to teal OutlinedButton
+
+- **Context:** Coral "Ocijeni" filled button was too aggressive for a review action. "Review" is not a destructive or primary action.
+- **Change:**
+  - Ocijeni: **teal outlined** button (borderRadius 8, height 30, fontSize 12)
+  - Otkaži: **coral outlined** button (borderRadius 8, height 30, fontSize 12)
+- **Visual hierarchy:** Teal = neutral action (rate), Coral = destructive action (cancel)
+- **BorderRadius:** Both use **8** (small compact buttons), not 16 (which is for large CTA buttons)
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 Service Chips — Pill Shape in Pregled
+
+### Decision: Service chips in Step 3 (Pregled) use pill borderRadius
+
+- **Context:** Service chips in the order summary looked boxy with borderRadius 16.
+- **Change:** borderRadius **24** in Pregled step (pill shape). Selection chips in Step 2 keep borderRadius 16.
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 One-Time Review Inside Summary Card
+
+### Decision: Show review inline in summary card instead of Termini section
+
+- **Context:** One-time orders have exactly 1 job. Showing a separate "Termini" section with 1 job card was excessive.
+- **Change:**
+  - One-time completed: review UI appears **inside the summary card** (below notes section)
+  - Grey title label "Ime studenta" (AppStrings.studentName)
+  - Person icon + student name (teal) + small Ocijeni button (teal outlined, height 30) on the right
+  - After review: inline stars + date + comment
+  - Termini section is **hidden** for one-time orders AND processing orders
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 "Ponovi narudžbu" — Repeat Order with Date Picker
+
+### Decision: Allow seniors to repeat completed orders with new dates
+
+- **Context:** Seniors may want to re-order the same services.
+- **Repeat flow:**
+  - **One-time / recurring-without-end:** `showDatePicker` — pick a single new start date
+  - **Recurring-with-end-date:** `showDateRangePicker` — pick new start AND end date range
+- **Processing state:** Repeated order goes to `OrderStatus.processing` with NO student assigned and NO jobs generated. Admin will assign student and jobs.
+- **Tab auto-switch:** After repeating, UI switches to tab 0 ("U obradi")
+- **`addProcessingOrder()`:** New method on OrdersNotifier that creates order without student/job generation
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 Mock Seed Data — 3 Completed Orders
+
+### Decision: Seed completed orders for UI testing
+
+- **Context:** Needed completed orders to test review and repeat flows.
+- **3 seeded completed orders:**
+  1. **One-time:** Čišćenje + Kuhanje, 25.02.2026, Ana M., 1 completed job
+  2. **Recurring no-end:** Čišćenje, 03.01.2026, frequency="Ponavljajuće", Marko K., 2 day entries (Pon+Čet), 4 completed jobs
+  3. **Recurring with-end:** Kuhanje + Šetnja, 10.01.2026, frequency="Do 07.02.2026", Ivana P., 1 day entry (Sub), 4 completed + 1 cancelled job
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 Frequency Labels Shortened
+
+### Decision: Simplify frequency display text
+
+- **Context:** Long frequency labels like "Ponavljajuće do 07.02.2026" took too much space on mobile.
+- **Change:**
+  - Recurring without end: `"Ponavljajuće"` (was "Svaki tjedan")
+  - Recurring with end: `"Do DD.MM.YYYY"` (was "Ponavljajuće do DD.MM.YYYY")
+  - One-time: `"Jednom"`
+- **AppStrings:** `recurringWithEnd` changed from "Ponavljajuće do {date}" to "Do {date}"
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-02 Documentation Update for Admin App Handoff
+
+### Decision: Update all MD files with session 2 changes
+
+- **Context:** Need accurate documentation so a third chat can read both senior and student app docs and build the admin app (desktop + mobile responsive).
+- **Updated files:**
+  - DESIGN_SYSTEM.md — all colors, border radius, components updated to current state
+  - PROGRESS.md — added session 2 completed items, updated module table
+  - PROJECT_HISTORY.md — added all 2026-03-02 decisions
+  - PROJECT_CONTEXT.md — updated colors, features, flow descriptions
+  - ROADMAP.md — added session 2 completed items
+- **Status:** Implemented.

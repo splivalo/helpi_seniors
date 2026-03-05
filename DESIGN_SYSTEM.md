@@ -4,16 +4,18 @@
 > Koristi ga kao referencu kod izrade bilo kojeg novog ekrana ili komponente.
 > Student app i Senior app dijele ISTI dizajn sustav.
 
+> Last updated: 2026-03-02
+
 ---
 
 ## 1. Boje
 
 ### Primarne
 
-| Naziv                       | Hex       | Uporaba                                                                                              |
-| --------------------------- | --------- | ---------------------------------------------------------------------------------------------------- |
-| **Coral** (primary)         | `#EF5B5B` | CTA gumbi, tab underline (active), cancel link, login gumb, logo krug pozadina                       |
-| **Teal** (secondary/accent) | `#009D9D` | Outlined gumbi, chipovi (active), status badge, input field ikone, text linkovi, bottom nav selected |
+| Naziv                       | Hex       | Uporaba                                                                                                            |
+| --------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Coral** (primary)         | `#EF5B5B` | CTA gumbi, tab underline (active), cancel link, login gumb, logo krug pozadina                                     |
+| **Teal** (secondary/accent) | `#009D9D` | Outlined gumbi, chipovi (active), input field ikone, text linkovi, bottom nav selected, student name, Ocijeni gumb |
 
 ### Pozadine
 
@@ -21,7 +23,7 @@
 | ------------------- | --------- | ------------------------------------------- |
 | **Warm off-white**  | `#F9F7F4` | Scaffold background — svi ekrani            |
 | **Surface (white)** | `#FFFFFF` | Kartice, input fieldovi, bottom nav, modali |
-| **Pastel teal**     | `#E0F5F5` | Chip pozadina (neaktivni servisi)           |
+| **Pastel teal**     | `#E0F5F5` | Chip pozadina (selektirani servisi)         |
 
 ### Pastelne boje za kartice
 
@@ -51,42 +53,51 @@
 | **Divider**           | `#EEEEEE` | Separator linije                                   |
 | **Nav unselected**    | `#B0B0B0` | Bottom nav neselektirane ikone                     |
 
+### Status / Badge boje
+
+| Status         | Foreground | Background | Uporaba                                         |
+| -------------- | ---------- | ---------- | ----------------------------------------------- |
+| **Processing** | `#1976D2`  | `#E8F1FB`  | "U obradi" order badge, "Predstojeći" job badge |
+| **Active**     | `#4CAF50`  | `#E8F5E9`  | "Aktivna" order badge                           |
+| **Completed**  | `#4CAF50`  | `#E8F5E9`  | "Završena" order badge, "Završen" job badge     |
+| **Cancelled**  | `#EF5B5B`  | `#FFEBEE`  | "Otkazan" job badge                             |
+
 ### Specijalne
 
-| Naziv                  | Hex       | Uporaba                                |
-| ---------------------- | --------- | -------------------------------------- |
-| **Star yellow**        | `#FFC107` | Zvjezdice za ocjene                    |
-| **Facebook blue**      | `#1877F2` | Facebook logo                          |
-| **Upcoming orange**    | `#F57C00` | Job status badge + icon (predstojeći)  |
-| **Upcoming orange bg** | `#FFF3E0` | Badge pozadina za predstojeće termine  |
-| **Cancelled bg**       | `#FFEBEE` | Badge pozadina za otkazane termine     |
-| **Review card bg**     | `#F5F5F5` | Inline review container na job kartici |
-| **Cancelled card bg**  | `#FAFAFA` | Job kartica kad je otkazan             |
+| Naziv                 | Hex       | Uporaba                                |
+| --------------------- | --------- | -------------------------------------- |
+| **Star yellow**       | `#FFC107` | Zvjezdice za ocjene                    |
+| **Facebook blue**     | `#1877F2` | Facebook logo                          |
+| **Review card bg**    | `#F5F5F5` | Inline review container na job kartici |
+| **Cancelled card bg** | `#FAFAFA` | Job kartica kad je otkazan             |
 
 ---
 
 ## 2. Border Radius
 
-| Vrijednost | Koristi se za                                                                    |
-| ---------- | -------------------------------------------------------------------------------- |
-| **16**     | Kartice, gumbi (svi tipovi), input fieldovi, service chipovi — STANDARDNI radius |
-| **12**     | Status chipovi, review kartice — manji elementi proporcionalno                   |
-| **24**     | Chat bubble — balloon efekt                                                      |
-| **20**     | BottomSheet gornji kutovi                                                        |
-| **2**      | Tab underline indikator (namjerno tanki)                                         |
+| Vrijednost | Koristi se za                                                             |
+| ---------- | ------------------------------------------------------------------------- |
+| **24**     | Service chipovi u Pregled koraku (pill oblik), Chat bubble                |
+| **16**     | Kartice, CTA gumbi, input fieldovi — STANDARDNI radius                    |
+| **12**     | Order status chipovi, review kartice, job kartice — manji elementi        |
+| **10**     | Inline review container unutar job kartice                                |
+| **8**      | Job status badge, mali action gumbi (Ocijeni, Otkaži) — najmanji elementi |
+| **20**     | BottomSheet gornji kutovi                                                 |
+| **2**      | Tab underline indikator (namjerno tanki)                                  |
 
-> **PRAVILO:** Za nove komponente koristi **16** osim ako je elelement manji (chip → 12) ili je poseban oblik (chat → 24).
+> **PRAVILO:** Za nove komponente koristi **16** osim ako je element manji (mali gumb → 8, chip status → 12) ili je poseban oblik (service chip summary → 24).
 
 ---
 
 ## 3. Dimenzije
 
-| Konstanta        | Vrijednost | Opis                                              |
-| ---------------- | ---------- | ------------------------------------------------- |
-| `buttonHeight`   | 56         | Standardna visina ElevatedButton i OutlinedButton |
-| `buttonRadius`   | 16         | Border radius svih gumba                          |
-| `cardRadius`     | 16         | Border radius svih kartica                        |
-| Login CTA visina | 52         | LoginScreen gumb je nešto manji                   |
+| Konstanta         | Vrijednost | Opis                                              |
+| ----------------- | ---------- | ------------------------------------------------- |
+| `buttonHeight`    | 56         | Standardna visina ElevatedButton i OutlinedButton |
+| `buttonRadius`    | 16         | Border radius velikih gumba                       |
+| `cardRadius`      | 16         | Border radius svih kartica                        |
+| Login CTA visina  | 52         | LoginScreen gumb je nešto manji                   |
+| Action btn visina | 30         | Mali Ocijeni/Otkaži gumbi na job karticama        |
 
 ---
 
@@ -165,12 +176,19 @@ TextButton.styleFrom(
 - Implementirano kao Row od GestureDetector + Column(Text, Container underline)
 - Sve tabove jednako širi s `Expanded`
 
-### 5.7 Service Chip
+### 5.7 Service Chip (Order Flow — odabir usluga)
 
 - Bijeli background, `#E0E0E0` border
-- Selektirani: teal background + bijeli tekst
+- Selektirani: pastel teal fill (`#E0F5F5`) + teal border + teal tekst
 - Border radius: 16
 - Padding: horizontal 16, vertical 10
+
+### 5.7a Service Chip (Pregled korak — prikaz odabranih)
+
+- Pastel teal fill (`#E0F5F5`) + teal border (`#009D9D`)
+- Teal tekst, fontSize 13, w500
+- Border radius: **24** (pill oblik)
+- Padding: horizontal 12, vertical 6
 
 ### 5.7b Time Selection Chips (Order Flow)
 
@@ -212,20 +230,32 @@ Container(
 )
 ```
 
-### 5.8 Status Chip (na order karticama)
+### 5.8 Order Status Chip (na order karticama)
 
-- Border radius: 12
-- `U obradi` / `Processing`: teal text + teal/12% background
-- `Aktivna` / `Active`: `#4CAF50` text + green/12% background
-- `Završena` / `Completed`: `#757575` text + grey/12% background
+- Border radius: **12**
+- Padding: horizontal 12, vertical 4
+- Font: 13, w600
+
+| Status     | Text color | Background |
+| ---------- | ---------- | ---------- |
+| `U obradi` | `#1976D2`  | `#E8F1FB`  |
+| `Aktivna`  | `#4CAF50`  | `#E8F5E9`  |
+| `Završena` | `#4CAF50`  | `#E8F5E9`  |
 
 ### 5.9 Job Status Badge (na job karticama)
 
-- Border radius: 8
-- **Završen:** teal text (`#009D9D`) + pastel teal bg (`#E0F5F5`)
-- **Predstojeći:** orange text (`#F57C00`) + orange bg (`#FFF3E0`)
-- **Otkazan:** coral text (`#EF5B5B`) + red bg (`#FFEBEE`)
+- Border radius: **8**
+- Padding: horizontal 8, vertical 2
 - Font: 11, w600
+
+| Status          | Text color | Background | Icon           |
+| --------------- | ---------- | ---------- | -------------- |
+| **Završen**     | `#4CAF50`  | `#E8F5E9`  | `check_circle` |
+| **Predstojeći** | `#1976D2`  | `#E8F1FB`  | `schedule`     |
+| **Otkazan**     | `#EF5B5B`  | `#FFEBEE`  | `cancel`       |
+
+- Icon size: 18, color matches text color
+- Cancelled date text: `TextDecoration.lineThrough` + grey
 
 ### 5.10 Job Card (Termini sekcija)
 
@@ -241,14 +271,50 @@ Container(
 ```
 
 - **Row 1:** Status icon (18px) + date (3-letter day + date) + status badge
-  - Icons: `check_circle` (completed/teal), `schedule` (upcoming/orange), `cancel` (cancelled/coral)
-  - Cancelled date: `TextDecoration.lineThrough` + grey text
 - **Row 2:** Time · Duration · Price (bodySmall, grey, left padding 26)
 - **Row 3:** Student name with `person_outline` icon (teal, w600)
 - **Row 4 (conditional):**
-  - Completed without review: coral "Ocijeni" ElevatedButton (height 30)
-  - Upcoming: coral "Otkaži" OutlinedButton (height 30, aligned right with Spacer)
+  - Completed without review: **teal outlined** "Ocijeni" button (height 30, borderRadius 8)
+  - Upcoming: **coral outlined** "Otkaži" button (height 30, borderRadius 8, aligned right with Spacer)
 - **Review inline (if rated):** Stars + comment in #F5F5F5 container (borderRadius 10)
+
+### 5.10a Ocijeni Button (mali, na job kartici)
+
+```dart
+OutlinedButton(
+  style: OutlinedButton.styleFrom(
+    foregroundColor: Color(0xFF009D9D),  // teal
+    side: BorderSide(color: Color(0xFF009D9D)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    minimumSize: Size(0, 30),
+    padding: EdgeInsets.symmetric(horizontal: 12),
+  ),
+  child: Text('Ocijeni', style: TextStyle(fontSize: 12)),
+)
+```
+
+### 5.10b Otkaži Button (mali, na job kartici)
+
+```dart
+OutlinedButton(
+  style: OutlinedButton.styleFrom(
+    foregroundColor: Color(0xFFEF5B5B),  // coral
+    side: BorderSide(color: Color(0xFFEF5B5B)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    minimumSize: Size(0, 30),
+    padding: EdgeInsets.symmetric(horizontal: 12),
+  ),
+  child: Text('Otkaži', style: TextStyle(fontSize: 12)),
+)
+```
+
+### 5.10c One-Time Review (inside summary card)
+
+Za jednokratne završene narudžbe, recenzija se prikazuje **unutar summary kartice**, ne u Termini sekciji:
+
+- Grey title: "Ime studenta" (AppStrings.studentName), fontSize 12, color `#757575`
+- Ako **nema recenzije**: Row s person icon + student name (teal) + mali Ocijeni gumb (teal outlined, height 30, borderRadius 8)
+- Ako **ima recenzija**: Person icon + student name, stars + date, comment text — sve inline u summary kartici
 
 ### 5.11 Termini Section Container
 
@@ -266,6 +332,7 @@ Container(
 - Header: "Termini" title + chevron icon (expand/collapse)
 - Default state: **collapsed**
 - GestureDetector on header row toggles `_jobsExpanded`
+- **Skrivena** za narudžbe sa statusom `processing` i za jednokratne (`isOneTime`) narudžbe
 
 ### 5.12 Social Login Button (krug)
 
@@ -316,6 +383,25 @@ Container(
     colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn)),
 )
 ```
+
+### 5.16 Action Buttons (Order Detail — footer)
+
+Na dnu order detail ekrana, ovisno o statusu narudžbe:
+
+| Status     | Gumbi                                              |
+| ---------- | -------------------------------------------------- |
+| Processing | "Otkaži narudžbu" — coral outlined, borderRadius 8 |
+| Active     | "Otkaži narudžbu" — coral outlined, borderRadius 8 |
+| Completed  | "Ponovi narudžbu" — teal outlined, borderRadius 16 |
+
+### 5.17 Ponovi Narudžbu (Repeat Order)
+
+Kad senior klikne "Ponovi narudžbu" na završenoj narudžbi:
+
+- **Jednokratna / ponavljajuća bez kraja**: `showDatePicker` — odaberi novi početni datum
+- **Ponavljajuća s krajnjim datumom**: `showDateRangePicker` — odaberi novi raspon datuma
+- Ponovljena narudžba ide u status **Processing** ("U obradi"), bez studenta i bez termina
+- Tab se automatski prebaci na "U obradi" (tab 0) nakon ponavljanja
 
 ---
 
@@ -424,7 +510,7 @@ ElevatedButton(
   child: Text('Action'),
 )
 
-// Teal Outlined
+// Teal Outlined (veliki full-width)
 OutlinedButton(
   onPressed: () {},
   style: OutlinedButton.styleFrom(
@@ -433,6 +519,19 @@ OutlinedButton(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   ),
   child: Text('Secondary'),
+)
+
+// Teal Outlined (mali — Ocijeni)
+OutlinedButton(
+  onPressed: () {},
+  style: OutlinedButton.styleFrom(
+    foregroundColor: Color(0xFF009D9D),
+    side: BorderSide(color: Color(0xFF009D9D)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    minimumSize: Size(0, 30),
+    padding: EdgeInsets.symmetric(horizontal: 12),
+  ),
+  child: Text('Ocijeni', style: TextStyle(fontSize: 12)),
 )
 
 // Standardna kartica
