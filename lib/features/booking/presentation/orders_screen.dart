@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:helpi_senior/core/constants/colors.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/features/booking/presentation/order_detail_screen.dart';
+import 'package:helpi_senior/shared/widgets/status_chip.dart';
+import 'package:helpi_senior/shared/widgets/summary_row.dart';
+import 'package:helpi_senior/shared/widgets/tab_bar_selector.dart';
 
 /// Ekran s listom narudžbi — 3 taba: U obradi, Aktivne, Završene.
 class OrdersScreen extends StatefulWidget {
@@ -51,45 +55,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // ── Custom tab bar (coral underline, no black line) ──
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                for (int i = 0; i < tabs.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 24),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        setState(() => _selectedTab = i);
-                      },
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 8),
-                          Text(
-                            tabs[i],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: _selectedTab == i
-                                  ? const Color(0xFFEF5B5B)
-                                  : const Color(0xFF9E9E9E),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            height: 3,
-                            decoration: BoxDecoration(
-                              color: _selectedTab == i
-                                  ? const Color(0xFFEF5B5B)
-                                  : const Color(0xFFE0E0E0),
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+            child: TabBarSelector(
+              tabs: tabs,
+              selectedIndex: _selectedTab,
+              onTap: (i) => setState(() => _selectedTab = i),
             ),
           ),
 
@@ -177,7 +146,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
+          border: Border.all(color: AppColors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,26 +162,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                   ),
                 ),
-                _statusChip(theme, order.status),
+                StatusChip(status: order.status),
               ],
             ),
             const Divider(height: 24),
 
             // Frequency
-            _cardSummaryRow(
-              theme,
-              AppStrings.orderSummaryFrequency,
-              order.frequency,
+            SummaryRow(
+              label: AppStrings.orderSummaryFrequency,
+              value: order.frequency,
             ),
             const Divider(height: 24),
 
             // Date
-            _cardSummaryRow(
-              theme,
-              order.isOneTime
+            SummaryRow(
+              label: order.isOneTime
                   ? AppStrings.orderSummaryDate
                   : AppStrings.orderSummaryStartDate,
-              order.date,
+              value: order.date,
             ),
 
             // Tap hint
@@ -240,61 +207,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // ── Card summary row ──
-  Widget _cardSummaryRow(ThemeData theme, String label, String value) {
-    return Row(
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: const Color(0xFF757575),
-          ),
-        ),
-        const Spacer(),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ── Status chip ──
-  Widget _statusChip(ThemeData theme, OrderStatus status) {
-    final Color bg;
-    final Color fg;
-    final String label;
-
-    switch (status) {
-      case OrderStatus.processing:
-        bg = const Color(0xFFE8F1FB);
-        fg = const Color(0xFF1976D2);
-        label = AppStrings.orderProcessing;
-      case OrderStatus.active:
-        bg = const Color(0xFFE8F5E9);
-        fg = const Color(0xFF4CAF50);
-        label = AppStrings.orderActive;
-      case OrderStatus.completed:
-        bg = const Color(0xFFE8F5E9);
-        fg = const Color(0xFF4CAF50);
-        label = AppStrings.orderCompleted;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(color: fg, fontSize: 13, fontWeight: FontWeight.w600),
       ),
     );
   }

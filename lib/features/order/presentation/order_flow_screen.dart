@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:helpi_senior/app/theme.dart';
+import 'package:helpi_senior/core/constants/colors.dart';
+import 'package:helpi_senior/core/constants/pricing.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/core/utils/formatters.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
+import 'package:helpi_senior/shared/widgets/info_card.dart';
+import 'package:helpi_senior/shared/widgets/selectable_chip.dart';
+import 'package:helpi_senior/shared/widgets/summary_row.dart';
+import 'package:helpi_senior/shared/widgets/tab_bar_selector.dart';
 
 // ─── Model za jednu stavku dana s vremenom ──────────────────────
 class _DayEntry {
@@ -68,22 +74,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   int _selectedCardIndex = 0; // default: first card
 
   // ── Constants ─────────────────────────────────
-  static const _teal = Color(0xFF009D9D);
   static const _timeHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
   static const _timeMinutes = [0, 15, 30, 45];
   static const _durations = [1, 2, 3, 4];
-
-  // ── Pricing ────────────────────────────────────
-  static const _hourlyRate = 14; // €/h standard
-  static const _sundayRate = 16; // €/h Sunday
-
-  /// Returns price for [hours] duration on [weekday] (1=Mon…7=Sun).
-  int _priceForDay(int weekday, int hours) {
-    final rate = weekday == DateTime.sunday ? _sundayRate : _hourlyRate;
-    return rate * hours;
-  }
-
-  String _formatPrice(int euros) => '$euros,00 €';
 
   @override
   void dispose() {
@@ -122,79 +115,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   /// [_startDate] and [_endDate].
   bool _isDayInRange(int weekday) {
     if (_startDate == null) return true;
-    final first = _firstOccurrence(weekday, _startDate!);
+    final first = AppFormatters.firstOccurrence(weekday, _startDate!);
     if (!_hasEndDate || _endDate == null) return true;
     return !first.isAfter(_endDate!);
-  }
-
-  String _dayFullName(int day) {
-    switch (day) {
-      case 1:
-        return AppStrings.dayMonFull;
-      case 2:
-        return AppStrings.dayTueFull;
-      case 3:
-        return AppStrings.dayWedFull;
-      case 4:
-        return AppStrings.dayThuFull;
-      case 5:
-        return AppStrings.dayFriFull;
-      case 6:
-        return AppStrings.daySatFull;
-      case 7:
-        return AppStrings.daySunFull;
-      default:
-        return '';
-    }
-  }
-
-  String _dayShortName(int day) {
-    switch (day) {
-      case 1:
-        return AppStrings.dayMonShort;
-      case 2:
-        return AppStrings.dayTueShort;
-      case 3:
-        return AppStrings.dayWedShort;
-      case 4:
-        return AppStrings.dayThuShort;
-      case 5:
-        return AppStrings.dayFriShort;
-      case 6:
-        return AppStrings.daySatShort;
-      case 7:
-        return AppStrings.daySunShort;
-      default:
-        return '';
-    }
-  }
-
-  /// 3-letter day name: Pon, Uto, Sri…
-  String _dayMediumName(int day) {
-    switch (day) {
-      case 1:
-        return AppStrings.dayMon;
-      case 2:
-        return AppStrings.dayTue;
-      case 3:
-        return AppStrings.dayWed;
-      case 4:
-        return AppStrings.dayThu;
-      case 5:
-        return AppStrings.dayFri;
-      case 6:
-        return AppStrings.daySat;
-      case 7:
-        return AppStrings.daySun;
-      default:
-        return '';
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final d = date.day.toString().padLeft(2, '0');
-    final m = date.month.toString().padLeft(2, '0');
-    return '$d.$m.${date.year}';
   }
 
   /// Removes day entries whose weekday no longer falls between
@@ -202,13 +125,6 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   void _removeInvalidDayEntries() {
     if (_startDate == null) return;
     _dayEntries.removeWhere((e) => !_isDayInRange(e.day));
-  }
-
-  /// Finds the first occurrence of [weekday] (1=Mon… 7=Sun) on or after [from].
-  DateTime _firstOccurrence(int weekday, DateTime from) {
-    // DateTime.weekday: 1=Mon … 7=Sun (matches our convention)
-    final diff = (weekday - from.weekday + 7) % 7;
-    return from.add(Duration(days: diff == 0 ? 0 : diff));
   }
 
   String _durationLabel(int hours) {
@@ -360,9 +276,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               height: 4,
               margin: EdgeInsets.only(right: i < 2 ? 8 : 0),
               decoration: BoxDecoration(
-                color: isActive
-                    ? const Color(0xFFEF5B5B)
-                    : const Color(0xFFE0E0E0),
+                color: isActive ? AppColors.coral : AppColors.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -411,81 +325,17 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   }
 
   Widget _buildFrequencyChips() {
-    final modes = [
-      (AppStrings.oneTime, _BookingMode.oneTime),
-      (AppStrings.recurring, _BookingMode.recurring),
-    ];
-    return Row(
-      children: [
-        for (int i = 0; i < modes.length; i++) ...[
-          if (i > 0) const SizedBox(width: 24),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                setState(() {
-                  _bookingMode = modes[i].$2;
-                  _showingDayPicker = false;
-                });
-              },
-              child: Column(
-                children: [
-                  Text(
-                    modes[i].$1,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: _bookingMode == modes[i].$2
-                          ? const Color(0xFFEF5B5B)
-                          : const Color(0xFF9E9E9E),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 3,
-                    decoration: BoxDecoration(
-                      color: _bookingMode == modes[i].$2
-                          ? const Color(0xFFEF5B5B)
-                          : const Color(0xFFE0E0E0),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  /// Generic chip — soft style, edge-to-edge.
-  Widget _buildChip({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE0F5F5) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? _teal : const Color(0xFFE0E0E0),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? _teal : const Color(0xFF2D2D2D),
-          ),
-        ),
-      ),
+    final labels = [AppStrings.oneTime, AppStrings.recurring];
+    final modes = [_BookingMode.oneTime, _BookingMode.recurring];
+    return TabBarSelector(
+      tabs: labels,
+      selectedIndex: modes.indexOf(_bookingMode),
+      onTap: (i) {
+        setState(() {
+          _bookingMode = modes[i];
+          _showingDayPicker = false;
+        });
+      },
     );
   }
 
@@ -513,7 +363,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE0E0E0)),
+              border: Border.all(color: AppColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -522,7 +372,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                 Row(
                   children: [
                     Text(
-                      _dayFullName(_oneTimeDate!.weekday),
+                      AppFormatters.dayFullName(_oneTimeDate!.weekday),
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -541,16 +391,16 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                       child: const Icon(
                         Icons.close,
                         size: 22,
-                        color: Color(0xFF757575),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  _formatDate(_oneTimeDate!),
+                  AppFormatters.date(_oneTimeDate!),
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF757575),
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -655,9 +505,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   });
                 },
                 activeThumbColor: Colors.white,
-                activeTrackColor: _teal,
-                inactiveThumbColor: _teal,
-                trackOutlineColor: WidgetStateProperty.all(_teal),
+                activeTrackColor: AppColors.teal,
+                inactiveThumbColor: AppColors.teal,
+                trackOutlineColor: WidgetStateProperty.all(AppColors.teal),
               ),
             ],
           ),
@@ -711,19 +561,19 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
+          border: Border.all(color: AppColors.border),
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today, size: 20, color: _teal),
+            Icon(Icons.calendar_today, size: 20, color: AppColors.teal),
             const SizedBox(width: 12),
             Text(
-              date != null ? _formatDate(date) : AppStrings.selectDate,
+              date != null ? AppFormatters.date(date) : AppStrings.selectDate,
               style: TextStyle(
                 fontSize: 16,
                 color: date != null
-                    ? const Color(0xFF212121)
-                    : const Color(0xFF9E9E9E),
+                    ? AppColors.textPrimary
+                    : AppColors.inactive,
               ),
             ),
           ],
@@ -755,7 +605,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               for (int i = 0; i < rows[r].length; i++) ...[
                 if (i > 0) const SizedBox(width: 8),
                 Expanded(
-                  child: _buildChip(
+                  child: SelectableChip(
                     label: '${rows[r][i].toString().padLeft(2, '0')}:00',
                     isSelected: selectedHour == rows[r][i],
                     onTap: () {
@@ -782,7 +632,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         for (int i = 0; i < _timeMinutes.length; i++) ...[
           if (i > 0) const SizedBox(width: 8),
           Expanded(
-            child: _buildChip(
+            child: SelectableChip(
               label: ':${_timeMinutes[i].toString().padLeft(2, '0')}',
               isSelected: selectedMinute == _timeMinutes[i],
               onTap: () {
@@ -806,7 +656,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         for (int i = 0; i < _durations.length; i++) ...[
           if (i > 0) const SizedBox(width: 8),
           Expanded(
-            child: _buildChip(
+            child: SelectableChip(
               label: _durationLabel(_durations[i]),
               isSelected: selectedDuration == _durations[i],
               onTap: () {
@@ -828,7 +678,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -837,7 +687,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           Row(
             children: [
               Text(
-                _dayFullName(entry.day),
+                AppFormatters.dayFullName(entry.day),
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -851,7 +701,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                 child: const Icon(
                   Icons.close,
                   size: 22,
-                  color: Color(0xFF757575),
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],
@@ -862,10 +712,12 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             const SizedBox(height: 6),
             Text(
               AppStrings.firstServiceDate(
-                _formatDate(_firstOccurrence(entry.day, _startDate!)),
+                AppFormatters.date(
+                  AppFormatters.firstOccurrence(entry.day, _startDate!),
+                ),
               ),
               style: theme.textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF757575),
+                color: AppColors.textSecondary,
               ),
             ),
           ],
@@ -941,7 +793,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -965,7 +817,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   child: const Icon(
                     Icons.close,
                     size: 22,
-                    color: Color(0xFF757575),
+                    color: AppColors.textSecondary,
                   ),
                 ),
             ],
@@ -976,8 +828,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               for (int i = 0; i < _availableDays.length; i++) ...[
                 if (i > 0) const SizedBox(width: 6),
                 Expanded(
-                  child: _buildChip(
-                    label: _dayShortName(_availableDays[i]),
+                  child: SelectableChip(
+                    label: AppFormatters.dayShortName(_availableDays[i]),
                     isSelected: false,
                     onTap: () {
                       HapticFeedback.selectionClick();
@@ -1013,14 +865,14 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _teal, width: 2),
+          border: Border.all(color: AppColors.teal, width: 2),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
               Icons.add_circle_outline,
-              color: Color(0xFF009D9D),
+              color: AppColors.teal,
               size: 24,
             ),
             const SizedBox(width: 10),
@@ -1029,7 +881,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF009D9D),
+                color: AppColors.teal,
               ),
             ),
           ],
@@ -1085,7 +937,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                 for (int i = 0; i < rows[r].length; i++) ...[
                   if (i > 0) const SizedBox(width: 8),
                   Expanded(
-                    child: _buildChip(
+                    child: SelectableChip(
                       label: rows[r][i].value(),
                       isSelected: _selectedServices.contains(rows[r][i].key),
                       onTap: () {
@@ -1116,33 +968,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
 
           // ── Escort info card (shown when Pratnja is selected) ──
           if (_selectedServices.contains('escort')) ...[
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: HelpiTheme.cardBlue,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.info_outline,
-                    size: 20,
-                    color: Color(0xFF1976D2),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      AppStrings.escortInfo,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF1565C0),
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            InfoCard(text: AppStrings.escortInfo),
             const SizedBox(height: 24),
           ],
 
@@ -1184,62 +1010,61 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE0E0E0)),
+              border: Border.all(color: AppColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Frequency
-                _summaryRow(
-                  theme,
-                  AppStrings.orderSummaryFrequency,
-                  _bookingModeLabel(),
+                SummaryRow(
+                  label: AppStrings.orderSummaryFrequency,
+                  value: _bookingModeLabel(),
                 ),
                 const Divider(height: 24),
 
                 // Date / Start+End
                 if (_bookingMode == _BookingMode.oneTime) ...[
-                  _summaryRow(
-                    theme,
-                    AppStrings.orderSummaryDate,
-                    _oneTimeDate != null ? _formatDate(_oneTimeDate!) : '-',
+                  SummaryRow(
+                    label: AppStrings.orderSummaryDate,
+                    value: _oneTimeDate != null
+                        ? AppFormatters.date(_oneTimeDate!)
+                        : '-',
                   ),
                   const Divider(height: 24),
-                  _summaryRow(
-                    theme,
-                    AppStrings.orderSummaryTime,
-                    _oneTimeFromHour != null
+                  SummaryRow(
+                    label: AppStrings.orderSummaryTime,
+                    value: _oneTimeFromHour != null
                         ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:${(_oneTimeFromMinute ?? 0).toString().padLeft(2, '0')}'
                         : '-',
                   ),
                   const Divider(height: 24),
-                  _summaryRow(
-                    theme,
-                    AppStrings.orderSummaryDuration,
-                    _oneTimeDuration != null
+                  SummaryRow(
+                    label: AppStrings.orderSummaryDuration,
+                    value: _oneTimeDuration != null
                         ? _durationLabel(_oneTimeDuration!)
                         : '-',
                   ),
                   if (_oneTimeDate != null && _oneTimeDuration != null) ...[
                     const Divider(height: 24),
-                    _summaryRow(
-                      theme,
-                      AppStrings.orderSummaryPrice,
-                      _formatPrice(
-                        _priceForDay(_oneTimeDate!.weekday, _oneTimeDuration!),
+                    SummaryRow(
+                      label: AppStrings.orderSummaryPrice,
+                      value: AppPricing.formatPrice(
+                        AppPricing.priceForDay(
+                          _oneTimeDate!.weekday,
+                          _oneTimeDuration!,
+                        ),
                       ),
                       bold: true,
                     ),
                   ],
                 ] else ...[
-                  _summaryRow(
-                    theme,
-                    AppStrings.orderSummaryStartDate,
-                    _startDate != null && _dayEntries.isNotEmpty
+                  SummaryRow(
+                    label: AppStrings.orderSummaryStartDate,
+                    value: _startDate != null && _dayEntries.isNotEmpty
                         ? () {
                             DateTime? earliest;
                             for (final entry in _dayEntries) {
-                              final occ = _firstOccurrence(
+                              final occ = AppFormatters.firstOccurrence(
                                 entry.day,
                                 _startDate!,
                               );
@@ -1247,18 +1072,19 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                                 earliest = occ;
                               }
                             }
-                            return _formatDate(earliest!);
+                            return AppFormatters.date(earliest!);
                           }()
                         : _startDate != null
-                        ? _formatDate(_startDate!)
+                        ? AppFormatters.date(_startDate!)
                         : '-',
                   ),
                   if (_hasEndDate && _endDate != null) ...[
                     const Divider(height: 24),
-                    _summaryRow(
-                      theme,
-                      AppStrings.orderSummaryEndDate,
-                      _endDate != null ? _formatDate(_endDate!) : '-',
+                    SummaryRow(
+                      label: AppStrings.orderSummaryEndDate,
+                      value: _endDate != null
+                          ? AppFormatters.date(_endDate!)
+                          : '-',
                     ),
                   ],
                   const Divider(height: 24),
@@ -1267,7 +1093,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   Text(
                     AppStrings.orderSummaryDays,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF757575),
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1279,14 +1105,16 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         ? '${entry.duration}h'
                         : '-';
                     final priceStr = entry.duration != null
-                        ? _formatPrice(_priceForDay(entry.day, entry.duration!))
+                        ? AppPricing.formatPrice(
+                            AppPricing.priceForDay(entry.day, entry.duration!),
+                          )
                         : '';
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(
                         children: [
                           Text(
-                            _dayMediumName(entry.day),
+                            AppFormatters.dayMediumName(entry.day),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -1313,11 +1141,12 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         ),
                         const Spacer(),
                         Text(
-                          _formatPrice(
+                          AppPricing.formatPrice(
                             _dayEntries.fold<int>(
                               0,
                               (sum, e) =>
-                                  sum + _priceForDay(e.day, e.duration!),
+                                  sum +
+                                  AppPricing.priceForDay(e.day, e.duration!),
                             ),
                           ),
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -1335,7 +1164,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                 Text(
                   AppStrings.orderSummaryServices,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF757575),
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1350,14 +1179,14 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE0F5F5),
+                        color: AppColors.selectedChipBg,
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: _teal),
+                        border: Border.all(color: AppColors.teal),
                       ),
                       child: Text(
                         label,
                         style: const TextStyle(
-                          color: Color(0xFF009D9D),
+                          color: AppColors.teal,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1372,7 +1201,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   Text(
                     AppStrings.orderSummaryNotes,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF757575),
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -1394,7 +1223,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE0E0E0)),
+              border: Border.all(color: AppColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1420,11 +1249,11 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFFE0F5F5)
+                            ? AppColors.selectedChipBg
                             : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isSelected ? _teal : const Color(0xFFE0E0E0),
+                          color: isSelected ? AppColors.teal : AppColors.border,
                           width: isSelected ? 2 : 1,
                         ),
                       ),
@@ -1432,7 +1261,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                         children: [
                           Icon(
                             Icons.credit_card,
-                            color: isSelected ? _teal : const Color(0xFF757575),
+                            color: isSelected
+                                ? AppColors.teal
+                                : AppColors.textSecondary,
                             size: 22,
                           ),
                           const SizedBox(width: 12),
@@ -1446,7 +1277,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                           if (isSelected)
                             const Icon(
                               Icons.check_circle,
-                              color: _teal,
+                              color: AppColors.teal,
                               size: 22,
                             ),
                         ],
@@ -1463,14 +1294,14 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                     children: [
                       const Icon(
                         Icons.add_circle_outline,
-                        color: _teal,
+                        color: AppColors.teal,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         AppStrings.addCard,
                         style: TextStyle(
-                          color: _teal,
+                          color: AppColors.teal,
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
@@ -1485,33 +1316,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
           const SizedBox(height: 20),
 
           // ── General overtime disclaimer ──
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: HelpiTheme.cardBlue,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color: Color(0xFF1976D2),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    AppStrings.overtimeDisclaimer,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF1565C0),
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          InfoCard(text: AppStrings.overtimeDisclaimer),
         ],
       ),
     );
@@ -1528,7 +1333,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     List<OrderDayEntry> dayEntries = [];
 
     if (isOneTime) {
-      date = _oneTimeDate != null ? _formatDate(_oneTimeDate!) : '-';
+      date = _oneTimeDate != null ? AppFormatters.date(_oneTimeDate!) : '-';
       time = _oneTimeFromHour != null
           ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:${(_oneTimeFromMinute ?? 0).toString().padLeft(2, '0')}'
           : '-';
@@ -1541,18 +1346,18 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         // Find the earliest first occurrence across all days
         DateTime? earliest;
         for (final entry in _dayEntries) {
-          final occ = _firstOccurrence(entry.day, _startDate!);
+          final occ = AppFormatters.firstOccurrence(entry.day, _startDate!);
           if (earliest == null || occ.isBefore(earliest)) {
             earliest = occ;
           }
         }
-        date = _formatDate(earliest!);
+        date = AppFormatters.date(earliest!);
       } else {
-        date = _startDate != null ? _formatDate(_startDate!) : '-';
+        date = _startDate != null ? AppFormatters.date(_startDate!) : '-';
       }
 
       if (_hasEndDate && _endDate != null) {
-        endDate = _formatDate(_endDate!);
+        endDate = AppFormatters.date(_endDate!);
       }
 
       // Build structured day entries
@@ -1564,7 +1369,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             ? _durationLabel(entry.duration!)
             : '-';
         return OrderDayEntry(
-          dayName: _dayFullName(entry.day),
+          dayName: AppFormatters.dayFullName(entry.day),
           time: timeStr,
           duration: durStr,
           weekday: entry.day,
@@ -1599,39 +1404,10 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
         return AppStrings.oneTime;
       case _BookingMode.recurring:
         if (_hasEndDate && _endDate != null) {
-          return AppStrings.recurringWithEnd(_formatDate(_endDate!));
+          return AppStrings.recurringWithEnd(AppFormatters.date(_endDate!));
         }
         return AppStrings.recurringNoEnd;
     }
-  }
-
-  Widget _summaryRow(
-    ThemeData theme,
-    String label,
-    String value, {
-    bool bold = false,
-  }) {
-    return Row(
-      children: [
-        Text(
-          label,
-          style: bold
-              ? theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                )
-              : theme.textTheme.bodySmall?.copyWith(
-                  color: const Color(0xFF757575),
-                ),
-        ),
-        const Spacer(),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
-          ),
-        ),
-      ],
-    );
   }
 
   // ═════════════════════════════════════════════════════════════════

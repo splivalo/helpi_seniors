@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:helpi_senior/core/constants/colors.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/core/l10n/locale_notifier.dart';
+import 'package:helpi_senior/shared/widgets/helpi_form_fields.dart';
 
 /// Profil ekran — pristupni podaci, naručitelj, senior, kartice, uvjeti.
 class ProfileScreen extends StatefulWidget {
@@ -68,12 +70,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // ── PRISTUPNI PODACI ────────────────────────
-          _sectionHeader(AppStrings.accessData),
+          HelpiSectionHeader(title: AppStrings.accessData),
           const SizedBox(height: 12),
-          _buildField(
-            AppStrings.email,
-            _emailCtrl,
+          HelpiTextField(
+            label: AppStrings.email,
+            controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
+            enabled: _isEditing,
           ),
           const SizedBox(height: 12),
           // Promijeni lozinku
@@ -85,53 +88,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 32),
 
           // ── PODACI O NARUČITELJU ────────────────────
-          _sectionHeader(AppStrings.ordererData),
+          HelpiSectionHeader(title: AppStrings.ordererData),
           const SizedBox(height: 12),
-          _buildField(AppStrings.firstName, _ordFirstNameCtrl),
-          const SizedBox(height: 12),
-          _buildField(AppStrings.lastName, _ordLastNameCtrl),
-          const SizedBox(height: 12),
-          _buildGenderPicker(_ordGender, (v) => setState(() => _ordGender = v)),
-          const SizedBox(height: 12),
-          _buildDatePicker(
-            AppStrings.dateOfBirth,
-            _ordDob,
-            (d) => setState(() => _ordDob = d),
+          HelpiTextField(
+            label: AppStrings.firstName,
+            controller: _ordFirstNameCtrl,
+            enabled: _isEditing,
           ),
           const SizedBox(height: 12),
-          _buildField(
-            AppStrings.phone,
-            _ordPhoneCtrl,
+          HelpiTextField(
+            label: AppStrings.lastName,
+            controller: _ordLastNameCtrl,
+            enabled: _isEditing,
+          ),
+          const SizedBox(height: 12),
+          HelpiGenderPicker(
+            value: _ordGender,
+            onChanged: (v) => setState(() => _ordGender = v),
+            enabled: _isEditing,
+          ),
+          const SizedBox(height: 12),
+          HelpiDatePicker(
+            label: AppStrings.dateOfBirth,
+            date: _ordDob,
+            onChanged: (d) => setState(() => _ordDob = d),
+            enabled: _isEditing,
+          ),
+          const SizedBox(height: 12),
+          HelpiTextField(
+            label: AppStrings.phone,
+            controller: _ordPhoneCtrl,
             keyboardType: TextInputType.phone,
+            enabled: _isEditing,
           ),
           const SizedBox(height: 32),
 
           // ── PODACI O KORISNIKU (SENIOR) ─────────────
-          _sectionHeader(AppStrings.seniorData),
+          HelpiSectionHeader(title: AppStrings.seniorData),
           const SizedBox(height: 12),
-          _buildField(AppStrings.firstName, _senFirstNameCtrl),
-          const SizedBox(height: 12),
-          _buildField(AppStrings.lastName, _senLastNameCtrl),
-          const SizedBox(height: 12),
-          _buildGenderPicker(_senGender, (v) => setState(() => _senGender = v)),
-          const SizedBox(height: 12),
-          _buildDatePicker(
-            AppStrings.dateOfBirth,
-            _senDob,
-            (d) => setState(() => _senDob = d),
+          HelpiTextField(
+            label: AppStrings.firstName,
+            controller: _senFirstNameCtrl,
+            enabled: _isEditing,
           ),
           const SizedBox(height: 12),
-          _buildField(AppStrings.address, _senAddressCtrl),
+          HelpiTextField(
+            label: AppStrings.lastName,
+            controller: _senLastNameCtrl,
+            enabled: _isEditing,
+          ),
           const SizedBox(height: 12),
-          _buildField(
-            AppStrings.phone,
-            _senPhoneCtrl,
+          HelpiGenderPicker(
+            value: _senGender,
+            onChanged: (v) => setState(() => _senGender = v),
+            enabled: _isEditing,
+          ),
+          const SizedBox(height: 12),
+          HelpiDatePicker(
+            label: AppStrings.dateOfBirth,
+            date: _senDob,
+            onChanged: (d) => setState(() => _senDob = d),
+            enabled: _isEditing,
+          ),
+          const SizedBox(height: 12),
+          HelpiTextField(
+            label: AppStrings.address,
+            controller: _senAddressCtrl,
+            enabled: _isEditing,
+          ),
+          const SizedBox(height: 12),
+          HelpiTextField(
+            label: AppStrings.phone,
+            controller: _senPhoneCtrl,
             keyboardType: TextInputType.phone,
+            enabled: _isEditing,
           ),
           const SizedBox(height: 32),
 
           // ── KREDITNE KARTICE ────────────────────────
-          _sectionHeader(AppStrings.creditCards),
+          HelpiSectionHeader(title: AppStrings.creditCards),
           const SizedBox(height: 12),
           if (_cards.isEmpty)
             Padding(
@@ -144,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                  border: Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -167,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     disabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     enabled: _isEditing,
                     filled: true,
@@ -306,9 +341,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: theme.colorScheme.onSurface,
                   fontSize: 16,
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'HR', child: Text('Hrvatski')),
-                  DropdownMenuItem(value: 'EN', child: Text('English')),
+                items: [
+                  DropdownMenuItem(value: 'HR', child: Text(AppStrings.langHr)),
+                  DropdownMenuItem(value: 'EN', child: Text(AppStrings.langEn)),
                 ],
               ),
             ),
@@ -321,168 +356,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: const Icon(Icons.logout),
             label: Text(AppStrings.logout),
             style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFFEF5B5B),
-              side: const BorderSide(color: Color(0xFFEF5B5B), width: 2),
+              foregroundColor: AppColors.coral,
+              side: const BorderSide(color: AppColors.coral, width: 2),
             ),
           ),
           const SizedBox(height: 32),
 
           // ── Verzija ─────────────────────────────────
-          Center(child: Text('Helpi v1.0.0', style: theme.textTheme.bodySmall)),
+          Center(
+            child: Text(
+              AppStrings.appVersion,
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
           const SizedBox(height: 16),
         ],
-      ),
-    );
-  }
-
-  // ── Helpers ───────────────────────────────────────
-
-  Widget _sectionHeader(String title) {
-    final theme = Theme.of(context);
-    return Text(
-      title,
-      style: theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w700,
-        color: theme.colorScheme.onSurface,
-      ),
-    );
-  }
-
-  Widget _buildField(
-    String label,
-    TextEditingController controller, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    final theme = Theme.of(context);
-
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      enabled: _isEditing,
-      style: TextStyle(
-        color: _isEditing
-            ? theme.colorScheme.onSurface
-            : theme.colorScheme.onSurface.withAlpha(153),
-        fontSize: 16,
-      ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-          color: theme.colorScheme.onSurface.withAlpha(_isEditing ? 180 : 153),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-      ),
-    );
-  }
-
-  Widget _buildGenderPicker(String value, ValueChanged<String> onChanged) {
-    final theme = Theme.of(context);
-
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: AppStrings.gender,
-        labelStyle: TextStyle(
-          color: theme.colorScheme.onSurface.withAlpha(_isEditing ? 180 : 153),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        enabled: _isEditing,
-        filled: true,
-        fillColor: Colors.white,
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isDense: true,
-          isExpanded: true,
-          onChanged: _isEditing
-              ? (v) {
-                  if (v != null) onChanged(v);
-                }
-              : null,
-          style: TextStyle(
-            color: _isEditing
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurface.withAlpha(153),
-            fontSize: 16,
-          ),
-          items: [
-            DropdownMenuItem(value: 'M', child: Text(AppStrings.genderMale)),
-            DropdownMenuItem(value: 'F', child: Text(AppStrings.genderFemale)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDatePicker(
-    String label,
-    DateTime date,
-    ValueChanged<DateTime> onChanged,
-  ) {
-    final theme = Theme.of(context);
-    final formatted =
-        '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}.';
-
-    return GestureDetector(
-      onTap: _isEditing
-          ? () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: date,
-                firstDate: DateTime(1920),
-                lastDate: DateTime.now(),
-              );
-              if (picked != null && context.mounted) {
-                onChanged(picked);
-              }
-            }
-          : null,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(
-            color: theme.colorScheme.onSurface.withAlpha(
-              _isEditing ? 180 : 153,
-            ),
-          ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: _isEditing
-                  ? theme.colorScheme.onSurface.withAlpha(100)
-                  : const Color(0xFFE0E0E0),
-            ),
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          suffixIcon: _isEditing
-              ? Icon(
-                  Icons.calendar_today,
-                  size: 20,
-                  color: theme.colorScheme.secondary,
-                )
-              : null,
-        ),
-        child: Text(
-          formatted,
-          style: TextStyle(
-            color: _isEditing
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurface.withAlpha(153),
-            fontSize: 16,
-          ),
-        ),
       ),
     );
   }

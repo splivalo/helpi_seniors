@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:helpi_senior/core/constants/colors.dart';
+import 'package:helpi_senior/core/constants/pricing.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/core/utils/formatters.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
+import 'package:helpi_senior/shared/widgets/job_status_badge.dart';
+import 'package:helpi_senior/shared/widgets/star_rating.dart';
+import 'package:helpi_senior/shared/widgets/status_chip.dart';
+import 'package:helpi_senior/shared/widgets/summary_row.dart';
 
 /// Detalji narudžbe — puni ekran s podacima + sekcija Studenti + ocjene.
 class OrderDetailScreen extends StatefulWidget {
@@ -20,22 +27,6 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  static const _teal = Color(0xFF009D9D);
-  static const _green = Color(0xFF4CAF50);
-  static const _coral = Color(0xFFEF5B5B);
-  static const _grey = Color(0xFF757575);
-
-  // ── Pricing ──
-  static const _hourlyRate = 14; // €/h standard
-  static const _sundayRate = 16; // €/h Sunday
-
-  int _priceForDay(int weekday, int hours) {
-    final rate = weekday == DateTime.sunday ? _sundayRate : _hourlyRate;
-    return rate * hours;
-  }
-
-  String _formatPrice(int euros) => '$euros,00 €';
-
   bool _jobsExpanded = false;
 
   @override
@@ -78,7 +69,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ),
                     ),
                   ),
-                  _statusChip(theme, order.status),
+                  StatusChip(status: order.status),
                 ],
               ),
               const SizedBox(height: 20),
@@ -105,8 +96,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   icon: const Icon(Icons.close, size: 20),
                   label: Text(AppStrings.cancelOrder),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: _coral,
-                    side: const BorderSide(color: _coral, width: 2),
+                    foregroundColor: AppColors.coral,
+                    side: const BorderSide(color: AppColors.coral, width: 2),
                   ),
                 ),
               if (order.status == OrderStatus.active)
@@ -120,8 +111,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   icon: const Icon(Icons.close, size: 20),
                   label: Text(AppStrings.cancelOrder),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: _coral,
-                    side: const BorderSide(color: _coral, width: 2),
+                    foregroundColor: AppColors.coral,
+                    side: const BorderSide(color: AppColors.coral, width: 2),
                   ),
                 ),
               if (order.status == OrderStatus.completed)
@@ -145,41 +136,50 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Frequency
-          _summaryRow(theme, AppStrings.orderSummaryFrequency, order.frequency),
+          SummaryRow(
+            label: AppStrings.orderSummaryFrequency,
+            value: order.frequency,
+          ),
           const Divider(height: 24),
 
           // Date
-          _summaryRow(
-            theme,
-            order.isOneTime
+          SummaryRow(
+            label: order.isOneTime
                 ? AppStrings.orderSummaryDate
                 : AppStrings.orderSummaryStartDate,
-            order.date,
+            value: order.date,
           ),
 
           if (order.endDate.isNotEmpty) ...[
             const Divider(height: 24),
-            _summaryRow(theme, AppStrings.orderSummaryEndDate, order.endDate),
+            SummaryRow(
+              label: AppStrings.orderSummaryEndDate,
+              value: order.endDate,
+            ),
           ],
 
           // One-time: time + duration + price
           if (order.isOneTime) ...[
             const Divider(height: 24),
-            _summaryRow(theme, AppStrings.orderSummaryTime, order.time),
+            SummaryRow(label: AppStrings.orderSummaryTime, value: order.time),
             const Divider(height: 24),
-            _summaryRow(theme, AppStrings.orderSummaryDuration, order.duration),
+            SummaryRow(
+              label: AppStrings.orderSummaryDuration,
+              value: order.duration,
+            ),
             if (order.durationHours > 0) ...[
               const Divider(height: 24),
-              _summaryRow(
-                theme,
-                AppStrings.orderSummaryPrice,
-                _formatPrice(_priceForDay(order.weekday, order.durationHours)),
+              SummaryRow(
+                label: AppStrings.orderSummaryPrice,
+                value: AppPricing.formatPrice(
+                  AppPricing.priceForDay(order.weekday, order.durationHours),
+                ),
                 bold: true,
               ),
             ],
@@ -190,7 +190,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const Divider(height: 24),
             Text(
               AppStrings.orderSummaryDays,
-              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 8),
             ...order.dayEntries.map(
@@ -199,7 +201,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 child: Row(
                   children: [
                     Text(
-                      _dayMediumName(entry.weekday),
+                      AppFormatters.dayMediumName(entry.weekday),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -207,7 +209,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     const Spacer(),
                     Text(
                       entry.durationHours > 0
-                          ? '${entry.time}  ·  ${entry.durationHours}h  ·  ${_formatPrice(_priceForDay(entry.weekday, entry.durationHours))}'
+                          ? '${entry.time}  ·  ${entry.durationHours}h  ·  ${AppPricing.formatPrice(AppPricing.priceForDay(entry.weekday, entry.durationHours))}'
                           : '${entry.time}  ·  ${entry.duration}',
                       style: theme.textTheme.bodyMedium,
                     ),
@@ -228,11 +230,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    _formatPrice(
+                    AppPricing.formatPrice(
                       order.dayEntries.fold<int>(
                         0,
                         (sum, e) =>
-                            sum + _priceForDay(e.weekday, e.durationHours),
+                            sum +
+                            AppPricing.priceForDay(e.weekday, e.durationHours),
                       ),
                     ),
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -249,7 +252,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           // Services as chips
           Text(
             AppStrings.orderSummaryServices,
-            style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -262,14 +267,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0F5F5),
+                  color: AppColors.selectedChipBg,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: _teal),
+                  border: Border.all(color: AppColors.teal),
                 ),
                 child: Text(
                   label,
                   style: const TextStyle(
-                    color: _teal,
+                    color: AppColors.teal,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -283,7 +288,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const Divider(height: 24),
             Text(
               AppStrings.orderSummaryNotes,
-              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 4),
             Text(order.notes, style: theme.textTheme.bodyMedium),
@@ -297,19 +304,25 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             // Grey label
             Text(
               AppStrings.studentName,
-              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 6),
             // Student name + small Ocijeni button
             if (order.jobs.first.review == null)
               Row(
                 children: [
-                  const Icon(Icons.person_outline, size: 16, color: _teal),
+                  const Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: AppColors.teal,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     order.jobs.first.studentName,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: _teal,
+                      color: AppColors.teal,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -321,8 +334,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       icon: const Icon(Icons.star, size: 14),
                       label: Text(AppStrings.rateStudent),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: _teal,
-                        side: const BorderSide(color: _teal),
+                        foregroundColor: AppColors.teal,
+                        side: const BorderSide(color: AppColors.teal),
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         textStyle: const TextStyle(
                           fontSize: 12,
@@ -340,12 +353,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             else ...[
               Row(
                 children: [
-                  const Icon(Icons.person_outline, size: 16, color: _teal),
+                  const Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: AppColors.teal,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     order.jobs.first.studentName,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: _teal,
+                      color: AppColors.teal,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -367,21 +384,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     Row(
                       children: [
-                        ...List.generate(
-                          5,
-                          (i) => Icon(
-                            i < order.jobs.first.review!.rating
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: const Color(0xFFFFC107),
-                            size: 18,
-                          ),
+                        StarRating(
+                          rating: order.jobs.first.review!.rating,
+                          size: 18,
                         ),
                         const Spacer(),
                         Text(
                           order.jobs.first.review!.date,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: _grey,
+                            color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
                         ),
@@ -405,26 +416,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _summaryRow(
-    ThemeData theme,
-    String label,
-    String value, {
-    bool bold = false,
-  }) {
-    return Row(
-      children: [
-        Text(label, style: theme.textTheme.bodySmall?.copyWith(color: _grey)),
-        const Spacer(),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
   // ── Jobs / sessions section ──
   Widget _jobsSection(ThemeData theme, OrderModel order) {
     if (order.jobs.isEmpty) return const SizedBox.shrink();
@@ -435,7 +426,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,7 +449,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   _jobsExpanded
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
-                  color: _grey,
+                  color: AppColors.textSecondary,
                 ),
               ],
             ),
@@ -467,7 +458,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const SizedBox(height: 6),
             Text(
               AppStrings.jobsMonthlySubtitle,
-              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
           if (_jobsExpanded) ...[
@@ -476,7 +469,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               final jobIndex = mapEntry.key;
               final job = mapEntry.value;
               final isLast = jobIndex == order.jobs.length - 1;
-              final price = _priceForDay(job.weekday, job.durationHours);
+              final price = AppPricing.priceForDay(
+                job.weekday,
+                job.durationHours,
+              );
 
               return Padding(
                 padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
@@ -505,7 +501,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: isCancelled ? const Color(0xFFFAFAFA) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,23 +517,25 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     : Icons.schedule,
                 size: 18,
                 color: isCompleted
-                    ? _green
+                    ? AppColors.success
                     : isCancelled
-                    ? _coral
-                    : const Color(0xFF1976D2),
+                    ? AppColors.coral
+                    : AppColors.info,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '${_dayMediumName(job.weekday)}, ${job.date}',
+                  '${AppFormatters.dayMediumName(job.weekday)}, ${job.date}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: isCancelled ? _grey : const Color(0xFF212121),
+                    color: isCancelled
+                        ? AppColors.textSecondary
+                        : const Color(0xFF212121),
                     decoration: isCancelled ? TextDecoration.lineThrough : null,
                   ),
                 ),
               ),
-              _jobStatusBadge(theme, job.status),
+              JobStatusBadge(status: job.status),
             ],
           ),
           const SizedBox(height: 6),
@@ -546,8 +544,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           Padding(
             padding: const EdgeInsets.only(left: 26),
             child: Text(
-              '${job.time}  ·  ${job.durationHours}h  ·  ${_formatPrice(price)}',
-              style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+              '${job.time}  ·  ${job.durationHours}h  ·  ${AppPricing.formatPrice(price)}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
 
@@ -556,12 +556,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             padding: const EdgeInsets.only(left: 26, top: 4),
             child: Row(
               children: [
-                const Icon(Icons.person_outline, size: 14, color: _teal),
+                const Icon(
+                  Icons.person_outline,
+                  size: 14,
+                  color: AppColors.teal,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   job.studentName,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: _teal,
+                    color: AppColors.teal,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -585,8 +589,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         icon: const Icon(Icons.star, size: 14),
                         label: Text(AppStrings.rateStudent),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: _teal,
-                          side: const BorderSide(color: _teal),
+                          foregroundColor: AppColors.teal,
+                          side: const BorderSide(color: AppColors.teal),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           textStyle: const TextStyle(
                             fontSize: 12,
@@ -610,8 +614,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         icon: const Icon(Icons.close, size: 14),
                         label: Text(AppStrings.cancelJobLabel),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: _coral,
-                          side: const BorderSide(color: _coral),
+                          foregroundColor: AppColors.coral,
+                          side: const BorderSide(color: AppColors.coral),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           textStyle: const TextStyle(
                             fontSize: 12,
@@ -650,21 +654,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     Row(
                       children: [
-                        ...List.generate(
-                          5,
-                          (i) => Icon(
-                            i < job.review!.rating
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: const Color(0xFFFFC107),
-                            size: 14,
-                          ),
-                        ),
+                        StarRating(rating: job.review!.rating, size: 14),
                         const Spacer(),
                         Text(
                           job.review!.date,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: _grey,
+                            color: AppColors.textSecondary,
                             fontSize: 11,
                           ),
                         ),
@@ -692,45 +687,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _jobStatusBadge(ThemeData theme, JobStatus status) {
-    final Color bg;
-    final Color fg;
-    final String label;
-
-    switch (status) {
-      case JobStatus.completed:
-        bg = const Color(0xFFE8F5E9);
-        fg = _green;
-        label = AppStrings.jobCompleted;
-      case JobStatus.upcoming:
-        bg = const Color(0xFFE8F1FB);
-        fg = const Color(0xFF1976D2);
-        label = AppStrings.jobUpcoming;
-      case JobStatus.cancelled:
-        bg = const Color(0xFFFFEBEE);
-        fg = _coral;
-        label = AppStrings.jobCancelled;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final d = date.day.toString().padLeft(2, '0');
-    final m = date.month.toString().padLeft(2, '0');
-    return '$d.$m.${date.year}';
-  }
-
   /// Repeat order: pick new date(s), then create order.
   Future<void> _repeatOrder(OrderModel order) async {
     HapticFeedback.selectionClick();
@@ -748,13 +704,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       if (!mounted) return;
       if (range == null) return;
 
-      final newFrequency = AppStrings.recurringWithEnd(_formatDate(range.end));
+      final newFrequency = AppStrings.recurringWithEnd(
+        AppFormatters.date(range.end),
+      );
 
       widget.ordersNotifier.addProcessingOrder(
         OrderModel(
           id: widget.ordersNotifier.nextId,
           services: List<String>.from(order.services),
-          date: _formatDate(range.start),
+          date: AppFormatters.date(range.start),
           frequency: newFrequency,
           notes: order.notes,
           isOneTime: false,
@@ -763,7 +721,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           weekday: range.start.weekday,
           durationHours: order.durationHours,
           dayEntries: order.dayEntries,
-          endDate: _formatDate(range.end),
+          endDate: AppFormatters.date(range.end),
         ),
       );
       if (!mounted) return;
@@ -786,7 +744,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       OrderModel(
         id: widget.ordersNotifier.nextId,
         services: List<String>.from(order.services),
-        date: _formatDate(picked),
+        date: AppFormatters.date(picked),
         frequency: order.frequency,
         notes: order.notes,
         isOneTime: order.isOneTime,
@@ -822,7 +780,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             },
             child: Text(
               AppStrings.cancelJobLabel,
-              style: const TextStyle(color: _coral),
+              style: const TextStyle(color: AppColors.coral),
             ),
           ),
         ],
@@ -866,30 +824,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_dayMediumName(job.weekday)}, ${job.date}',
-                    style: theme.textTheme.bodySmall?.copyWith(color: _grey),
+                    '${AppFormatters.dayMediumName(job.weekday)}, ${job.date}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 20),
 
                   // Stars
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (i) {
-                      return GestureDetector(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          setSheetState(() => selectedRating = i + 1);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          child: Icon(
-                            i < selectedRating ? Icons.star : Icons.star_border,
-                            color: const Color(0xFFFFC107),
-                            size: 40,
-                          ),
-                        ),
-                      );
-                    }),
+                  StarRating(
+                    rating: selectedRating,
+                    size: 40,
+                    onTap: (rating) {
+                      HapticFeedback.selectionClick();
+                      setSheetState(() => selectedRating = rating);
+                    },
                   ),
                   const SizedBox(height: 20),
 
@@ -912,11 +861,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     child: ElevatedButton(
                       onPressed: selectedRating > 0
                           ? () {
-                              final now = DateTime.now();
-                              final dateStr =
-                                  '${now.day.toString().padLeft(2, '0')}.'
-                                  '${now.month.toString().padLeft(2, '0')}.'
-                                  '${now.year}';
+                              final dateStr = AppFormatters.date(
+                                DateTime.now(),
+                              );
                               widget.ordersNotifier.addJobReview(
                                 order.id,
                                 jobIndex,
@@ -939,62 +886,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           },
         );
       },
-    );
-  }
-
-  /// 3-letter day abbreviation from weekday int.
-  String _dayMediumName(int day) {
-    switch (day) {
-      case 1:
-        return AppStrings.dayMon;
-      case 2:
-        return AppStrings.dayTue;
-      case 3:
-        return AppStrings.dayWed;
-      case 4:
-        return AppStrings.dayThu;
-      case 5:
-        return AppStrings.dayFri;
-      case 6:
-        return AppStrings.daySat;
-      case 7:
-        return AppStrings.daySun;
-      default:
-        return '';
-    }
-  }
-
-  // ── Status chip ──
-  Widget _statusChip(ThemeData theme, OrderStatus status) {
-    final Color bg;
-    final Color fg;
-    final String label;
-
-    switch (status) {
-      case OrderStatus.processing:
-        bg = const Color(0xFFE8F1FB);
-        fg = const Color(0xFF1976D2);
-        label = AppStrings.orderProcessing;
-      case OrderStatus.active:
-        bg = const Color(0xFFE8F5E9);
-        fg = _green;
-        label = AppStrings.orderActive;
-      case OrderStatus.completed:
-        bg = const Color(0xFFE8F5E9);
-        fg = _green;
-        label = AppStrings.orderCompleted;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(color: fg, fontSize: 13, fontWeight: FontWeight.w600),
-      ),
     );
   }
 }

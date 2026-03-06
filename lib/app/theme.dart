@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:helpi_senior/core/constants/colors.dart';
+
 /// Senior-friendly tema — soft, topla, pristupačna.
 class HelpiTheme {
   HelpiTheme._();
-
-  // ─── Boje ───────────────────────────────────────────────────────
-  static const Color _primary = Color(0xFFEF5B5B);
-  static const Color _accent = Color(0xFF009D9D);
-  static const Color _error = Color(0xFFC62828);
-  static const Color _background = Color(0xFFF9F7F4); // warm off-white
-  static const Color _surface = Colors.white;
-  static const Color _textPrimary = Color(0xFF2D2D2D);
-  static const Color _textSecondary = Color(0xFF757575);
 
   // Pastelne boje za kartice
   static const Color cardMint = Color(0xFFE8F5F1);
@@ -29,30 +22,30 @@ class HelpiTheme {
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: const ColorScheme.light(
-      primary: _primary,
+      primary: AppColors.coral,
       primaryContainer: Color(0xFFFFE8E5),
-      secondary: _accent,
+      secondary: AppColors.teal,
       secondaryContainer: Color(0xFFD4F0F0),
-      error: _error,
-      surface: _surface,
+      error: AppColors.error,
+      surface: AppColors.surface,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
-      onSurface: _textPrimary,
+      onSurface: AppColors.textPrimary,
       onError: Colors.white,
     ),
-    scaffoldBackgroundColor: _background,
+    scaffoldBackgroundColor: AppColors.background,
 
     // ─── AppBar ─────────────────────────────────────
     appBarTheme: const AppBarTheme(
-      backgroundColor: _background,
-      foregroundColor: _textPrimary,
+      backgroundColor: AppColors.background,
+      foregroundColor: AppColors.textPrimary,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.w700,
-        color: _textPrimary,
+        color: AppColors.textPrimary,
       ),
     ),
 
@@ -61,32 +54,32 @@ class HelpiTheme {
       headlineLarge: TextStyle(
         fontSize: 30,
         fontWeight: FontWeight.w800,
-        color: _textPrimary,
+        color: AppColors.textPrimary,
       ),
       headlineMedium: TextStyle(
         fontSize: 26,
         fontWeight: FontWeight.w700,
-        color: _textPrimary,
+        color: AppColors.textPrimary,
       ),
       headlineSmall: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        color: _textPrimary,
+        color: AppColors.textPrimary,
       ),
       bodyLarge: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w400,
-        color: _textPrimary,
+        color: AppColors.textPrimary,
       ),
       bodyMedium: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        color: _textPrimary,
+        color: AppColors.textPrimary,
       ),
       bodySmall: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: _textSecondary,
+        color: AppColors.textSecondary,
       ),
       labelLarge: TextStyle(
         fontSize: 18,
@@ -98,7 +91,7 @@ class HelpiTheme {
     // ─── Elevated Button (veliki, zaobljeni) ───────
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: _primary,
+        backgroundColor: AppColors.coral,
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, buttonHeight),
         shape: RoundedRectangleBorder(
@@ -112,12 +105,12 @@ class HelpiTheme {
     // ─── Outlined Button ────────────────────────────
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: _accent,
+        foregroundColor: AppColors.teal,
         minimumSize: const Size(double.infinity, buttonHeight),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(buttonRadius),
         ),
-        side: const BorderSide(color: _accent, width: 2),
+        side: const BorderSide(color: AppColors.teal, width: 2),
         textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       ),
     ),
@@ -125,14 +118,14 @@ class HelpiTheme {
     // ─── Text Button ───────────────────────────────
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: _accent,
+        foregroundColor: AppColors.teal,
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
 
     // ─── Card ───────────────────────────────────────
     cardTheme: CardThemeData(
-      color: _surface,
+      color: AppColors.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(cardRadius),
@@ -144,32 +137,32 @@ class HelpiTheme {
     // ─── Input Decoration ───────────────────────────
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: _surface,
+      fillColor: AppColors.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: const BorderSide(color: _accent, width: 2),
+        borderSide: const BorderSide(color: AppColors.teal, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        borderSide: const BorderSide(color: _error, width: 2),
+        borderSide: const BorderSide(color: AppColors.error, width: 2),
       ),
-      labelStyle: const TextStyle(fontSize: 16, color: _textSecondary),
-      hintStyle: const TextStyle(fontSize: 16, color: _textSecondary),
+      labelStyle: const TextStyle(fontSize: 16, color: AppColors.textSecondary),
+      hintStyle: const TextStyle(fontSize: 16, color: AppColors.textSecondary),
     ),
 
     // ─── Bottom Navigation ──────────────────────────
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: _surface,
-      selectedItemColor: _accent,
+      backgroundColor: AppColors.surface,
+      selectedItemColor: AppColors.teal,
       unselectedItemColor: const Color(0xFFB0B0B0),
       selectedLabelStyle: const TextStyle(
         fontSize: 14,
@@ -182,7 +175,7 @@ class HelpiTheme {
 
     // ─── Floating Action Button ─────────────────────
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: _accent,
+      backgroundColor: AppColors.teal,
       foregroundColor: Colors.white,
       elevation: 2,
     ),

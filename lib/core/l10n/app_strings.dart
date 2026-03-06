@@ -265,6 +265,9 @@ class AppStrings {
       'genderFemale': 'Žensko',
       'dateOfBirth': 'Datum rođenja',
       'dobPlaceholder': 'DD.MM.GGGG.',
+      'langHr': 'Hrvatski',
+      'langEn': 'English',
+      'appVersion': 'Helpi v1.0.0',
       'creditCards': 'Kreditne kartice',
       'noCards': 'Nemate spremljenih kartica',
       'addCard': 'Dodaj karticu',
@@ -566,6 +569,9 @@ class AppStrings {
       'genderFemale': 'Female',
       'dateOfBirth': 'Date of birth',
       'dobPlaceholder': 'DD.MM.YYYY.',
+      'langHr': 'Hrvatski',
+      'langEn': 'English',
+      'appVersion': 'Helpi v1.0.0',
       'creditCards': 'Credit cards',
       'noCards': 'No saved cards',
       'addCard': 'Add card',
@@ -886,6 +892,9 @@ class AppStrings {
   static String get genderFemale => _t('genderFemale');
   static String get dateOfBirth => _t('dateOfBirth');
   static String get dobPlaceholder => _t('dobPlaceholder');
+  static String get langHr => _t('langHr');
+  static String get langEn => _t('langEn');
+  static String get appVersion => _t('appVersion');
   static String get creditCards => _t('creditCards');
   static String get noCards => _t('noCards');
   static String get addCard => _t('addCard');

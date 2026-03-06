@@ -1,10 +1,10 @@
 ﻿# Helpi Senior Progress
 
-> Last updated: 2026-03-02
+> Last updated: 2026-03-03
 
 ---
 
-## Overall progress: ~70%
+## Overall progress: ~75%
 
 ### Completed
 
@@ -107,6 +107,23 @@
 - [x] addProcessingOrder() method (no student/job assignment)
 - [x] All MD documentation files updated for admin app handoff
 
+#### Session 3 — DRY Refactor (Audit + Wire-Up)
+
+- [x] Full codebase audit: SENIOR_AUDIT.md (39 problems found)
+- [x] DRY refactor plan: SENIOR_DRY_PLAN.md (8 steps)
+- [x] AppColors (colors.dart) — centralized 15+ color constants
+- [x] AppPricing (pricing.dart) — hourlyRate/sundayRate/priceForDay/formatPrice
+- [x] AppFormatters (formatters.dart) — date/dayFullName/dayMediumName/dayShortName/firstOccurrence
+- [x] Shared widgets: StatusChip, JobStatusBadge, SummaryRow, SelectableChip, InfoCard, StarRating, TabBarSelector, HelpiFormFields (HelpiSectionHeader, HelpiTextField, HelpiGenderPicker, HelpiDatePicker)
+- [x] AppStrings: added langHr, langEn, appVersion keys (HR+EN)
+- [x] theme.dart: replaced private color constants with AppColors
+- [x] orders_screen.dart: wired TabBarSelector, StatusChip, SummaryRow, AppColors
+- [x] order_detail_screen.dart: wired StatusChip, JobStatusBadge, SummaryRow, StarRating, AppFormatters, AppPricing, AppColors
+- [x] order_flow_screen.dart: wired SelectableChip, SummaryRow, InfoCard, TabBarSelector, AppFormatters, AppPricing, AppColors; removed 8 dead methods, 6 private constants
+- [x] login_screen.dart: wired HelpiFormFields (HelpiTextField, HelpiGenderPicker, HelpiDatePicker, HelpiSectionHeader), AppColors, AppStrings.langHr/langEn; removed 4 dead helper methods + 2 private color constants
+- [x] profile_screen.dart: wired HelpiFormFields, AppColors, AppStrings.langHr/langEn/appVersion; removed 4 dead helper methods
+- [x] flutter analyze: 0 errors maintained throughout all changes
+
 #### Dead Code Cleanup
 
 - [x] Marketplace code deleted (home_screen, marketplace_screen, student_detail_screen)
@@ -121,7 +138,7 @@
 
 ### Next Steps
 
-1. Git commit + push all current work (session 2)
+1. Git commit + push DRY refactor (session 3)
 2. Order confirmation screen (after "Naruči" submit)
 3. APK rebuild with latest changes
 4. GoRouter setup (1.5)
