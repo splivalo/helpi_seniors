@@ -32,6 +32,14 @@ class StatusChip extends StatelessWidget {
         bg = AppColors.statusGreenBg;
         fg = AppColors.success;
         label = AppStrings.orderCompleted;
+      case OrderStatus.cancelled:
+        bg = AppColors.statusRedBg;
+        fg = AppColors.coral;
+        label = AppStrings.orderCancelled;
+      case OrderStatus.archived:
+        bg = const Color(0xFFF5F5F5);
+        fg = AppColors.textSecondary;
+        label = AppStrings.orderArchived;
     }
 
     return Container(

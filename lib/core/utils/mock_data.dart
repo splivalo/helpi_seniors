@@ -16,7 +16,7 @@ class MockData {
       rating: 5.0,
       reviewCount: 7,
       hourlyRate: 14.0,
-      services: [ServiceType.companionship, ServiceType.techHelp],
+      services: [ServiceType.companionship, ServiceType.escort],
       distanceKm: 0.8,
       availableSlots: [
         MockSlot(
@@ -59,7 +59,7 @@ class MockData {
       hourlyRate: 14.0,
       services: [
         ServiceType.shopping,
-        ServiceType.household,
+        ServiceType.houseHelp,
         ServiceType.companionship,
       ],
       distanceKm: 1.5,
@@ -96,7 +96,7 @@ class MockData {
       rating: 4.8,
       reviewCount: 23,
       hourlyRate: 14.0,
-      services: [ServiceType.techHelp, ServiceType.companionship],
+      services: [ServiceType.escort, ServiceType.companionship],
       distanceKm: 2.3,
       availableSlots: [
         MockSlot(
@@ -131,7 +131,7 @@ class MockData {
       rating: 4.5,
       reviewCount: 15,
       hourlyRate: 14.0,
-      services: [ServiceType.techHelp, ServiceType.activities],
+      services: [ServiceType.escort, ServiceType.walking],
       distanceKm: 3.8,
       availableSlots: [
         MockSlot(
@@ -165,7 +165,11 @@ class MockData {
       rating: 4.3,
       reviewCount: 9,
       hourlyRate: 14.0,
-      services: [ServiceType.household, ServiceType.shopping, ServiceType.pets],
+      services: [
+        ServiceType.houseHelp,
+        ServiceType.shopping,
+        ServiceType.other,
+      ],
       distanceKm: 5.1,
       availableSlots: [
         MockSlot(
@@ -363,11 +367,4 @@ class MockDateAvailability {
       '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.';
 }
 
-enum ServiceType {
-  activities,
-  shopping,
-  household,
-  companionship,
-  techHelp,
-  pets,
-}
+enum ServiceType { shopping, houseHelp, companionship, walking, escort, other }

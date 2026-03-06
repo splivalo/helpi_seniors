@@ -897,9 +897,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   // Service chip definitions: key → label getter
   static final _serviceChips = <String, String Function()>{
     'shopping': () => AppStrings.bookingChipShopping,
-    'cleaning': () => AppStrings.bookingChipCleaning,
+    'house_help': () => AppStrings.bookingChipCleaning,
     'companionship': () => AppStrings.bookingChipCompanionship,
-    'walk': () => AppStrings.bookingChipWalk,
+    'walking': () => AppStrings.bookingChipWalk,
     'escort': () => AppStrings.bookingChipEscort,
     'other': () => AppStrings.bookingChipOther,
   };
@@ -1326,14 +1326,14 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   void _submitOrder() {
     final bool isOneTime = _bookingMode == _BookingMode.oneTime;
 
-    String date;
+    DateTime date;
     String time = '';
     String duration = '';
-    String endDate = '';
+    DateTime? endDate;
     List<OrderDayEntry> dayEntries = [];
 
     if (isOneTime) {
-      date = _oneTimeDate != null ? AppFormatters.date(_oneTimeDate!) : '-';
+      date = _oneTimeDate ?? DateTime.now();
       time = _oneTimeFromHour != null
           ? '${_oneTimeFromHour.toString().padLeft(2, '0')}:${(_oneTimeFromMinute ?? 0).toString().padLeft(2, '0')}'
           : '-';
@@ -1351,13 +1351,13 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
             earliest = occ;
           }
         }
-        date = AppFormatters.date(earliest!);
+        date = earliest!;
       } else {
-        date = _startDate != null ? AppFormatters.date(_startDate!) : '-';
+        date = _startDate ?? DateTime.now();
       }
 
       if (_hasEndDate && _endDate != null) {
-        endDate = AppFormatters.date(_endDate!);
+        endDate = _endDate;
       }
 
       // Build structured day entries

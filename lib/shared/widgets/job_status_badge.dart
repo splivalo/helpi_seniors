@@ -4,7 +4,7 @@ import 'package:helpi_senior/core/constants/colors.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 
-/// Badge koji prikazuje status posla/termina (completed / upcoming / cancelled).
+/// Badge koji prikazuje status posla/termina (completed / scheduled / cancelled).
 ///
 /// Zamjenjuje _jobStatusBadge() iz order_detail_screen.dart.
 class JobStatusBadge extends StatelessWidget {
@@ -23,7 +23,7 @@ class JobStatusBadge extends StatelessWidget {
         bg = AppColors.statusGreenBg;
         fg = AppColors.success;
         label = AppStrings.jobCompleted;
-      case JobStatus.upcoming:
+      case JobStatus.scheduled:
         bg = AppColors.statusBlueBg;
         fg = AppColors.info;
         label = AppStrings.jobUpcoming;

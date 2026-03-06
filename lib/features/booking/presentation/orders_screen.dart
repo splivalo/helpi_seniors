@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:helpi_senior/core/constants/colors.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
+import 'package:helpi_senior/core/utils/formatters.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/features/booking/presentation/order_detail_screen.dart';
 import 'package:helpi_senior/shared/widgets/status_chip.dart';
@@ -46,6 +47,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       AppStrings.ordersProcessing,
       AppStrings.ordersActive,
       AppStrings.ordersCompleted,
+      AppStrings.ordersCancelled,
     ];
 
     return Scaffold(
@@ -70,6 +72,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 _buildList(notifier.processing, _ActionType.cancel),
                 _buildList(notifier.active, _ActionType.cancel),
                 _buildList(notifier.completed, _ActionType.repeat),
+                _buildList(notifier.cancelled, _ActionType.none),
               ],
             ),
           ),
@@ -179,7 +182,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               label: order.isOneTime
                   ? AppStrings.orderSummaryDate
                   : AppStrings.orderSummaryStartDate,
-              value: order.date,
+              value: AppFormatters.date(order.date),
             ),
 
             // Tap hint
@@ -212,4 +215,4 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 }
 
-enum _ActionType { cancel, repeat }
+enum _ActionType { cancel, repeat, none }

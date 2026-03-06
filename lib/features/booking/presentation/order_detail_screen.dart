@@ -153,14 +153,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             label: order.isOneTime
                 ? AppStrings.orderSummaryDate
                 : AppStrings.orderSummaryStartDate,
-            value: order.date,
+            value: AppFormatters.date(order.date),
           ),
 
-          if (order.endDate.isNotEmpty) ...[
+          if (order.endDate != null) ...[
             const Divider(height: 24),
             SummaryRow(
               label: AppStrings.orderSummaryEndDate,
-              value: order.endDate,
+              value: AppFormatters.date(order.endDate!),
             ),
           ],
 
@@ -390,7 +390,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                         const Spacer(),
                         Text(
-                          order.jobs.first.review!.date,
+                          AppFormatters.date(order.jobs.first.review!.date),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                             fontSize: 12,
@@ -494,7 +494,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   ) {
     final isCompleted = job.status == JobStatus.completed;
     final isCancelled = job.status == JobStatus.cancelled;
-    final isUpcoming = job.status == JobStatus.upcoming;
+    final isUpcoming = job.status == JobStatus.scheduled;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -525,7 +525,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '${AppFormatters.dayMediumName(job.weekday)}, ${job.date}',
+                  '${AppFormatters.dayMediumName(job.weekday)}, ${AppFormatters.date(job.date)}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isCancelled
@@ -657,7 +657,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         StarRating(rating: job.review!.rating, size: 14),
                         const Spacer(),
                         Text(
-                          job.review!.date,
+                          AppFormatters.date(job.review!.date),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                             fontSize: 11,
@@ -694,7 +694,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final lastDate = DateTime(now.year + 2);
 
     // Recurring with end date → date range picker
-    if (!order.isOneTime && order.endDate.isNotEmpty) {
+    if (!order.isOneTime && order.endDate != null) {
       final range = await showDateRangePicker(
         context: context,
         firstDate: now,
@@ -712,7 +712,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         OrderModel(
           id: widget.ordersNotifier.nextId,
           services: List<String>.from(order.services),
-          date: AppFormatters.date(range.start),
+          date: range.start,
           frequency: newFrequency,
           notes: order.notes,
           isOneTime: false,
@@ -721,7 +721,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           weekday: range.start.weekday,
           durationHours: order.durationHours,
           dayEntries: order.dayEntries,
-          endDate: AppFormatters.date(range.end),
+          endDate: range.end,
         ),
       );
       if (!mounted) return;
@@ -744,7 +744,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       OrderModel(
         id: widget.ordersNotifier.nextId,
         services: List<String>.from(order.services),
-        date: AppFormatters.date(picked),
+        date: picked,
         frequency: order.frequency,
         notes: order.notes,
         isOneTime: order.isOneTime,
@@ -753,7 +753,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         weekday: picked.weekday,
         durationHours: order.durationHours,
         dayEntries: order.dayEntries,
-        endDate: '',
       ),
     );
     if (!mounted) return;
@@ -824,7 +823,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${AppFormatters.dayMediumName(job.weekday)}, ${job.date}',
+                    '${AppFormatters.dayMediumName(job.weekday)}, ${AppFormatters.date(job.date)}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -861,16 +860,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     child: ElevatedButton(
                       onPressed: selectedRating > 0
                           ? () {
-                              final dateStr = AppFormatters.date(
-                                DateTime.now(),
-                              );
                               widget.ordersNotifier.addJobReview(
                                 order.id,
                                 jobIndex,
                                 ReviewModel(
                                   rating: selectedRating,
                                   comment: commentCtrl.text.trim(),
-                                  date: dateStr,
+                                  date: DateTime.now(),
                                 ),
                               );
                               if (!ctx.mounted) return;

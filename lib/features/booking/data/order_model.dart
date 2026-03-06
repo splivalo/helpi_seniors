@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
-/// Status narudžbe.
-enum OrderStatus { processing, active, completed }
+/// Status narudžbe (canonical: processing → active → completed | cancelled | archived).
+enum OrderStatus { processing, active, completed, cancelled, archived }
 
-/// Status pojedinog posla/termina.
-enum JobStatus { completed, upcoming, cancelled }
+/// Status pojedinog posla/termina (canonical: scheduled → completed | cancelled).
+enum JobStatus { completed, scheduled, cancelled }
 
 /// Strukturirani zapis jednog dana u ponavljajućoj narudžbi.
 class OrderDayEntry {
@@ -31,16 +31,25 @@ class JobModel {
     required this.time,
     required this.durationHours,
     required this.studentName,
-    this.status = JobStatus.upcoming,
+    this.orderId = '',
+    this.studentId = '',
+    this.status = JobStatus.scheduled,
     this.review,
   });
 
-  /// Formatted date string "DD.MM.YYYY."
-  final String date;
+  /// Date of this job occurrence.
+  final DateTime date;
   final int weekday; // 1=Mon … 7=Sun
   final String time;
   final int durationHours;
   final String studentName;
+
+  /// Linkage: explicit order reference.
+  final String orderId;
+
+  /// Linkage: explicit student reference.
+  final String studentId;
+
   JobStatus status;
   ReviewModel? review;
 }
@@ -51,7 +60,7 @@ class ReviewModel {
 
   final int rating; // 1-5
   final String comment;
-  final String date;
+  final DateTime date;
 }
 
 /// Student dodijeljen narudžbi.
@@ -59,12 +68,17 @@ class StudentAssignment {
   StudentAssignment({
     required this.name,
     required this.fromDate,
-    this.toDate = '',
+    this.studentId = '',
+    this.toDate,
   });
 
   final String name;
-  final String fromDate;
-  final String toDate;
+
+  /// Linkage: explicit student reference.
+  final String studentId;
+
+  final DateTime fromDate;
+  final DateTime? toDate;
   final List<ReviewModel> reviews = [];
 }
 
@@ -75,13 +89,14 @@ class OrderModel {
     required this.services,
     required this.date,
     required this.frequency,
+    this.seniorId = '',
     this.status = OrderStatus.processing,
     this.notes = '',
     this.isOneTime = true,
     this.time = '',
     this.duration = '',
     this.dayEntries = const [],
-    this.endDate = '',
+    this.endDate,
     this.weekday = 1,
     this.durationHours = 0,
     List<StudentAssignment>? students,
@@ -90,8 +105,12 @@ class OrderModel {
        jobs = jobs ?? [];
 
   final int id;
+
+  /// Linkage: explicit senior reference.
+  final String seniorId;
+
   final List<String> services;
-  final String date;
+  final DateTime date;
   final String frequency;
   final String notes;
   OrderStatus status;
@@ -101,7 +120,7 @@ class OrderModel {
   final String duration;
 
   final List<OrderDayEntry> dayEntries;
-  final String endDate;
+  final DateTime? endDate;
 
   /// For one-time orders: weekday (1=Mon…7=Sun) and numeric hours.
   final int weekday;
@@ -132,7 +151,7 @@ class OrdersNotifier extends ChangeNotifier {
     final seedOneTime = OrderModel(
       id: _nextId,
       services: ['Čišćenje', 'Kuhanje'],
-      date: '25.02.2026',
+      date: DateTime(2026, 2, 25),
       frequency: 'Jednom',
       status: OrderStatus.completed,
       isOneTime: true,
@@ -140,10 +159,12 @@ class OrdersNotifier extends ChangeNotifier {
       duration: '2 sata',
       weekday: 3, // Wednesday
       durationHours: 2,
-      students: [StudentAssignment(name: 'Ana M.', fromDate: '25.02.2026')],
+      students: [
+        StudentAssignment(name: 'Ana M.', fromDate: DateTime(2026, 2, 25)),
+      ],
       jobs: [
         JobModel(
-          date: '25.02.2026',
+          date: DateTime(2026, 2, 25),
           weekday: 3,
           time: '10:00',
           durationHours: 2,
@@ -159,7 +180,7 @@ class OrdersNotifier extends ChangeNotifier {
     final seedRecurring = OrderModel(
       id: _nextId,
       services: ['Čišćenje'],
-      date: '03.01.2026',
+      date: DateTime(2026, 1, 3),
       frequency: 'Ponavljajuće',
       status: OrderStatus.completed,
       isOneTime: false,
@@ -183,10 +204,12 @@ class OrdersNotifier extends ChangeNotifier {
           durationHours: 2,
         ),
       ],
-      students: [StudentAssignment(name: 'Marko K.', fromDate: '03.01.2026')],
+      students: [
+        StudentAssignment(name: 'Marko K.', fromDate: DateTime(2026, 1, 3)),
+      ],
       jobs: [
         JobModel(
-          date: '05.01.2026',
+          date: DateTime(2026, 1, 5),
           weekday: 1,
           time: '09:00',
           durationHours: 3,
@@ -194,7 +217,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '08.01.2026',
+          date: DateTime(2026, 1, 8),
           weekday: 4,
           time: '14:00',
           durationHours: 2,
@@ -202,7 +225,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '12.01.2026',
+          date: DateTime(2026, 1, 12),
           weekday: 1,
           time: '09:00',
           durationHours: 3,
@@ -210,7 +233,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '15.01.2026',
+          date: DateTime(2026, 1, 15),
           weekday: 4,
           time: '14:00',
           durationHours: 2,
@@ -226,7 +249,7 @@ class OrdersNotifier extends ChangeNotifier {
     final seedUntilDate = OrderModel(
       id: _nextId,
       services: ['Kuhanje', 'Šetnja'],
-      date: '10.01.2026',
+      date: DateTime(2026, 1, 10),
       frequency: 'Do 07.02.2026',
       status: OrderStatus.completed,
       isOneTime: false,
@@ -234,7 +257,7 @@ class OrdersNotifier extends ChangeNotifier {
       duration: '2 sata',
       weekday: 6,
       durationHours: 2,
-      endDate: '07.02.2026',
+      endDate: DateTime(2026, 2, 7),
       dayEntries: const [
         OrderDayEntry(
           dayName: 'Subota',
@@ -244,10 +267,12 @@ class OrdersNotifier extends ChangeNotifier {
           durationHours: 2,
         ),
       ],
-      students: [StudentAssignment(name: 'Ivana P.', fromDate: '10.01.2026')],
+      students: [
+        StudentAssignment(name: 'Ivana P.', fromDate: DateTime(2026, 1, 10)),
+      ],
       jobs: [
         JobModel(
-          date: '10.01.2026',
+          date: DateTime(2026, 1, 10),
           weekday: 6,
           time: '11:00',
           durationHours: 2,
@@ -255,7 +280,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '17.01.2026',
+          date: DateTime(2026, 1, 17),
           weekday: 6,
           time: '11:00',
           durationHours: 2,
@@ -263,7 +288,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '24.01.2026',
+          date: DateTime(2026, 1, 24),
           weekday: 6,
           time: '11:00',
           durationHours: 2,
@@ -271,7 +296,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '31.01.2026',
+          date: DateTime(2026, 1, 31),
           weekday: 6,
           time: '11:00',
           durationHours: 2,
@@ -279,7 +304,7 @@ class OrdersNotifier extends ChangeNotifier {
           status: JobStatus.completed,
         ),
         JobModel(
-          date: '07.02.2026',
+          date: DateTime(2026, 2, 7),
           weekday: 6,
           time: '11:00',
           durationHours: 2,
@@ -302,6 +327,12 @@ class OrdersNotifier extends ChangeNotifier {
 
   List<OrderModel> get completed =>
       _orders.where((o) => o.status == OrderStatus.completed).toList();
+
+  List<OrderModel> get cancelled =>
+      _orders.where((o) => o.status == OrderStatus.cancelled).toList();
+
+  List<OrderModel> get archived =>
+      _orders.where((o) => o.status == OrderStatus.archived).toList();
 
   int _nextId = 1;
 
@@ -343,18 +374,15 @@ class OrdersNotifier extends ChangeNotifier {
           time: order.time,
           durationHours: order.durationHours,
           studentName: studentName,
-          status: JobStatus.upcoming,
+          status: JobStatus.scheduled,
         ),
       );
       return;
     }
 
-    // Recurring: parse start/end, generate occurrences
-    final start = _parseDate(order.date);
-    if (start == null) return;
-
-    final end = order.endDate.isNotEmpty ? _parseDate(order.endDate) : null;
-    final limit = end ?? start.add(const Duration(days: 60));
+    // Recurring: use DateTime directly
+    final start = order.date;
+    final limit = order.endDate ?? start.add(const Duration(days: 60));
 
     final jobs = <JobModel>[];
     for (final entry in order.dayEntries) {
@@ -362,12 +390,12 @@ class OrdersNotifier extends ChangeNotifier {
       while (!current.isAfter(limit)) {
         jobs.add(
           JobModel(
-            date: _fmtDate(current),
+            date: current,
             weekday: entry.weekday,
             time: entry.time,
             durationHours: entry.durationHours,
             studentName: studentName,
-            status: JobStatus.upcoming,
+            status: JobStatus.scheduled,
           ),
         );
         current = current.add(const Duration(days: 7));
@@ -386,22 +414,6 @@ class OrdersNotifier extends ChangeNotifier {
   }
 
   // ── Date helpers ──
-  static DateTime? _parseDate(String s) {
-    final parts = s.replaceAll('.', '/').split('/');
-    if (parts.length < 3) return null;
-    final d = int.tryParse(parts[0]);
-    final m = int.tryParse(parts[1]);
-    final y = int.tryParse(parts[2]);
-    if (d == null || m == null || y == null) return null;
-    return DateTime(y, m, d);
-  }
-
-  static String _fmtDate(DateTime date) {
-    final d = date.day.toString().padLeft(2, '0');
-    final m = date.month.toString().padLeft(2, '0');
-    return '$d.$m.${date.year}';
-  }
-
   static DateTime _firstOccurrence(int weekday, DateTime from) {
     final diff = (weekday - from.weekday + 7) % 7;
     return from.add(Duration(days: diff));
@@ -410,7 +422,9 @@ class OrdersNotifier extends ChangeNotifier {
   int get nextId => _nextId;
 
   void cancelOrder(int id) {
-    _orders.removeWhere((o) => o.id == id);
+    final idx = _orders.indexWhere((o) => o.id == id);
+    if (idx == -1) return;
+    _orders[idx].status = OrderStatus.cancelled;
     notifyListeners();
   }
 

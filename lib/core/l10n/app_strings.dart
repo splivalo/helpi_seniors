@@ -224,9 +224,12 @@ class AppStrings {
       'ordersProcessing': 'U obradi',
       'ordersActive': 'Aktivne',
       'ordersCompleted': 'Završene',
+      'ordersCancelled': 'Otkazane',
       'orderProcessing': 'U obradi',
       'orderActive': 'Aktivna',
       'orderCompleted': 'Završena',
+      'orderCancelled': 'Otkazana',
+      'orderArchived': 'Arhivirana',
       'cancelOrder': 'Otkaži narudžbu',
       'repeatOrder': 'Ponovi narudžbu',
       'orderPlaced': 'Narudžba zaprimljena!',
@@ -528,9 +531,12 @@ class AppStrings {
       'ordersProcessing': 'Processing',
       'ordersActive': 'Active',
       'ordersCompleted': 'Completed',
+      'ordersCancelled': 'Cancelled',
       'orderProcessing': 'Processing',
       'orderActive': 'Active',
       'orderCompleted': 'Completed',
+      'orderCancelled': 'Cancelled',
+      'orderArchived': 'Archived',
       'cancelOrder': 'Cancel order',
       'repeatOrder': 'Repeat order',
       'orderPlaced': 'Order placed!',
@@ -849,9 +855,12 @@ class AppStrings {
   static String get ordersProcessing => _t('ordersProcessing');
   static String get ordersActive => _t('ordersActive');
   static String get ordersCompleted => _t('ordersCompleted');
+  static String get ordersCancelled => _t('ordersCancelled');
   static String get orderProcessing => _t('orderProcessing');
   static String get orderActive => _t('orderActive');
   static String get orderCompleted => _t('orderCompleted');
+  static String get orderCancelled => _t('orderCancelled');
+  static String get orderArchived => _t('orderArchived');
   static String get cancelOrder => _t('cancelOrder');
   static String get repeatOrder => _t('repeatOrder');
   static String get orderPlaced => _t('orderPlaced');
