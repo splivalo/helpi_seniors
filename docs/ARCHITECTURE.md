@@ -1,6 +1,6 @@
 # Helpi Senior — System Architecture
 
-> Version: 0.5.0 | Date: 2026-03-01
+> Version: 0.6.0 | Date: 2026-03-08
 
 ---
 
@@ -200,9 +200,9 @@ The table exists for future use when specialization may be needed.
 | ENUM                   | Values                                                                                                         |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `user_role`            | `senior`, `student`, `admin`                                                                                   |
-| `service_type`         | `shopping`, `home_help`, `companionship`, `walk`, `escort`, `other`                                            |
+| `service_type`         | `shopping`, `house_help`, `companionship`, `walking`, `escort`, `other`                                        |
 | `booking_status`       | `pending`, `confirmed`, `in_progress`, `completed`, `cancelled`, `cancelled_by_student`, `skipped`, `replaced` |
-| `job_status` (Flutter) | `completed`, `upcoming`, `cancelled` — per-session status in Flutter UI                                        |
+| `job_status` (Flutter) | `completed`, `scheduled`, `cancelled` — per-session status in Flutter UI                                       |
 | `payment_status`       | `pending`, `succeeded`, `failed`, `refunded`                                                                   |
 | `notification_type`    | `booking_confirmed`, `payment_received`, `chat_message`, `reminder`                                            |
 
@@ -242,7 +242,7 @@ lib/
 │   │   ├── data/
 │   │   │   └── order_model.dart        # Order/Job/Review models + OrdersNotifier + mock data
 │   │   └── presentation/
-│   │       ├── orders_screen.dart      # "Moje narudžbe" (3 tabs: processing/active/completed)
+│   │       ├── orders_screen.dart      # "Moje narudžbe" (4 tabs: processing/active/completed/cancelled)
 │   │       └── order_detail_screen.dart # Order detail + pricing + jobs section + per-job reviews
 │   │
 │   ├── payment/

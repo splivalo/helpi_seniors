@@ -3,7 +3,7 @@
 > WARNING: It is STRICTLY FORBIDDEN to start any task from the Roadmap without explicit user confirmation.
 > Every step requires explicit approval from the product owner.
 
-> Last updated: 2026-03-02
+> Last updated: 2026-03-08
 
 ---
 
@@ -44,10 +44,10 @@
 
 ## Phase 4 - Orders Management
 
-- [x] 4.1 "Moje narudžbe" screen (order list with 3 tabs: processing/active/completed)
+- [x] 4.1 "Moje narudžbe" screen (order list with 4 tabs: processing/active/completed/cancelled)
 - [x] 4.2 Order detail screen (tap-to-detail, expand/collapse)
 - [x] 4.3 Pricing display (14€/h weekday, 16€/h Sunday, weekly total)
-- [x] 4.4 JobModel + JobStatus (completed, upcoming, cancelled)
+- [x] 4.4 JobModel + JobStatus (completed, scheduled, cancelled)
 - [x] 4.5 "Termini" section: collapsible job list with per-job cards
 - [x] 4.6 Per-job actions: cancel upcoming, rate completed (stars + comment)
 - [x] 4.7 Inline review display on job cards
@@ -62,8 +62,11 @@
 - [x] 4.16 3 mock completed orders seeded (one-time, recurring, recurring-with-end)
 - [x] 4.17 Frequency labels: "Ponavljajuće", "Do DD.MM.YYYY", "Jednom"
 - [x] 4.18 Service chips pill shape (borderRadius 24) in Pregled step
-- [ ] 4.19 Order status updates (push notifications)
-- [ ] 4.20 Orders Cubit + repository
+- [x] 4.19 Canonical domain alignment (statuses, service codes, linkage IDs, DateTime migration)
+- [x] 4.20 Promo code UI (TextField + Apply button in payment card)
+- [x] 4.21 OrderModel: added promoCode, serviceNote, paymentMethodId fields
+- [ ] 4.22 Order status updates (push notifications)
+- [ ] 4.23 Orders Cubit + repository
 
 ## Phase 5 - Payment
 

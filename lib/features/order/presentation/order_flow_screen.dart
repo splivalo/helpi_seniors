@@ -65,6 +65,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
 
   // ── Step 3 state ──────────────────────────────
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _promoCodeController = TextEditingController();
 
   // Mock saved cards
   static const _mockCards = [
@@ -81,6 +82,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
   @override
   void dispose() {
     _notesController.dispose();
+    _promoCodeController.dispose();
     _serviceNoteController.dispose();
     _step1Scroll.dispose();
     super.dispose();
@@ -169,6 +171,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       firstDate: now,
       lastDate: DateTime(now.year + 2),
       locale: const Locale('hr'),
+      confirmText: AppStrings.confirm,
+      cancelText: AppStrings.cancel,
     );
     if (!context.mounted) return;
     if (picked != null) {
@@ -185,6 +189,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       firstDate: _startDate ?? now,
       lastDate: DateTime(now.year + 2),
       locale: const Locale('hr'),
+      confirmText: AppStrings.confirm,
+      cancelText: AppStrings.cancel,
     );
     if (!context.mounted) return;
     if (picked != null) {
@@ -204,6 +210,8 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       firstDate: now,
       lastDate: DateTime(now.year + 2),
       locale: const Locale('hr'),
+      confirmText: AppStrings.confirm,
+      cancelText: AppStrings.cancel,
     );
     if (!context.mounted) return;
     if (picked != null) {
@@ -227,6 +235,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(AppStrings.newOrder),
         leading: IconButton(
@@ -1309,6 +1318,70 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                     ],
                   ),
                 ),
+
+                // ── Promo code ──
+                const Divider(height: 24),
+                Text(
+                  AppStrings.promoCode,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _promoCodeController,
+                        decoration: InputDecoration(
+                          hintText: AppStrings.promoCodeHint,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.border,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.border,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.teal,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Prototype — would validate promo code via API
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.teal,
+                        foregroundColor: Colors.white,
+                        minimumSize: Size.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
+                      ),
+                      child: Text(AppStrings.promoCodeApply),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -1386,6 +1459,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
       date: date,
       frequency: _bookingModeLabel(),
       notes: _notesController.text.trim(),
+      serviceNote: _serviceNoteController.text.trim(),
+      promoCode: _promoCodeController.text.trim(),
+      paymentMethodId: _mockCards[_selectedCardIndex]['last4'] ?? '',
       isOneTime: isOneTime,
       time: time,
       duration: duration,

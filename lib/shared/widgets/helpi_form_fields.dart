@@ -160,6 +160,8 @@ class HelpiDatePicker extends StatelessWidget {
                 initialDate: date ?? DateTime(1960),
                 firstDate: DateTime(1920),
                 lastDate: DateTime.now(),
+                confirmText: AppStrings.confirm,
+                cancelText: AppStrings.cancel,
               );
               if (picked != null && context.mounted) {
                 onChanged(picked);

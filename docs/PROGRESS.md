@@ -1,10 +1,10 @@
 ﻿# Helpi Senior Progress
 
-> Last updated: 2026-03-03
+> Last updated: 2026-03-08
 
 ---
 
-## Overall progress: ~75%
+## Overall progress: ~80%
 
 ### Completed
 
@@ -124,6 +124,32 @@
 - [x] profile_screen.dart: wired HelpiFormFields, AppColors, AppStrings.langHr/langEn/appVersion; removed 4 dead helper methods
 - [x] flutter analyze: 0 errors maintained throughout all changes
 
+#### Session 4 — Canonical Domain Alignment (2026-03-06)
+
+- [x] JobStatus enum: `upcoming` → `scheduled` (canonical)
+- [x] OrderStatus enum: added `cancelled`, `archived`
+- [x] cancelOrder(): changed from delete to status transition (`OrderStatus.cancelled`)
+- [x] 4th tab added: "Otkazane" (cancelled orders)
+- [x] StatusChip: added cancelled (red) and archived (grey) cases
+- [x] JobStatusBadge: updated for `JobStatus.scheduled`
+- [x] Service codes standardized: `cleaning`→`house_help`, `walk`→`walking`
+- [x] ServiceType enum (mock_data): `activities`→`walking`, `household`→`houseHelp`, `techHelp`→`escort`, `pets`→`other`
+- [x] Linkage IDs: `seniorId` on OrderModel, `orderId`+`studentId` on JobModel, `studentId` on StudentAssignment
+- [x] DateTime migration: all date fields changed from String to DateTime/DateTime? (OrderModel, JobModel, ReviewModel, StudentAssignment)
+- [x] All seed data and UI screens updated for DateTime formatting via AppFormatters
+- [x] AppStrings: added `orderCancelled`, `orderArchived`, `ordersCancelled` (HR+EN)
+- [x] flutter analyze: 0 errors maintained
+
+#### Session 5 — Promo Code + Model Fields (2026-03-08)
+
+- [x] Promo code UI: TextField + "Primijeni" button inside payment card on Step 3
+- [x] AppStrings: added `promoCode`, `promoCodeHint`, `promoCodeApply` (HR+EN)
+- [x] OrderModel: added `promoCode`, `serviceNote`, `paymentMethodId` fields
+- [x] \_submitOrder() now passes all 3 new fields to OrderModel
+- [x] ElevatedButton minimumSize override (fix for global theme infinite width in Row)
+- [x] Scaffold resizeToAvoidBottomInset: false (keyboard overlay fix)
+- [x] flutter analyze: 0 errors maintained
+
 #### Dead Code Cleanup
 
 - [x] Marketplace code deleted (home_screen, marketplace_screen, student_detail_screen)
@@ -138,28 +164,27 @@
 
 ### Next Steps
 
-1. Git commit + push DRY refactor (session 3)
-2. Order confirmation screen (after "Naruči" submit)
-3. APK rebuild with latest changes
-4. GoRouter setup (1.5)
-5. Backend integration (Supabase)
-6. Admin app development (desktop + mobile responsive)
+1. Order confirmation screen (after "Naruči" submit)
+2. APK rebuild with latest changes
+3. GoRouter setup (1.5)
+4. Backend integration (Supabase)
+5. Admin app development (desktop + mobile responsive)
 
 ---
 
 ## Module Status
 
-| Module              | Status                                                             | Progress |
-| ------------------- | ------------------------------------------------------------------ | -------- |
-| Architecture & Docs | Done, updated for session 2                                        | 100%     |
-| Foundation          | Theme + i18n done                                                  | 80%      |
-| Auth (UI)           | Login/Register done                                                | 40%      |
-| Order Flow (UI)     | 3-step flow + progressive disclosure + auto-scroll                 | 95%      |
-| Orders (UI)         | 3 tabs + detail + pricing + jobs + reviews + repeat order + colors | 90%      |
-| Chat (UI prototype) | Screens done                                                       | 30%      |
-| Profile (UI proto)  | Screen done                                                        | 25%      |
-| Auth (backend)      | Waiting                                                            | 0%       |
-| Booking (backend)   | Waiting                                                            | 0%       |
-| Payment (Stripe)    | Waiting                                                            | 0%       |
-| Chat (WebSocket)    | Waiting                                                            | 0%       |
-| Admin App           | Planned                                                            | 0%       |
+| Module              | Status                                                               | Progress |
+| ------------------- | -------------------------------------------------------------------- | -------- |
+| Architecture & Docs | Done, updated for session 2                                          | 100%     |
+| Foundation          | Theme + i18n done                                                    | 80%      |
+| Auth (UI)           | Login/Register done                                                  | 40%      |
+| Order Flow (UI)     | 3-step flow + progressive disclosure + auto-scroll                   | 95%      |
+| Orders (UI)         | 4 tabs + detail + pricing + jobs + reviews + repeat + cancel + promo | 95%      |
+| Chat (UI prototype) | Screens done                                                         | 30%      |
+| Profile (UI proto)  | Screen done                                                          | 25%      |
+| Auth (backend)      | Waiting                                                              | 0%       |
+| Booking (backend)   | Waiting                                                              | 0%       |
+| Payment (Stripe)    | Waiting                                                              | 0%       |
+| Chat (WebSocket)    | Waiting                                                              | 0%       |
+| Admin App           | Planned                                                              | 0%       |

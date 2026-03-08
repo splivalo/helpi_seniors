@@ -92,6 +92,9 @@ class OrderModel {
     this.seniorId = '',
     this.status = OrderStatus.processing,
     this.notes = '',
+    this.serviceNote = '',
+    this.promoCode = '',
+    this.paymentMethodId = '',
     this.isOneTime = true,
     this.time = '',
     this.duration = '',
@@ -113,6 +116,9 @@ class OrderModel {
   final DateTime date;
   final String frequency;
   final String notes;
+  final String serviceNote;
+  final String promoCode;
+  final String paymentMethodId;
   OrderStatus status;
 
   final bool isOneTime;

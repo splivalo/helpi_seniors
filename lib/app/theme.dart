@@ -186,5 +186,45 @@ class HelpiTheme {
       thickness: 1,
       space: 1,
     ),
+
+    // ─── DatePicker / TimePicker — no uppercase buttons ──
+    datePickerTheme: DatePickerThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(cardRadius),
+      ),
+      confirmButtonStyle: TextButton.styleFrom(
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0,
+        ),
+      ),
+      cancelButtonStyle: TextButton.styleFrom(
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0,
+        ),
+      ),
+    ),
+    timePickerTheme: TimePickerThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(cardRadius),
+      ),
+      confirmButtonStyle: TextButton.styleFrom(
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0,
+        ),
+      ),
+      cancelButtonStyle: TextButton.styleFrom(
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0,
+        ),
+      ),
+    ),
   );
 }

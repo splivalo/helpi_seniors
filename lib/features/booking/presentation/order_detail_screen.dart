@@ -700,6 +700,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         firstDate: now,
         lastDate: lastDate,
         locale: const Locale('hr'),
+        confirmText: AppStrings.confirm,
+        cancelText: AppStrings.cancel,
       );
       if (!mounted) return;
       if (range == null) return;
@@ -736,6 +738,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       firstDate: now,
       lastDate: lastDate,
       locale: const Locale('hr'),
+      confirmText: AppStrings.confirm,
+      cancelText: AppStrings.cancel,
     );
     if (!mounted) return;
     if (picked == null) return;

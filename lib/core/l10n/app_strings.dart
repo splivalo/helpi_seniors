@@ -274,6 +274,9 @@ class AppStrings {
       'creditCards': 'Kreditne kartice',
       'noCards': 'Nemate spremljenih kartica',
       'addCard': 'Dodaj karticu',
+      'promoCode': 'Promo kod',
+      'promoCodeHint': 'Unesite promo kod',
+      'promoCodeApply': 'Primijeni',
       'agreeToTerms': 'Slažem se s ',
       'termsOfUse': 'uvjetima',
       'byClickingRegister': 'Klikom na "Završi registraciju" prihvaćate ',
@@ -581,6 +584,9 @@ class AppStrings {
       'creditCards': 'Credit cards',
       'noCards': 'No saved cards',
       'addCard': 'Add card',
+      'promoCode': 'Promo code',
+      'promoCodeHint': 'Enter promo code',
+      'promoCodeApply': 'Apply',
       'agreeToTerms': 'I agree to the ',
       'termsOfUse': 'terms',
       'byClickingRegister':
@@ -907,6 +913,9 @@ class AppStrings {
   static String get creditCards => _t('creditCards');
   static String get noCards => _t('noCards');
   static String get addCard => _t('addCard');
+  static String get promoCode => _t('promoCode');
+  static String get promoCodeHint => _t('promoCodeHint');
+  static String get promoCodeApply => _t('promoCodeApply');
   static String get agreeToTerms => _t('agreeToTerms');
   static String get termsOfUse => _t('termsOfUse');
   static String get byClickingRegister => _t('byClickingRegister');

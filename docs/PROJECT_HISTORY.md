@@ -405,3 +405,58 @@
   - PROJECT_CONTEXT.md — updated colors, features, flow descriptions
   - ROADMAP.md — added session 2 completed items
 - **Status:** Implemented.
+
+---
+
+## 2026-03-03 DRY Refactor (Session 3)
+
+### Decision: Full codebase audit and shared widget extraction
+
+- **Context:** Codebase had duplicate colors, formatters, and widget patterns across multiple screens.
+- **Audit:** SENIOR_AUDIT.md identified 39 problems across all files.
+- **Extracted to shared:**
+  - `AppColors` — 15+ centralized color constants
+  - `AppPricing` — hourly rates, price calculation, formatting
+  - `AppFormatters` — date formatting, day names, first occurrence calculation
+  - Shared widgets: StatusChip, JobStatusBadge, SummaryRow, SelectableChip, InfoCard, StarRating, TabBarSelector, HelpiFormFields
+- **All 5 UI files wired:** orders_screen, order_detail_screen, order_flow_screen, login_screen, profile_screen
+- **Dead methods/constants removed:** 16+ unused helpers across all files
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-06 Canonical Domain Alignment (Session 4)
+
+### Decision: Align all models with canonical domain (STATUS_MATRIX.md + CANONICAL_DOMAIN_V1.md)
+
+- **Context:** Senior app models diverged from canonical domain definitions. Backend needs consistent enums and field types across all 3 apps.
+- **Changes:**
+  1. **JobStatus:** `upcoming` → `scheduled` (canonical name)
+  2. **OrderStatus:** Added `cancelled` and `archived` values
+  3. **cancelOrder():** Changed from deleting order to setting `status = OrderStatus.cancelled`
+  4. **Service codes:** `cleaning` → `house_help`, `walk` → `walking`; ServiceType enum in mock_data aligned (`activities`→`walking`, `household`→`houseHelp`, `techHelp`→`escort`, `pets`→`other`)
+  5. **Linkage IDs:** Added `seniorId` to OrderModel, `orderId`+`studentId` to JobModel, `studentId` to StudentAssignment
+  6. **DateTime migration:** All date fields changed from `String` to `DateTime`/`DateTime?` (OrderModel.date, OrderModel.endDate, JobModel.date, ReviewModel.date, StudentAssignment.fromDate, StudentAssignment.toDate)
+- **UI updates:** 4th tab "Otkazane", StatusChip cancelled/archived cases, JobStatusBadge scheduled case, all date displays via AppFormatters
+- **AppStrings:** orderCancelled, orderArchived, ordersCancelled (HR+EN)
+- **Files modified:** 8 (order_model, status_chip, job_status_badge, app_strings, orders_screen, order_detail_screen, order_flow_screen, mock_data)
+- **Status:** Implemented. 0 errors.
+
+---
+
+## 2026-03-08 Promo Code + Model Fields (Session 5)
+
+### Decision: Add promo code input to payment step and sync model fields
+
+- **Context:** Payment step (Step 3) needed promo code input. Also discovered 3 UI-collected fields not being passed to OrderModel.
+- **Promo code UI:**
+  - TextField + "Primijeni" button inside payment card (below "Dodaj karticu", separated by Divider)
+  - `minimumSize: Size.zero` override on button (global theme sets `Size(double.infinity, ...)`)
+  - `resizeToAvoidBottomInset: false` on Scaffold (prevents keyboard RenderBox overflow)
+- **New OrderModel fields:**
+  - `promoCode` (String) — promo code entered by senior
+  - `serviceNote` (String) — service-specific note from Step 2
+  - `paymentMethodId` (String) — selected card identifier
+- **\_submitOrder():** Now passes all 3 new fields to OrderModel constructor
+- **AppStrings:** promoCode, promoCodeHint, promoCodeApply (HR+EN)
+- **Status:** Implemented. 0 errors.
