@@ -5,6 +5,7 @@ import 'package:helpi_senior/app/main_shell.dart';
 import 'package:helpi_senior/app/theme.dart';
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/core/l10n/locale_notifier.dart';
+import 'package:helpi_senior/core/services/auth_service.dart';
 import 'package:helpi_senior/features/auth/presentation/login_screen.dart';
 
 /// Root widget aplikacije Helpi Senior.
@@ -17,7 +18,24 @@ class HelpiApp extends StatefulWidget {
 
 class _HelpiAppState extends State<HelpiApp> {
   final LocaleNotifier _localeNotifier = LocaleNotifier();
+  final AuthService _authService = AuthService();
   bool _isLoggedIn = false;
+  bool _isCheckingAuth = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkExistingAuth();
+  }
+
+  Future<void> _checkExistingAuth() async {
+    final loggedIn = await _authService.isLoggedIn();
+    if (!mounted) return;
+    setState(() {
+      _isLoggedIn = loggedIn;
+      _isCheckingAuth = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -26,7 +44,13 @@ class _HelpiAppState extends State<HelpiApp> {
   }
 
   void _handleLogin() => setState(() => _isLoggedIn = true);
-  void _handleLogout() => setState(() => _isLoggedIn = false);
+
+  void _handleLogout() {
+    _authService.logout().then((_) {
+      if (!mounted) return;
+      setState(() => _isLoggedIn = false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +68,19 @@ class _HelpiAppState extends State<HelpiApp> {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          home: _isLoggedIn
-              ? MainShell(
-                  localeNotifier: _localeNotifier,
-                  onLogout: _handleLogout,
+          home: _isCheckingAuth
+              ? const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
                 )
-              : LoginScreen(
-                  onLoginSuccess: _handleLogin,
-                  localeNotifier: _localeNotifier,
-                ),
+              : _isLoggedIn
+                  ? MainShell(
+                      localeNotifier: _localeNotifier,
+                      onLogout: _handleLogout,
+                    )
+                  : LoginScreen(
+                      onLoginSuccess: _handleLogin,
+                      localeNotifier: _localeNotifier,
+                    ),
         );
       },
     );

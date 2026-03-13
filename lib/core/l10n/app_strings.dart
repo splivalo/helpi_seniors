@@ -109,6 +109,19 @@ class AppStrings {
       'email': 'E-mail adresa',
       'password': 'Lozinka',
       'forgotPassword': 'Zaboravljena lozinka?',
+      'loggingIn': 'Prijava u tijeku...',
+      'loginError': 'Greška pri prijavi',
+      'invalidCredentials': 'Neispravni podaci za prijavu',
+      'forgotPasswordTitle': 'Zaboravljena lozinka',
+      'forgotPasswordSubtitle': 'Unesite email adresu za slanje koda',
+      'sendResetCode': 'Pošalji kod',
+      'resetCode': 'Kod za resetiranje',
+      'newPassword': 'Nova lozinka',
+      'confirmNewPassword': 'Potvrdi novu lozinku',
+      'resetPasswordButton': 'Resetiraj lozinku',
+      'resetPasswordSuccess': 'Lozinka uspješno promijenjena',
+      'codeSent': 'Kod poslan na email',
+      'backToLogin': 'Povratak na prijavu',
       'loginButton': 'Prijavi se',
       'registerButton': 'Registriraj se',
       'noAccount': 'Nemate račun?',
@@ -419,6 +432,19 @@ class AppStrings {
       'email': 'Email address',
       'password': 'Password',
       'forgotPassword': 'Forgot password?',
+      'loggingIn': 'Signing in...',
+      'loginError': 'Login error',
+      'invalidCredentials': 'Invalid credentials',
+      'forgotPasswordTitle': 'Forgot password',
+      'forgotPasswordSubtitle': 'Enter your email to receive a reset code',
+      'sendResetCode': 'Send code',
+      'resetCode': 'Reset code',
+      'newPassword': 'New password',
+      'confirmNewPassword': 'Confirm new password',
+      'resetPasswordButton': 'Reset password',
+      'resetPasswordSuccess': 'Password changed successfully',
+      'codeSent': 'Code sent to email',
+      'backToLogin': 'Back to login',
       'loginButton': 'Sign in',
       'registerButton': 'Sign up',
       'noAccount': "Don't have an account?",
@@ -748,6 +774,19 @@ class AppStrings {
   static String get email => _t('email');
   static String get password => _t('password');
   static String get forgotPassword => _t('forgotPassword');
+  static String get loggingIn => _t('loggingIn');
+  static String get loginError => _t('loginError');
+  static String get invalidCredentials => _t('invalidCredentials');
+  static String get forgotPasswordTitle => _t('forgotPasswordTitle');
+  static String get forgotPasswordSubtitle => _t('forgotPasswordSubtitle');
+  static String get sendResetCode => _t('sendResetCode');
+  static String get resetCode => _t('resetCode');
+  static String get newPassword => _t('newPassword');
+  static String get confirmNewPassword => _t('confirmNewPassword');
+  static String get resetPasswordButton => _t('resetPasswordButton');
+  static String get resetPasswordSuccess => _t('resetPasswordSuccess');
+  static String get codeSent => _t('codeSent');
+  static String get backToLogin => _t('backToLogin');
   static String get loginButton => _t('loginButton');
   static String get registerButton => _t('registerButton');
   static String get noAccount => _t('noAccount');
