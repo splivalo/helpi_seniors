@@ -51,8 +51,9 @@ class AuthService {
       final token = body['token'] as String;
       final userId = body['userId'] as int;
       final rawUserType = body['userType'];
-      final userType =
-          rawUserType is int ? _userTypeFromInt(rawUserType) : '$rawUserType';
+      final userType = rawUserType is int
+          ? _userTypeFromInt(rawUserType)
+          : '$rawUserType';
 
       await _tokenStorage.saveToken(token);
       await _tokenStorage.saveUserId(userId);

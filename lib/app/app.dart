@@ -69,18 +69,16 @@ class _HelpiAppState extends State<HelpiApp> {
             GlobalCupertinoLocalizations.delegate,
           ],
           home: _isCheckingAuth
-              ? const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                )
+              ? const Scaffold(body: Center(child: CircularProgressIndicator()))
               : _isLoggedIn
-                  ? MainShell(
-                      localeNotifier: _localeNotifier,
-                      onLogout: _handleLogout,
-                    )
-                  : LoginScreen(
-                      onLoginSuccess: _handleLogin,
-                      localeNotifier: _localeNotifier,
-                    ),
+              ? MainShell(
+                  localeNotifier: _localeNotifier,
+                  onLogout: _handleLogout,
+                )
+              : LoginScreen(
+                  onLoginSuccess: _handleLogin,
+                  localeNotifier: _localeNotifier,
+                ),
         );
       },
     );

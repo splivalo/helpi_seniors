@@ -149,11 +149,19 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                autofillHints: const [AutofillHints.email, AutofillHints.username],
+                autofillHints: const [
+                  AutofillHints.email,
+                  AutofillHints.username,
+                ],
                 decoration: InputDecoration(
                   labelText: AppStrings.loginEmail,
-                  prefixIcon: const Icon(Icons.email_outlined, color: AppColors.teal),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                  prefixIcon: const Icon(
+                    Icons.email_outlined,
+                    color: AppColors.teal,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   filled: true,
                   fillColor: Colors.white,
                 ),
@@ -168,7 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 onEditingComplete: TextInput.finishAutofillContext,
                 decoration: InputDecoration(
                   labelText: AppStrings.loginPassword,
-                  prefixIcon: const Icon(Icons.lock_outline, color: AppColors.teal),
+                  prefixIcon: const Icon(
+                    Icons.lock_outline,
+                    color: AppColors.teal,
+                  ),
                   suffixIcon: GestureDetector(
                     onTap: () {
                       setState(() => _obscurePassword = !_obscurePassword);
@@ -180,7 +191,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   filled: true,
                   fillColor: Colors.white,
                 ),
@@ -205,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 20),
 
         // ── Error message ──
-        if (_errorMessage != null) ...[  
+        if (_errorMessage != null) ...[
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -230,8 +243,8 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: _isLoading
                 ? null
                 : (_isRegisterMode
-                    ? () => setState(() => _registerStep = 1)
-                    : _handleLogin),
+                      ? () => setState(() => _registerStep = 1)
+                      : _handleLogin),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.coral,
               foregroundColor: Colors.white,
@@ -532,10 +545,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showForgotPasswordDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => const _ForgotPasswordDialog(),
-    );
+    showDialog(context: context, builder: (_) => const _ForgotPasswordDialog());
   }
 }
 

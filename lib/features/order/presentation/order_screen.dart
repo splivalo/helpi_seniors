@@ -16,7 +16,7 @@ class OrderScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.navOrder)),
+      appBar: AppBar(title: Text(AppStrings.orderTitle)),
       body: SafeArea(
         top: false,
         child: Center(
@@ -25,12 +25,6 @@ class OrderScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  AppStrings.orderTitle,
-                  style: theme.textTheme.headlineMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
                 Text(
                   AppStrings.orderSubtitle,
                   style: theme.textTheme.bodyLarge?.copyWith(
