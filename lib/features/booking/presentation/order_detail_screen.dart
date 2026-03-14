@@ -7,6 +7,8 @@ import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/core/utils/formatters.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/shared/widgets/job_status_badge.dart';
+import 'package:helpi_senior/shared/widgets/review_inline_card.dart';
+import 'package:helpi_senior/shared/widgets/service_chips_wrap.dart';
 import 'package:helpi_senior/shared/widgets/star_rating.dart';
 import 'package:helpi_senior/shared/widgets/status_chip.dart';
 import 'package:helpi_senior/shared/widgets/summary_row.dart';
@@ -85,7 +87,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 const SizedBox(height: 20),
 
               // ── Action buttons ──
-              if (order.status == OrderStatus.processing)
+              if (order.status == OrderStatus.processing ||
+                  order.status == OrderStatus.active)
                 OutlinedButton.icon(
                   onPressed: () {
                     HapticFeedback.selectionClick();
@@ -95,25 +98,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   },
                   icon: const Icon(Icons.close, size: 20),
                   label: Text(AppStrings.cancelOrder),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.coral,
-                    side: const BorderSide(color: AppColors.coral, width: 2),
-                  ),
-                ),
-              if (order.status == OrderStatus.active)
-                OutlinedButton.icon(
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    widget.ordersNotifier.cancelOrder(order.id);
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.close, size: 20),
-                  label: Text(AppStrings.cancelOrder),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.coral,
-                    side: const BorderSide(color: AppColors.coral, width: 2),
-                  ),
+                  style: AppColors.coralOutlinedStyle,
                 ),
               if (order.status == OrderStatus.completed)
                 OutlinedButton.icon(
@@ -257,31 +242,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: order.services.map((label) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.selectedChipBg,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppColors.teal),
-                ),
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: AppColors.teal,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+          ServiceChipsWrap(labels: order.services),
 
           // Notes
           if (order.notes.isNotEmpty) ...[
@@ -333,19 +294,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       onPressed: () => _showJobReviewSheet(order, 0),
                       icon: const Icon(Icons.star, size: 14),
                       label: Text(AppStrings.rateStudent),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.teal,
-                        side: const BorderSide(color: AppColors.teal),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        textStyle: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        minimumSize: Size.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                      style: AppColors.tealSmallOutlinedStyle,
                     ),
                   ),
                 ],
@@ -369,45 +318,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        StarRating(
-                          rating: order.jobs.first.review!.rating,
-                          size: 18,
-                        ),
-                        const Spacer(),
-                        Text(
-                          AppFormatters.date(order.jobs.first.review!.date),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (order.jobs.first.review!.comment.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          order.jobs.first.review!.comment,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                  ],
-                ),
+              ReviewInlineCard(
+                rating: order.jobs.first.review!.rating,
+                date: order.jobs.first.review!.date,
+                comment: order.jobs.first.review!.comment,
               ),
             ],
           ],
@@ -588,19 +502,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         onPressed: () => _showJobReviewSheet(order, jobIndex),
                         icon: const Icon(Icons.star, size: 14),
                         label: Text(AppStrings.rateStudent),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.teal,
-                          side: const BorderSide(color: AppColors.teal),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          textStyle: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          minimumSize: Size.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                        style: AppColors.tealSmallOutlinedStyle,
                       ),
                     ),
 
@@ -613,19 +515,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         onPressed: () => _confirmCancelJob(order, jobIndex),
                         icon: const Icon(Icons.close, size: 14),
                         label: Text(AppStrings.cancelJobLabel),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.coral,
-                          side: const BorderSide(color: AppColors.coral),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          textStyle: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          minimumSize: Size.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                        style: AppColors.coralSmallOutlinedStyle,
                       ),
                     ),
                   ],
@@ -639,46 +529,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.only(left: 26),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        StarRating(rating: job.review!.rating, size: 14),
-                        const Spacer(),
-                        Text(
-                          AppFormatters.date(job.review!.date),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (job.review!.comment.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          job.review!.comment,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 12,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                ),
+              child: ReviewInlineCard(
+                rating: job.review!.rating,
+                date: job.review!.date,
+                comment: job.review!.comment,
+                compact: true,
               ),
             ),
           ],

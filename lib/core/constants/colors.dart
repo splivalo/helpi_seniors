@@ -31,4 +31,28 @@ class AppColors {
 
   // ── Chip / selection ──────────────────────────────────────────
   static const Color selectedChipBg = Color(0xFFE0F5F5);
+
+  // ── Reusable button styles ────────────────────────────────────
+  static final ButtonStyle coralOutlinedStyle = OutlinedButton.styleFrom(
+    foregroundColor: coral,
+    side: const BorderSide(color: coral, width: 2),
+  );
+
+  static final ButtonStyle tealSmallOutlinedStyle = OutlinedButton.styleFrom(
+    foregroundColor: teal,
+    side: const BorderSide(color: teal),
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+    minimumSize: Size.zero,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  );
+
+  static final ButtonStyle coralSmallOutlinedStyle = OutlinedButton.styleFrom(
+    foregroundColor: coral,
+    side: const BorderSide(color: coral),
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+    minimumSize: Size.zero,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  );
 }

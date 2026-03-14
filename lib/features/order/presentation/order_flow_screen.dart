@@ -8,8 +8,10 @@ import 'package:helpi_senior/core/utils/formatters.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/shared/widgets/info_card.dart';
 import 'package:helpi_senior/shared/widgets/selectable_chip.dart';
+import 'package:helpi_senior/shared/widgets/service_chips_wrap.dart';
 import 'package:helpi_senior/shared/widgets/summary_row.dart';
 import 'package:helpi_senior/shared/widgets/tab_bar_selector.dart';
+import 'package:helpi_senior/shared/widgets/helpi_switch.dart';
 
 // ─── Model za jednu stavku dana s vremenom ──────────────────────
 class _DayEntry {
@@ -505,7 +507,7 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   ),
                 ),
               ),
-              Switch(
+              HelpiSwitch(
                 value: _hasEndDate,
                 onChanged: (val) {
                   HapticFeedback.selectionClick();
@@ -514,10 +516,6 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                     if (!val) _endDate = null;
                   });
                 },
-                activeThumbColor: Colors.white,
-                activeTrackColor: AppColors.teal,
-                inactiveThumbColor: AppColors.teal,
-                trackOutlineColor: WidgetStateProperty.all(AppColors.teal),
               ),
             ],
           ),
@@ -1178,30 +1176,9 @@ class _OrderFlowScreenState extends State<OrderFlowScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _selectedServices.map((key) {
-                    final label = _serviceChips[key]?.call() ?? key;
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.selectedChipBg,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: AppColors.teal),
-                      ),
-                      child: Text(
-                        label,
-                        style: const TextStyle(
-                          color: AppColors.teal,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    );
+                ServiceChipsWrap(
+                  labels: _selectedServices.map((key) {
+                    return _serviceChips[key]?.call() ?? key;
                   }).toList(),
                 ),
 

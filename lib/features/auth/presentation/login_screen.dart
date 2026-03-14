@@ -7,6 +7,7 @@ import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/core/l10n/locale_notifier.dart';
 import 'package:helpi_senior/core/services/auth_service.dart';
 import 'package:helpi_senior/shared/widgets/helpi_form_fields.dart';
+import 'package:helpi_senior/shared/widgets/helpi_switch.dart';
 
 /// Login / Register ekran — UI prototype, bez prave autentikacije.
 class LoginScreen extends StatefulWidget {
@@ -413,13 +414,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: theme.textTheme.bodyMedium,
               ),
             ),
-            Switch(
+            HelpiSwitch(
               value: _orderingForOther,
               onChanged: (v) => setState(() => _orderingForOther = v),
-              activeThumbColor: Colors.white,
-              activeTrackColor: AppColors.teal,
-              inactiveThumbColor: AppColors.teal,
-              trackOutlineColor: WidgetStateProperty.all(AppColors.teal),
             ),
           ],
         ),

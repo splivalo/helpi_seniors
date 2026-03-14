@@ -355,10 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: widget.onLogout,
             icon: const Icon(Icons.logout),
             label: Text(AppStrings.logout),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.coral,
-              side: const BorderSide(color: AppColors.coral, width: 2),
-            ),
+            style: AppColors.coralOutlinedStyle,
           ),
           const SizedBox(height: 32),
 
