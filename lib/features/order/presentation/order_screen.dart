@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:helpi_senior/core/l10n/app_strings.dart';
 import 'package:helpi_senior/features/booking/data/order_model.dart';
 import 'package:helpi_senior/features/order/presentation/order_flow_screen.dart';
@@ -25,6 +27,11 @@ class OrderScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                SvgPicture.asset(
+                  'assets/images/illustration.svg',
+                  width: 220,
+                ),
+                const SizedBox(height: 32),
                 Text(
                   AppStrings.orderSubtitle,
                   style: theme.textTheme.bodyLarge?.copyWith(
