@@ -27,10 +27,7 @@ class OrderScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SvgPicture.asset(
-                  'assets/images/illustration.svg',
-                  width: 220,
-                ),
+                SvgPicture.asset('assets/images/illustration.svg', width: 220),
                 const SizedBox(height: 32),
                 Text(
                   AppStrings.orderSubtitle,
